@@ -70,29 +70,30 @@ interface StatusSelectorProps {
 }
 
 export function StatusSelector({ value, onChange, label = 'Status do Projeto' }: StatusSelectorProps) {
-  const statuses: ProjectStatus[] = ['quote', 'approved', 'production', 'completed', 'cancelled'];
+  const statusConfig: Record<ProjectStatus, { label: string; icon: string }> = {
+    quote: { label: 'Orçamento', icon: '📋' },
+    approved: { label: 'Aprovado', icon: '✅' },
+    production: { label: 'Em Produção', icon: '🖨️' },
+    completed: { label: 'Concluído', icon: '🎉' },
+    cancelled: { label: 'Cancelado', icon: '❌' },
+  };
 
   return (
     <div>
       <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
         {label}
       </label>
-      <div className="flex flex-wrap gap-2">
-        {statuses.map((status) => (
-          <button
-            key={status}
-            type="button"
-            onClick={() => onChange(status)}
-            className={`transition-all ${
-              value === status
-                ? 'ring-2 ring-orange-500 ring-offset-2 dark:ring-offset-slate-900'
-                : 'opacity-60 hover:opacity-100'
-            }`}
-          >
-            <StatusBadge status={status} size="md" />
-          </button>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value as ProjectStatus)}
+        className="w-full px-3 py-2 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
+      >
+        {Object.entries(statusConfig).map(([key, config]) => (
+          <option key={key} value={key}>
+            {config.icon} {config.label}
+          </option>
         ))}
-      </div>
+      </select>
     </div>
   );
 }
