@@ -358,7 +358,7 @@ export default function Calculator() {
                       {filamentUsages.length > 1 && (
                         <button
                           onClick={() => removeFilamentUsage(usage.id)}
-                          className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 p-2"
+                          className="text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 p-2 transition-colors"
                           title="Remover"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

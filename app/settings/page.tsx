@@ -15,20 +15,29 @@ export default function SettingsPage() {
       <div className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-orange-500 shadow-2xl">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center border-2 border-amber-300 shadow-lg shadow-orange-500/50">
-                  <svg className="w-7 h-7 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <div className="flex items-center gap-3 sm:gap-4">
+              <Link
+                href="/"
+                className="group flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-white hover:bg-orange-50 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl border-2 border-orange-400 dark:border-orange-500 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+              >
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center border-2 border-amber-300 shadow-lg shadow-orange-500/50 group-hover:scale-110 transition-transform">
+                  <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                   </svg>
                 </div>
                 <div>
-                  <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">
-                    Configurações
-                  </h1>
-                  <p className="text-orange-200 text-sm">Voltar para Calculadora</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs sm:text-sm font-black text-orange-600 dark:text-orange-400 uppercase tracking-wider">← Voltar</span>
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 hidden sm:block">Calculadora</p>
                 </div>
               </Link>
+              <div>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white">
+                  Configurações
+                </h1>
+                <p className="text-orange-200 text-xs sm:text-sm">Gerencie suas configurações</p>
+              </div>
             </div>
             <div className="text-right">
               <div className="text-orange-300 text-xs uppercase tracking-widest font-semibold">Powered by</div>
