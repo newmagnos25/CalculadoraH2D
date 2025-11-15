@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-export default function CheckoutPendingPage() {
+function CheckoutPendingContent() {
   const searchParams = useSearchParams();
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
@@ -139,5 +139,13 @@ export default function CheckoutPendingPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function CheckoutPendingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-slate-950 to-slate-900"><p className="text-white">Carregando...</p></div>}>
+      <CheckoutPendingContent />
+    </Suspense>
   );
 }

@@ -18,12 +18,10 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Printer>>({
     name: '',
-    manufacturer: '',
-    model: '',
+    brand: '',
     buildVolume: { x: 220, y: 220, z: 250 },
-    nozzleDiameter: 0.4,
-    maxTemp: { nozzle: 300, bed: 100 },
-    powerConsumption: { printing: 150, standby: 10 },
+    maxTemp: { hotend: 300, bed: 100 },
+    powerConsumption: { idle: 10, heating: 100, printing: 150 },
     features: [],
   });
 
@@ -42,14 +40,11 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
     const newPrinter: Printer = {
       id: editingId || `custom-printer-${Date.now()}`,
       name: formData.name || '',
-      manufacturer: formData.manufacturer || '',
-      model: formData.model || '',
+      brand: formData.brand || '',
       buildVolume: formData.buildVolume!,
-      nozzleDiameter: formData.nozzleDiameter || 0.4,
       maxTemp: formData.maxTemp!,
       powerConsumption: formData.powerConsumption!,
       features: formData.features || [],
-      isCustom: true,
     };
 
     saveCustomPrinter(newPrinter);
@@ -60,12 +55,10 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
   const resetForm = () => {
     setFormData({
       name: '',
-      manufacturer: '',
-      model: '',
+      brand: '',
       buildVolume: { x: 220, y: 220, z: 250 },
-      nozzleDiameter: 0.4,
-      maxTemp: { nozzle: 300, bed: 100 },
-      powerConsumption: { printing: 150, standby: 10 },
+      maxTemp: { hotend: 300, bed: 100 },
+      powerConsumption: { idle: 10, heating: 100, printing: 150 },
       features: [],
     });
     setIsAddingNew(false);
@@ -129,29 +122,16 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
                   />
                 </div>
 
-                <div>
+                <div className="md:col-span-2">
                   <label className="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-100">
-                    Fabricante
+                    Marca
                   </label>
                   <input
                     type="text"
-                    value={formData.manufacturer}
-                    onChange={e => setFormData({ ...formData, manufacturer: e.target.value })}
+                    value={formData.brand}
+                    onChange={e => setFormData({ ...formData, brand: e.target.value })}
                     className="w-full px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
-                    placeholder="Ex: Bambu Lab"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-100">
-                    Modelo
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.model}
-                    onChange={e => setFormData({ ...formData, model: e.target.value })}
-                    className="w-full px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
-                    placeholder="Ex: H2D"
+                    placeholder="Ex: Bambu Lab, Creality, Prusa"
                   />
                 </div>
 
@@ -198,7 +178,47 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
 
                 <div>
                   <label className="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-100">
-                    Consumo Impressão (W) *
+                    Consumo Ocioso (W)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.powerConsumption?.idle || ''}
+                    onChange={e => setFormData({
+                      ...formData,
+                      powerConsumption: {
+                        idle: parseInt(e.target.value) || 0,
+                        heating: formData.powerConsumption?.heating || 0,
+                        printing: formData.powerConsumption?.printing || 0
+                      }
+                    })}
+                    className="w-full px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
+                    placeholder="10"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-100">
+                    Consumo Aquecendo (W)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.powerConsumption?.heating || ''}
+                    onChange={e => setFormData({
+                      ...formData,
+                      powerConsumption: {
+                        idle: formData.powerConsumption?.idle || 0,
+                        heating: parseInt(e.target.value) || 0,
+                        printing: formData.powerConsumption?.printing || 0
+                      }
+                    })}
+                    className="w-full px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
+                    placeholder="100"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-100">
+                    Consumo Imprimindo (W) *
                   </label>
                   <input
                     type="number"
@@ -206,26 +226,14 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
                     value={formData.powerConsumption?.printing || ''}
                     onChange={e => setFormData({
                       ...formData,
-                      powerConsumption: { ...formData.powerConsumption!, printing: parseInt(e.target.value) || 0 }
+                      powerConsumption: {
+                        idle: formData.powerConsumption?.idle || 0,
+                        heating: formData.powerConsumption?.heating || 0,
+                        printing: parseInt(e.target.value) || 0
+                      }
                     })}
                     className="w-full px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
                     placeholder="150"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-100">
-                    Consumo Standby (W)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.powerConsumption?.standby || ''}
-                    onChange={e => setFormData({
-                      ...formData,
-                      powerConsumption: { ...formData.powerConsumption!, standby: parseInt(e.target.value) || 0 }
-                    })}
-                    className="w-full px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
-                    placeholder="10"
                   />
                 </div>
               </div>
@@ -270,7 +278,7 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
                     <div className="flex-1">
                       <h4 className="font-bold text-slate-900 dark:text-white">{printer.name}</h4>
                       <p className="text-xs text-slate-600 dark:text-slate-400">
-                        {printer.manufacturer} {printer.model}
+                        {printer.brand}
                       </p>
                     </div>
                     <div className="flex gap-1">
@@ -336,7 +344,7 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
         <option value="">Selecione uma impressora...</option>
         {allPrinters.map(printer => (
           <option key={printer.id} value={printer.id}>
-            {printer.name} {printer.isCustom && '(Custom)'}
+            {printer.name}
           </option>
         ))}
       </select>
@@ -349,12 +357,8 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
             return (
               <div className="text-xs space-y-1.5">
                 <div className="flex justify-between">
-                  <span className="text-slate-600 dark:text-slate-400">Fabricante:</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">{printer.manufacturer}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-600 dark:text-slate-400">Modelo:</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">{printer.model}</span>
+                  <span className="text-slate-600 dark:text-slate-400">Marca:</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">{printer.brand}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-600 dark:text-slate-400">Volume:</span>
