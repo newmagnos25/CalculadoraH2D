@@ -111,10 +111,10 @@ export const TIER_CONFIGS: Record<SubscriptionTier, TierConfig> = {
   starter: {
     name: 'Starter',
     tier: 'starter',
-    price_monthly: 29.90,
-    price_yearly: 299.00,
-    max_quotes: 30,
-    max_clients: 10,
+    price_monthly: 19.90,
+    price_yearly: 199.00, // ~R$ 16,58/mês - 16% de desconto
+    max_quotes: 50,
+    max_clients: 20,
     max_companies: 1,
     features: {
       pdf_generation: true,
@@ -129,8 +129,8 @@ export const TIER_CONFIGS: Record<SubscriptionTier, TierConfig> = {
   professional: {
     name: 'Professional',
     tier: 'professional',
-    price_monthly: 79.90,
-    price_yearly: 799.00,
+    price_monthly: 49.90,
+    price_yearly: 499.00, // ~R$ 41,58/mês - 16% de desconto
     max_quotes: undefined, // unlimited
     max_clients: undefined, // unlimited
     max_companies: 3,
@@ -147,8 +147,8 @@ export const TIER_CONFIGS: Record<SubscriptionTier, TierConfig> = {
   enterprise: {
     name: 'Enterprise',
     tier: 'enterprise',
-    price_monthly: 199.90,
-    price_yearly: 1999.00,
+    price_monthly: 99.90,
+    price_yearly: 999.00, // ~R$ 83,25/mês - 16% de desconto
     max_quotes: undefined, // unlimited
     max_clients: undefined, // unlimited
     max_companies: 999, // effectively unlimited
@@ -166,7 +166,7 @@ export const TIER_CONFIGS: Record<SubscriptionTier, TierConfig> = {
     name: 'Lifetime',
     tier: 'lifetime',
     price_monthly: 0, // one-time payment
-    price_yearly: 2497.00, // one-time payment
+    price_yearly: 1497.00, // pagamento único vitalício
     max_quotes: undefined, // unlimited
     max_clients: undefined, // unlimited
     max_companies: 999, // effectively unlimited
