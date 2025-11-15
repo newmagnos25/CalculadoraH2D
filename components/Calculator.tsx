@@ -335,7 +335,8 @@ export default function Calculator() {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="mt-2">
