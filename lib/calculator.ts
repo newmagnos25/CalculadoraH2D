@@ -1,8 +1,6 @@
 import { CalculationInput, CalculationResult } from './types';
-import { printers } from '@/data/printers';
-import { filaments } from '@/data/filaments';
+import { getPrinterById, getFilamentById, getAddonById } from './storage';
 import { energyTariffs } from '@/data/energy-tariffs';
-import { addons } from '@/data/addons';
 
 /**
  * Engine de cálculo de custos para impressão 3D
@@ -18,9 +16,9 @@ import { addons } from '@/data/addons';
  * - Margem de lucro
  */
 export function calculatePrintCost(input: CalculationInput): CalculationResult {
-  // 1. Buscar dados das tabelas
-  const printer = printers.find(p => p.id === input.printerId);
-  const filament = filaments.find(f => f.id === input.filamentId);
+  // 1. Buscar dados (inclui default + customizados do localStorage)
+  const printer = getPrinterById(input.printerId);
+  const filament = getFilamentById(input.filamentId);
   const tariff = energyTariffs.find(t => t.distributor === input.energyTariffId);
 
   if (!printer) throw new Error('Impressora não encontrada');
@@ -51,7 +49,7 @@ export function calculatePrintCost(input: CalculationInput): CalculationResult {
   let addonsCost = 0;
   if (input.addons && input.addons.length > 0) {
     for (const addonInput of input.addons) {
-      const addon = addons.find(a => a.id === addonInput.addonId);
+      const addon = getAddonById(addonInput.addonId);
       if (addon) {
         addonsCost += addon.pricePerUnit * addonInput.quantity;
       }

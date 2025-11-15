@@ -1,4 +1,7 @@
 import { Filament, Addon, Printer, CompanySettings, ClientData } from './types';
+import { printers as defaultPrinters } from '@/data/printers';
+import { filaments as defaultFilaments } from '@/data/filaments';
+import { addons as defaultAddons } from '@/data/addons';
 
 // LocalStorage helpers para persistência de dados
 
@@ -83,6 +86,12 @@ export function saveCustomPrinter(printer: Printer): void {
   }
 
   localStorage.setItem(KEYS.CUSTOM_PRINTERS, JSON.stringify(existing));
+}
+
+export function deleteCustomPrinter(id: string): void {
+  const existing = getCustomPrinters();
+  const filtered = existing.filter(p => p.id !== id);
+  localStorage.setItem(KEYS.CUSTOM_PRINTERS, JSON.stringify(filtered));
 }
 
 // Última calculação
@@ -189,4 +198,47 @@ export function incrementInvoiceCounter(): void {
     settings.invoiceCounter += 1;
     saveCompanySettings(settings);
   }
+}
+
+// Helpers para combinar dados default + customizados
+/**
+ * Retorna todas as impressoras (default + customizadas)
+ */
+export function getAllPrinters(): Printer[] {
+  return [...defaultPrinters, ...getCustomPrinters()];
+}
+
+/**
+ * Retorna todos os filamentos (default + customizados)
+ */
+export function getAllFilaments(): Filament[] {
+  return [...defaultFilaments, ...getCustomFilaments()];
+}
+
+/**
+ * Retorna todos os adereços (default + customizados)
+ */
+export function getAllAddons(): Addon[] {
+  return [...defaultAddons, ...getCustomAddons()];
+}
+
+/**
+ * Busca impressora por ID (default ou customizada)
+ */
+export function getPrinterById(id: string): Printer | undefined {
+  return getAllPrinters().find(p => p.id === id);
+}
+
+/**
+ * Busca filamento por ID (default ou customizado)
+ */
+export function getFilamentById(id: string): Filament | undefined {
+  return getAllFilaments().find(f => f.id === id);
+}
+
+/**
+ * Busca adereço por ID (default ou customizado)
+ */
+export function getAddonById(id: string): Addon | undefined {
+  return getAllAddons().find(a => a.id === id);
 }
