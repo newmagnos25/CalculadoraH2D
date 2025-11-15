@@ -253,10 +253,10 @@ export default function Calculator() {
               </svg>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
                 Nova Cotação
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Configure os parâmetros da impressão</p>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Configure os parâmetros da impressão</p>
             </div>
           </div>
 
@@ -308,8 +308,8 @@ export default function Calculator() {
 
                 return (
                 <div key={usage.id} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 border border-slate-200 dark:border-slate-600">
-                  <div className="flex gap-2 items-center flex-wrap">
-                    <div className="flex-1 min-w-[180px]">
+                  <div className="flex gap-2 items-start sm:items-center flex-col sm:flex-row">
+                    <div className="w-full sm:flex-1 sm:min-w-[140px]">
                       <select
                         value={usage.filamentId}
                         onChange={e => updateFilamentUsage(usage.id, { filamentId: e.target.value })}
@@ -323,34 +323,36 @@ export default function Calculator() {
                       </select>
                     </div>
 
-                    <div className="flex gap-2 items-center">
-                      <input
-                        type="number"
-                        value={usage.weight}
-                        onChange={e => updateFilamentUsage(usage.id, { weight: Number(e.target.value) })}
-                        className="w-20 px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
-                        placeholder="g"
-                      />
+                    <div className="flex gap-2 items-center w-full sm:w-auto justify-between sm:justify-start">
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="number"
+                          value={usage.weight}
+                          onChange={e => updateFilamentUsage(usage.id, { weight: Number(e.target.value) })}
+                          className="w-16 sm:w-20 px-2 sm:px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
+                          placeholder="g"
+                        />
 
-                      <div className="relative">
-                        <select
-                          value={usage.color || ''}
-                          onChange={e => updateFilamentUsage(usage.id, { color: e.target.value })}
-                          className="pl-9 pr-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 appearance-none"
-                        >
-                          <option value="">Selecione Cor</option>
-                          {commonColors.map(color => (
-                            <option key={color.value} value={color.value}>
-                              {color.name}
-                            </option>
-                          ))}
-                        </select>
-                        {usage.color && (
-                          <div
-                            className="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded border-2 border-slate-400 dark:border-slate-500 pointer-events-none"
-                            style={{ backgroundColor: usage.color }}
-                          />
-                        )}
+                        <div className="relative">
+                          <select
+                            value={usage.color || ''}
+                            onChange={e => updateFilamentUsage(usage.id, { color: e.target.value })}
+                            className="pl-8 sm:pl-9 pr-2 sm:pr-3 py-2 text-xs sm:text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 appearance-none"
+                          >
+                            <option value="">Cor</option>
+                            {commonColors.map(color => (
+                              <option key={color.value} value={color.value}>
+                                {color.name}
+                              </option>
+                            ))}
+                          </select>
+                          {usage.color && (
+                            <div
+                              className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 rounded border-2 border-slate-400 dark:border-slate-500 pointer-events-none"
+                              style={{ backgroundColor: usage.color }}
+                            />
+                          )}
+                        </div>
                       </div>
 
                       {filamentUsages.length > 1 && (
@@ -617,9 +619,9 @@ export default function Calculator() {
         {/* Botão Calcular */}
         <button
           onClick={handleCalculate}
-          className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-white font-black py-4 px-6 rounded-xl shadow-2xl shadow-orange-500/50 hover:shadow-orange-600/60 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 border-2 border-amber-300"
+          className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-white font-black py-3 sm:py-4 px-4 sm:px-6 rounded-xl shadow-2xl shadow-orange-500/50 hover:shadow-orange-600/60 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 border-2 border-amber-300 text-sm sm:text-base"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
           </svg>
           Calcular Preço
@@ -627,7 +629,7 @@ export default function Calculator() {
       </div>
 
       {/* Resultados */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 border-2 border-amber-200 dark:border-amber-900/50 sticky top-6">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-4 sm:p-6 border-2 border-amber-200 dark:border-amber-900/50 lg:sticky lg:top-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-500/30">
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -635,8 +637,8 @@ export default function Calculator() {
             </svg>
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Orçamento</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Resultado da precificação</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Orçamento</h2>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Resultado da precificação</p>
           </div>
         </div>
 
