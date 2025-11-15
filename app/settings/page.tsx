@@ -92,7 +92,7 @@ export default function SettingsPage() {
                   Adicione e gerencie seus clientes para facilitar a geração de orçamentos
                 </p>
               </div>
-              <ClientManager />
+              <ClientManager showAsList={true} />
             </div>
           )}
         </div>
