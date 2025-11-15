@@ -191,9 +191,9 @@ export default function Calculator() {
       {/* Formulário */}
       <div className="space-y-6">
         {/* Card Principal */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 border border-slate-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 border-2 border-orange-200 dark:border-orange-900/50">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/30">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
@@ -202,7 +202,7 @@ export default function Calculator() {
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
                 Nova Cotação
               </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Configure os parâmetros da impressão</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Configure os parâmetros da impressão</p>
             </div>
           </div>
 
@@ -214,7 +214,7 @@ export default function Calculator() {
             <select
               value={printerId}
               onChange={e => setPrinterId(e.target.value)}
-              className="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all"
+              className="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200 dark:focus:ring-orange-800 transition-all"
             >
               {printers.map(p => (
                 <option key={p.id} value={p.id}>
@@ -232,7 +232,7 @@ export default function Calculator() {
               </label>
               <button
                 onClick={addFilamentUsage}
-                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1"
+                className="text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium flex items-center gap-1 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -286,8 +286,8 @@ export default function Calculator() {
               <FilamentManager onSave={loadCustomData} />
             </div>
 
-            <div className="mt-2 text-xs text-slate-500 dark:text-slate-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-2 rounded-md">
-              <strong>Peso total:</strong> {totalWeight}g
+            <div className="mt-2 text-xs text-slate-700 dark:text-slate-300 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 px-3 py-2 rounded-md border border-orange-200 dark:border-orange-900/50">
+              <strong className="text-orange-600 dark:text-orange-400">Peso total:</strong> {totalWeight}g
             </div>
           </div>
 
@@ -300,7 +300,7 @@ export default function Calculator() {
               type="number"
               value={printTime}
               onChange={e => setPrintTime(Number(e.target.value))}
-              className="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
+              className="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200 dark:focus:ring-orange-800 transition-all"
             />
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               ≈ {(printTime / 60).toFixed(1)}h
@@ -418,9 +418,9 @@ export default function Calculator() {
         </div>
 
         {/* Card de Adereços */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 border border-slate-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 border-2 border-amber-200 dark:border-amber-900/50">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-lg flex items-center justify-center shadow-lg shadow-amber-500/30">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
               </svg>
@@ -429,7 +429,7 @@ export default function Calculator() {
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                 Adereços e Inserções
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Parafusos, ímãs, insertos, etc</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400">Parafusos, ímãs, insertos, etc</p>
             </div>
           </div>
 
@@ -498,7 +498,7 @@ export default function Calculator() {
         {/* Botão Calcular */}
         <button
           onClick={handleCalculate}
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-white font-black py-4 px-6 rounded-xl shadow-2xl shadow-orange-500/50 hover:shadow-orange-600/60 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 border-2 border-amber-300"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -508,30 +508,30 @@ export default function Calculator() {
       </div>
 
       {/* Resultados */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 border border-slate-200 dark:border-slate-700 sticky top-6">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 border-2 border-amber-200 dark:border-amber-900/50 sticky top-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-500/30">
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Orçamento</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Resultado da precificação</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Resultado da precificação</p>
           </div>
         </div>
 
         {result ? (
           <div className="space-y-4">
             {/* Preço Final Destaque */}
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-2 border-blue-200 dark:border-blue-700 rounded-xl p-6 text-center">
-              <div className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">
+            <div className="bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 dark:from-orange-900/20 dark:via-amber-900/20 dark:to-yellow-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-xl p-6 text-center shadow-lg shadow-orange-200/50">
+              <div className="text-sm font-semibold text-orange-600 dark:text-orange-400 mb-1 uppercase tracking-wide">
                 Valor Total a Cobrar
               </div>
-              <div className="text-5xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <div className="text-5xl font-black bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 bg-clip-text text-transparent drop-shadow-sm">
                 {formatCurrency(result.finalPrice)}
               </div>
-              <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+              <div className="mt-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
                 Inclui margem de {result.profitMargin}% de lucro
               </div>
             </div>
@@ -559,7 +559,7 @@ export default function Calculator() {
                     </div>
                     <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 transition-all duration-500 shadow-sm"
                         style={{ width: `${item.percentage}%` }}
                       />
                     </div>

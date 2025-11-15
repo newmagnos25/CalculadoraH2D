@@ -43,7 +43,7 @@ export default function AddonManager({ onSave }: AddonManagerProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium flex items-center gap-1"
+        className="text-sm text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 font-semibold flex items-center gap-1 transition-colors"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -54,14 +54,14 @@ export default function AddonManager({ onSave }: AddonManagerProps) {
   }
 
   return (
-    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-4">
+    <div className="bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border-2 border-amber-300 dark:border-amber-800 rounded-lg p-4 mb-4 shadow-md">
       <div className="flex justify-between items-center mb-3">
-        <h3 className="font-semibold text-green-900 dark:text-green-100">
+        <h3 className="font-bold text-amber-900 dark:text-amber-100">
           Adicionar Item Customizado
         </h3>
         <button
           onClick={() => setIsOpen(false)}
-          className="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200"
+          className="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 transition-colors"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -72,7 +72,7 @@ export default function AddonManager({ onSave }: AddonManagerProps) {
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <label className="block text-xs font-medium mb-1 text-green-900 dark:text-green-100">
+            <label className="block text-xs font-semibold mb-1 text-amber-900 dark:text-amber-100">
               Nome do Item
             </label>
             <input
@@ -80,7 +80,7 @@ export default function AddonManager({ onSave }: AddonManagerProps) {
               required
               value={formData.name}
               onChange={e => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-2 py-1.5 text-sm border border-green-300 dark:border-green-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+              className="w-full px-2 py-1.5 text-sm border-2 border-amber-200 dark:border-amber-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
               placeholder="Ex: Ímã neodímio 15x3mm"
             />
           </div>
@@ -88,13 +88,13 @@ export default function AddonManager({ onSave }: AddonManagerProps) {
 
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-medium mb-1 text-green-900 dark:text-green-100">
+            <label className="block text-xs font-semibold mb-1 text-amber-900 dark:text-amber-100">
               Categoria
             </label>
             <select
               value={formData.category}
               onChange={e => setFormData({ ...formData, category: e.target.value as Addon['category'] })}
-              className="w-full px-2 py-1.5 text-sm border border-green-300 dark:border-green-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+              className="w-full px-2 py-1.5 text-sm border-2 border-amber-200 dark:border-amber-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
             >
               <option value="insert">Inserções</option>
               <option value="screw">Parafusos</option>
@@ -106,7 +106,7 @@ export default function AddonManager({ onSave }: AddonManagerProps) {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium mb-1 text-green-900 dark:text-green-100">
+            <label className="block text-xs font-semibold mb-1 text-amber-900 dark:text-amber-100">
               Preço (R$)
             </label>
             <input
@@ -115,17 +115,17 @@ export default function AddonManager({ onSave }: AddonManagerProps) {
               step="0.01"
               value={formData.pricePerUnit}
               onChange={e => setFormData({ ...formData, pricePerUnit: Number(e.target.value) })}
-              className="w-full px-2 py-1.5 text-sm border border-green-300 dark:border-green-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+              className="w-full px-2 py-1.5 text-sm border-2 border-amber-200 dark:border-amber-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium mb-1 text-green-900 dark:text-green-100">
+            <label className="block text-xs font-semibold mb-1 text-amber-900 dark:text-amber-100">
               Unidade
             </label>
             <select
               value={formData.unit}
               onChange={e => setFormData({ ...formData, unit: e.target.value as Addon['unit'] })}
-              className="w-full px-2 py-1.5 text-sm border border-green-300 dark:border-green-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+              className="w-full px-2 py-1.5 text-sm border-2 border-amber-200 dark:border-amber-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
             >
               <option value="un">unidade</option>
               <option value="g">gramas</option>
@@ -138,14 +138,14 @@ export default function AddonManager({ onSave }: AddonManagerProps) {
         <div className="flex gap-2">
           <button
             type="submit"
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md text-sm transition-colors"
+            className="flex-1 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold py-2 px-4 rounded-md text-sm transition-all shadow-lg shadow-amber-500/30"
           >
             Salvar Item
           </button>
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="px-4 py-2 text-sm text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-md transition-colors"
+            className="px-4 py-2 text-sm text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30 rounded-md transition-colors font-semibold"
           >
             Cancelar
           </button>
