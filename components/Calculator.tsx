@@ -33,10 +33,36 @@ export default function Calculator() {
   const [printTime, setPrintTime] = useState(120);
   const [selectedState, setSelectedState] = useState('SP');
   const [energyTariffId, setEnergyTariffId] = useState('Enel São Paulo');
-  const [laborCost, setLaborCost] = useState(0);
-  const [depreciation, setDepreciation] = useState(1);
-  const [fixedCosts, setFixedCosts] = useState(0.5);
-  const [profitMargin, setProfitMargin] = useState(30);
+
+  // Estados com auto-save (custos e margem)
+  const [laborCost, setLaborCost] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('laborCost');
+      return saved ? parseFloat(saved) : 0;
+    }
+    return 0;
+  });
+  const [depreciation, setDepreciation] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('depreciation');
+      return saved ? parseFloat(saved) : 1;
+    }
+    return 1;
+  });
+  const [fixedCosts, setFixedCosts] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('fixedCosts');
+      return saved ? parseFloat(saved) : 0.5;
+    }
+    return 0.5;
+  });
+  const [profitMargin, setProfitMargin] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('profitMargin');
+      return saved ? parseFloat(saved) : 30;
+    }
+    return 30;
+  });
 
   // Adereços selecionados
   const [selectedAddons, setSelectedAddons] = useState<{ id: string; quantity: number }[]>([]);
@@ -48,6 +74,31 @@ export default function Calculator() {
   useEffect(() => {
     loadCustomData();
   }, []);
+
+  // Auto-save custos e margem quando mudarem
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('laborCost', laborCost.toString());
+    }
+  }, [laborCost]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('depreciation', depreciation.toString());
+    }
+  }, [depreciation]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('fixedCosts', fixedCosts.toString());
+    }
+  }, [fixedCosts]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('profitMargin', profitMargin.toString());
+    }
+  }, [profitMargin]);
 
   const loadCustomData = () => {
     const customFilaments = getCustomFilaments();
@@ -202,10 +253,10 @@ export default function Calculator() {
               </svg>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
                 Nova Cotação
               </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Configure os parâmetros da impressão</p>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Configure os parâmetros da impressão</p>
             </div>
           </div>
 
@@ -238,25 +289,6 @@ export default function Calculator() {
               </button>
             </div>
 
-            {/* Preview de Cores */}
-            {filamentUsages.length > 0 && (
-              <div className="mb-3 p-3 bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-800/50 dark:to-gray-800/50 rounded-lg border border-slate-200 dark:border-slate-600">
-                <div className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Preview das Cores:</div>
-                <div className="flex flex-wrap gap-2">
-                  {filamentUsages.map((usage) => (
-                    <div key={usage.id} className="flex items-center gap-1.5 bg-white dark:bg-slate-700 px-2 py-1 rounded border border-slate-300 dark:border-slate-600">
-                      <div
-                        className="w-5 h-5 rounded border-2 border-slate-400 dark:border-slate-500 shadow-sm"
-                        style={{ backgroundColor: usage.color || '#999999' }}
-                        title={usage.color || 'Sem cor definida'}
-                      />
-                      <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">{usage.weight}g</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             <div className="space-y-2">
               {filamentUsages.map((usage, idx) => {
                 const commonColors = [
@@ -276,8 +308,8 @@ export default function Calculator() {
 
                 return (
                 <div key={usage.id} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 border border-slate-200 dark:border-slate-600">
-                  <div className="flex gap-2 items-center flex-wrap">
-                    <div className="flex-1 min-w-[180px]">
+                  <div className="flex gap-2 items-start sm:items-center flex-col sm:flex-row">
+                    <div className="w-full sm:flex-1 sm:min-w-[140px]">
                       <select
                         value={usage.filamentId}
                         onChange={e => updateFilamentUsage(usage.id, { filamentId: e.target.value })}
@@ -291,34 +323,36 @@ export default function Calculator() {
                       </select>
                     </div>
 
-                    <div className="flex gap-2 items-center">
-                      <input
-                        type="number"
-                        value={usage.weight}
-                        onChange={e => updateFilamentUsage(usage.id, { weight: Number(e.target.value) })}
-                        className="w-20 px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
-                        placeholder="g"
-                      />
+                    <div className="flex gap-2 items-center w-full sm:w-auto justify-between sm:justify-start">
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="number"
+                          value={usage.weight}
+                          onChange={e => updateFilamentUsage(usage.id, { weight: Number(e.target.value) })}
+                          className="w-16 sm:w-20 px-2 sm:px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
+                          placeholder="g"
+                        />
 
-                      <div className="relative">
-                        <select
-                          value={usage.color || ''}
-                          onChange={e => updateFilamentUsage(usage.id, { color: e.target.value })}
-                          className="pl-9 pr-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 appearance-none"
-                        >
-                          <option value="">Selecione Cor</option>
-                          {commonColors.map(color => (
-                            <option key={color.value} value={color.value}>
-                              {color.name}
-                            </option>
-                          ))}
-                        </select>
-                        {usage.color && (
-                          <div
-                            className="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded border-2 border-slate-400 dark:border-slate-500 pointer-events-none"
-                            style={{ backgroundColor: usage.color }}
-                          />
-                        )}
+                        <div className="relative">
+                          <select
+                            value={usage.color || ''}
+                            onChange={e => updateFilamentUsage(usage.id, { color: e.target.value })}
+                            className="pl-8 sm:pl-9 pr-2 sm:pr-3 py-2 text-xs sm:text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 appearance-none"
+                          >
+                            <option value="">Cor</option>
+                            {commonColors.map(color => (
+                              <option key={color.value} value={color.value}>
+                                {color.name}
+                              </option>
+                            ))}
+                          </select>
+                          {usage.color && (
+                            <div
+                              className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 rounded border-2 border-slate-400 dark:border-slate-500 pointer-events-none"
+                              style={{ backgroundColor: usage.color }}
+                            />
+                          )}
+                        </div>
                       </div>
 
                       {filamentUsages.length > 1 && (
@@ -339,12 +373,42 @@ export default function Calculator() {
               })}
             </div>
 
+            {/* Preview de Cores - MOVIDO para depois de escolher */}
+            {filamentUsages.length > 0 && filamentUsages.some(u => u.color) && (
+              <div className="mt-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border-2 border-green-300 dark:border-green-700">
+                <div className="text-xs font-bold text-green-700 dark:text-green-300 mb-2 flex items-center gap-1.5">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                  </svg>
+                  Preview das Cores:
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {filamentUsages.filter(u => u.color).map((usage) => (
+                    <div key={usage.id} className="flex items-center gap-1.5 bg-white dark:bg-slate-700 px-3 py-1.5 rounded-lg border-2 border-green-400 dark:border-green-600 shadow-sm">
+                      <div
+                        className="w-6 h-6 rounded border-2 border-slate-400 dark:border-slate-500 shadow-md"
+                        style={{ backgroundColor: usage.color }}
+                        title={usage.color}
+                      />
+                      <span className="text-xs text-slate-700 dark:text-slate-300 font-bold">{usage.weight}g</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="mt-2">
               <FilamentManager onSave={loadCustomData} />
             </div>
 
-            <div className="mt-2 text-xs text-slate-700 dark:text-slate-300 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 px-3 py-2 rounded-md border border-orange-200 dark:border-orange-900/50">
-              <strong className="text-orange-600 dark:text-orange-400">Peso total:</strong> {totalWeight}g
+            <div className="mt-2 text-xs text-slate-700 dark:text-slate-300 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 px-3 py-2.5 rounded-md border-2 border-green-400 dark:border-green-700">
+              <strong className="text-green-700 dark:text-green-300 flex items-center gap-1">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                </svg>
+                Peso total:
+              </strong>
+              <span className="text-green-800 dark:text-green-200 font-bold ml-1">{totalWeight}g</span>
             </div>
           </div>
 
@@ -555,9 +619,9 @@ export default function Calculator() {
         {/* Botão Calcular */}
         <button
           onClick={handleCalculate}
-          className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-white font-black py-4 px-6 rounded-xl shadow-2xl shadow-orange-500/50 hover:shadow-orange-600/60 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 border-2 border-amber-300"
+          className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-white font-black py-3 sm:py-4 px-4 sm:px-6 rounded-xl shadow-2xl shadow-orange-500/50 hover:shadow-orange-600/60 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 border-2 border-amber-300 text-sm sm:text-base"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
           </svg>
           Calcular Preço
@@ -565,7 +629,7 @@ export default function Calculator() {
       </div>
 
       {/* Resultados */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 border-2 border-amber-200 dark:border-amber-900/50 sticky top-6">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-4 sm:p-6 border-2 border-amber-200 dark:border-amber-900/50 lg:sticky lg:top-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-500/30">
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -573,8 +637,8 @@ export default function Calculator() {
             </svg>
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Orçamento</h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Resultado da precificação</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Orçamento</h2>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Resultado da precificação</p>
           </div>
         </div>
 

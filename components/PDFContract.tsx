@@ -5,8 +5,8 @@ import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/render
 import { CompanySettings, ClientData } from '@/lib/types';
 import { formatCurrency } from '@/lib/calculator';
 
-// Estilos do PDF
-const styles = StyleSheet.create({
+// Função para criar estilos dinâmicos baseados na cor da marca
+const createStyles = (brandColor: string = '#F97316') => StyleSheet.create({
   page: {
     padding: 40,
     fontSize: 10,
@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 20,
-    borderBottom: '3 solid #F97316',
+    borderBottom: `3 solid ${brandColor}`,
     paddingBottom: 15,
   },
   logoSection: {
@@ -24,8 +24,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   logo: {
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 70,
     objectFit: 'contain',
   },
   companyInfo: {
@@ -35,8 +35,8 @@ const styles = StyleSheet.create({
   companyName: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#F97316',
-    marginBottom: 3,
+    color: brandColor,
+    marginBottom: 4,
   },
   title: {
     fontSize: 20,
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 11,
     fontWeight: 'bold',
-    color: '#F97316',
+    color: brandColor,
     marginBottom: 8,
     textTransform: 'uppercase',
   },
@@ -162,6 +162,9 @@ export const PDFContract: React.FC<PDFContractProps> = ({
   description,
   deliveryDays = 7,
 }) => {
+  // Criar estilos dinâmicos baseados na cor da marca da empresa
+  const styles = createStyles(company.brandColor || '#F97316');
+
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     return d.toLocaleDateString('pt-BR', {
