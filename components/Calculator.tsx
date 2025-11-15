@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { printers } from '@/data/printers';
 import { filaments } from '@/data/filaments';
 import { energyTariffs, getStates, getTariffsByState } from '@/data/energy-tariffs';
 import { addons, addonCategories } from '@/data/addons';
 import { calculatePrintCost, formatCurrency, formatPercentage } from '@/lib/calculator';
 import { CalculationInput, CalculationResult } from '@/lib/types';
-import { getCustomFilaments, getCustomAddons, getCustomPrinters, saveLastCalculation, getLastCalculation } from '@/lib/storage';
+import { getCustomFilaments, getCustomAddons, getAllPrinters, saveLastCalculation, getLastCalculation } from '@/lib/storage';
 import FilamentManager from './FilamentManager';
 import AddonManager from './AddonManager';
 import PrinterManager from './PrinterManager';
@@ -21,8 +20,13 @@ interface FilamentUsage {
 }
 
 export default function Calculator() {
+  // Filamentos, adereços e impressoras (padrão + customizados)
+  const [allPrinters, setAllPrinters] = useState(getAllPrinters());
+  const [allFilaments, setAllFilaments] = useState(filaments);
+  const [allAddons, setAllAddons] = useState(addons);
+
   // Estados do formulário
-  const [printerId, setPrinterId] = useState(printers[0].id);
+  const [printerId, setPrinterId] = useState(allPrinters[0]?.id || '');
   const [filamentUsages, setFilamentUsages] = useState<FilamentUsage[]>([
     { id: '1', filamentId: filaments[0].id, weight: 50 }
   ]);
@@ -37,11 +41,6 @@ export default function Calculator() {
   // Adereços selecionados
   const [selectedAddons, setSelectedAddons] = useState<{ id: string; quantity: number }[]>([]);
 
-  // Filamentos, adereços e impressoras (padrão + customizados)
-  const [allFilaments, setAllFilaments] = useState(filaments);
-  const [allAddons, setAllAddons] = useState(addons);
-  const [allPrinters, setAllPrinters] = useState(printers);
-
   // Resultado
   const [result, setResult] = useState<CalculationResult | null>(null);
 
@@ -53,10 +52,9 @@ export default function Calculator() {
   const loadCustomData = () => {
     const customFilaments = getCustomFilaments();
     const customAddons = getCustomAddons();
-    const customPrinters = getCustomPrinters();
     setAllFilaments([...filaments, ...customFilaments]);
     setAllAddons([...addons, ...customAddons]);
-    setAllPrinters([...printers, ...customPrinters]);
+    setAllPrinters(getAllPrinters()); // Já combina printers default + custom
   };
 
   const handleCalculate = () => {
