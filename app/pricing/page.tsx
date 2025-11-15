@@ -87,7 +87,7 @@ export default function PricingPage() {
             </ul>
 
             <Link
-              href="/auth/signup"
+              href="/checkout/starter"
               className="block w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-center transition-all"
             >
               Começar Agora
@@ -145,7 +145,7 @@ export default function PricingPage() {
             </ul>
 
             <Link
-              href="/auth/signup"
+              href="/checkout/professional"
               className="block w-full bg-white hover:bg-slate-100 text-orange-600 font-black py-3 px-6 rounded-lg text-center transition-all shadow-lg"
             >
               Testar 14 Dias Grátis
@@ -195,7 +195,7 @@ export default function PricingPage() {
             </ul>
 
             <Link
-              href="/auth/signup"
+              href="/checkout/enterprise"
               className="block w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg text-center transition-all"
             >
               Começar Agora
@@ -246,7 +246,7 @@ export default function PricingPage() {
             </ul>
 
             <Link
-              href="/auth/signup"
+              href="/checkout/lifetime"
               className="block w-full bg-slate-900 hover:bg-black text-white font-black py-3 px-6 rounded-lg text-center transition-all shadow-lg"
             >
               Garantir Acesso Vitalício
