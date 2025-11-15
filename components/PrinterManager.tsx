@@ -98,14 +98,14 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
       <div className="space-y-4">
         {/* Formulário de Adicionar/Editar */}
         {isAddingNew ? (
-          <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-2 border-orange-300 dark:border-orange-800 rounded-lg p-4">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-300 dark:border-blue-800 rounded-lg p-4">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="font-bold text-orange-900 dark:text-orange-100">
+              <h3 className="font-bold text-blue-900 dark:text-blue-100">
                 {editingId ? 'Editar Impressora' : 'Adicionar Nova Impressora'}
               </h3>
               <button
                 onClick={resetForm}
-                className="text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-200"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -116,7 +116,7 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
             <form onSubmit={handleSubmit} className="space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-semibold mb-1 text-orange-900 dark:text-orange-100">
+                  <label className="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-100">
                     Nome da Impressora *
                   </label>
                   <input
@@ -124,39 +124,39 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
                     required
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-2 py-1.5 text-sm border-2 border-orange-200 dark:border-orange-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500"
+                    className="w-full px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
                     placeholder="Ex: Minha Impressora 3D"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold mb-1 text-orange-900 dark:text-orange-100">
+                  <label className="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-100">
                     Fabricante
                   </label>
                   <input
                     type="text"
                     value={formData.manufacturer}
                     onChange={e => setFormData({ ...formData, manufacturer: e.target.value })}
-                    className="w-full px-2 py-1.5 text-sm border-2 border-orange-200 dark:border-orange-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500"
+                    className="w-full px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
                     placeholder="Ex: Bambu Lab"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold mb-1 text-orange-900 dark:text-orange-100">
+                  <label className="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-100">
                     Modelo
                   </label>
                   <input
                     type="text"
                     value={formData.model}
                     onChange={e => setFormData({ ...formData, model: e.target.value })}
-                    className="w-full px-2 py-1.5 text-sm border-2 border-orange-200 dark:border-orange-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500"
+                    className="w-full px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
                     placeholder="Ex: H2D"
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-semibold mb-1.5 text-orange-900 dark:text-orange-100">
+                  <label className="block text-xs font-semibold mb-1.5 text-blue-900 dark:text-blue-100">
                     Volume de Impressão (mm)
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -168,7 +168,7 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
                         ...formData,
                         buildVolume: { ...formData.buildVolume!, x: parseInt(e.target.value) || 0 }
                       })}
-                      className="px-2 py-1.5 text-sm border-2 border-orange-200 dark:border-orange-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500"
+                      className="px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
                       placeholder="X"
                     />
                     <input
@@ -179,7 +179,7 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
                         ...formData,
                         buildVolume: { ...formData.buildVolume!, y: parseInt(e.target.value) || 0 }
                       })}
-                      className="px-2 py-1.5 text-sm border-2 border-orange-200 dark:border-orange-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500"
+                      className="px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
                       placeholder="Y"
                     />
                     <input
@@ -190,14 +190,14 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
                         ...formData,
                         buildVolume: { ...formData.buildVolume!, z: parseInt(e.target.value) || 0 }
                       })}
-                      className="px-2 py-1.5 text-sm border-2 border-orange-200 dark:border-orange-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500"
+                      className="px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
                       placeholder="Z"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold mb-1 text-orange-900 dark:text-orange-100">
+                  <label className="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-100">
                     Consumo Impressão (W) *
                   </label>
                   <input
@@ -208,13 +208,13 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
                       ...formData,
                       powerConsumption: { ...formData.powerConsumption!, printing: parseInt(e.target.value) || 0 }
                     })}
-                    className="w-full px-2 py-1.5 text-sm border-2 border-orange-200 dark:border-orange-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500"
+                    className="w-full px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
                     placeholder="150"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold mb-1 text-orange-900 dark:text-orange-100">
+                  <label className="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-100">
                     Consumo Standby (W)
                   </label>
                   <input
@@ -224,7 +224,7 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
                       ...formData,
                       powerConsumption: { ...formData.powerConsumption!, standby: parseInt(e.target.value) || 0 }
                     })}
-                    className="w-full px-2 py-1.5 text-sm border-2 border-orange-200 dark:border-orange-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500"
+                    className="w-full px-2 py-1.5 text-sm border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
                     placeholder="10"
                   />
                 </div>
@@ -330,7 +330,7 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
           const printer = allPrinters.find(p => p.id === e.target.value);
           handleSelectPrinter(printer || null);
         }}
-        className="w-full px-3 py-2 border-2 border-orange-200 dark:border-orange-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+        className="w-full px-3 py-2 border-2 border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
         required
       >
         <option value="">Selecione uma impressora...</option>
@@ -371,7 +371,7 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
                     <span className="text-slate-600 dark:text-slate-400 block mb-1">Recursos:</span>
                     <div className="flex flex-wrap gap-1">
                       {printer.features.map((feature, idx) => (
-                        <span key={idx} className="px-2 py-0.5 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded text-xs">
+                        <span key={idx} className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-xs">
                           {feature}
                         </span>
                       ))}

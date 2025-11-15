@@ -119,6 +119,7 @@ export interface CompanySettings {
   email: string;
   website?: string;
   logo?: string; // Base64 encoded image
+  brandColor?: string; // Cor primária da marca (hex) para PDFs
   invoicePrefix: string; // Ex: "INV-2025-"
   invoiceCounter: number; // Contador para numeração automática
   paymentTerms: string; // Condições de pagamento padrão

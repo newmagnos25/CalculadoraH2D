@@ -229,7 +229,7 @@ export default function Calculator() {
               </label>
               <button
                 onClick={addFilamentUsage}
-                className="text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium flex items-center gap-1 transition-colors"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -238,15 +238,50 @@ export default function Calculator() {
               </button>
             </div>
 
+            {/* Preview de Cores */}
+            {filamentUsages.length > 0 && (
+              <div className="mb-3 p-3 bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-800/50 dark:to-gray-800/50 rounded-lg border border-slate-200 dark:border-slate-600">
+                <div className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Preview das Cores:</div>
+                <div className="flex flex-wrap gap-2">
+                  {filamentUsages.map((usage) => (
+                    <div key={usage.id} className="flex items-center gap-1.5 bg-white dark:bg-slate-700 px-2 py-1 rounded border border-slate-300 dark:border-slate-600">
+                      <div
+                        className="w-5 h-5 rounded border-2 border-slate-400 dark:border-slate-500 shadow-sm"
+                        style={{ backgroundColor: usage.color || '#999999' }}
+                        title={usage.color || 'Sem cor definida'}
+                      />
+                      <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">{usage.weight}g</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="space-y-2">
-              {filamentUsages.map((usage, idx) => (
+              {filamentUsages.map((usage, idx) => {
+                const commonColors = [
+                  { name: 'Branco', value: '#FFFFFF' },
+                  { name: 'Preto', value: '#1F2937' },
+                  { name: 'Vermelho', value: '#EF4444' },
+                  { name: 'Azul', value: '#3B82F6' },
+                  { name: 'Verde', value: '#10B981' },
+                  { name: 'Amarelo', value: '#FCD34D' },
+                  { name: 'Laranja', value: '#F97316' },
+                  { name: 'Rosa', value: '#EC4899' },
+                  { name: 'Roxo', value: '#A855F7' },
+                  { name: 'Cinza', value: '#6B7280' },
+                  { name: 'Marrom', value: '#92400E' },
+                  { name: 'Transparente', value: '#E5E7EB' },
+                ];
+
+                return (
                 <div key={usage.id} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 border border-slate-200 dark:border-slate-600">
-                  <div className="flex gap-2 items-center">
-                    <div className="flex-1">
+                  <div className="flex gap-2 items-center flex-wrap">
+                    <div className="flex-1 min-w-[180px]">
                       <select
                         value={usage.filamentId}
                         onChange={e => updateFilamentUsage(usage.id, { filamentId: e.target.value })}
-                        className="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                        className="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
                       >
                         {allFilaments.map(f => (
                           <option key={f.id} value={f.id}>
@@ -255,25 +290,49 @@ export default function Calculator() {
                         ))}
                       </select>
                     </div>
-                    <div className="w-24">
+
+                    <div className="flex gap-2 items-center">
                       <input
                         type="number"
                         value={usage.weight}
                         onChange={e => updateFilamentUsage(usage.id, { weight: Number(e.target.value) })}
-                        className="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                        className="w-20 px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
                         placeholder="g"
                       />
+
+                      <div className="relative">
+                        <select
+                          value={usage.color || ''}
+                          onChange={e => updateFilamentUsage(usage.id, { color: e.target.value })}
+                          className="pl-9 pr-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 appearance-none"
+                        >
+                          <option value="">Selecione Cor</option>
+                          {commonColors.map(color => (
+                            <option key={color.value} value={color.value}>
+                              {color.name}
+                            </option>
+                          ))}
+                        </select>
+                        {usage.color && (
+                          <div
+                            className="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded border-2 border-slate-400 dark:border-slate-500 pointer-events-none"
+                            style={{ backgroundColor: usage.color }}
+                          />
+                        )}
+                      </div>
+
+                      {filamentUsages.length > 1 && (
+                        <button
+                          onClick={() => removeFilamentUsage(usage.id)}
+                          className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 p-2"
+                          title="Remover"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
-                    {filamentUsages.length > 1 && (
-                      <button
-                        onClick={() => removeFilamentUsage(usage.id)}
-                        className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 p-2"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    )}
                   </div>
                 </div>
               ))}
@@ -521,11 +580,11 @@ export default function Calculator() {
         {result ? (
           <div className="space-y-4">
             {/* Preço Final Destaque */}
-            <div className="bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 dark:from-orange-900/20 dark:via-amber-900/20 dark:to-yellow-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-xl p-6 text-center shadow-lg shadow-orange-200/50">
-              <div className="text-sm font-semibold text-orange-600 dark:text-orange-400 mb-1 uppercase tracking-wide">
+            <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-green-900/20 dark:via-emerald-900/20 dark:to-teal-900/20 border-2 border-green-300 dark:border-green-700 rounded-xl p-6 text-center shadow-lg shadow-green-200/50 dark:shadow-green-900/20">
+              <div className="text-sm font-semibold text-green-700 dark:text-green-300 mb-1 uppercase tracking-wide">
                 Valor Total a Cobrar
               </div>
-              <div className="text-5xl font-black bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 bg-clip-text text-transparent drop-shadow-sm">
+              <div className="text-5xl font-black bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent drop-shadow-sm">
                 {formatCurrency(result.finalPrice)}
               </div>
               <div className="mt-2 text-xs text-slate-600 dark:text-slate-400 font-medium">

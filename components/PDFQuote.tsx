@@ -5,8 +5,8 @@ import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/render
 import { CompanySettings, ClientData, CalculationResult, ProjectStatus } from '@/lib/types';
 import { formatCurrency } from '@/lib/calculator';
 
-// Estilos do PDF - Mais clean e profissional
-const styles = StyleSheet.create({
+// Função para criar estilos dinâmicos baseados na cor da marca
+const createStyles = (brandColor: string = '#F97316') => StyleSheet.create({
   page: {
     padding: 40,
     fontSize: 10,
@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 20,
-    borderBottom: '3 solid #F97316',
+    borderBottom: `3 solid ${brandColor}`,
     paddingBottom: 15,
   },
   logoSection: {
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   companyName: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#F97316',
+    color: brandColor,
     marginBottom: 4,
   },
   title: {
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 11,
     fontWeight: 'bold',
-    color: '#F97316',
+    color: brandColor,
     marginBottom: 8,
     borderBottom: '1 solid #FED7AA',
     paddingBottom: 3,
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   serviceTitle: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#EA580C',
+    color: brandColor,
     marginBottom: 8,
   },
   serviceDesc: {
@@ -134,8 +134,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   totalBox: {
-    backgroundColor: '#F97316',
-    border: '3 solid #EA580C',
+    backgroundColor: brandColor,
+    border: `3 solid ${brandColor}`,
     borderRadius: 8,
     padding: 20,
     marginTop: 20,
@@ -211,6 +211,9 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
   projectStatus,
   printDetails,
 }) => {
+  // Criar estilos dinâmicos baseados na cor da marca da empresa
+  const styles = createStyles(company.brandColor || '#F97316');
+
   const getStatusLabel = (status?: ProjectStatus): string => {
     if (!status) return 'Orçamento';
     const labels: Record<ProjectStatus, string> = {
