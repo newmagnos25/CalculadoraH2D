@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import InputMask from 'react-input-mask';
 
 interface MaskedInputProps {
   mask: string;
@@ -14,14 +13,8 @@ interface MaskedInputProps {
 }
 
 /**
- * Componente de input com máscara
- *
- * Máscaras prontas:
- * - CPF: "999.999.999-99"
- * - CNPJ: "99.999.999/9999-99"
- * - Telefone: "(99) 99999-9999"
- * - CEP: "99999-999"
- * - Data: "99/99/9999"
+ * Componente de input com máscara SIMPLES (sem biblioteca externa)
+ * Funciona com React 18+
  */
 export default function MaskedInput({
   mask,
@@ -32,21 +25,54 @@ export default function MaskedInput({
   className = '',
   type = 'text',
 }: MaskedInputProps) {
+  const applyMask = (inputValue: string) => {
+    // Remove tudo que não é número
+    const numbers = inputValue.replace(/\D/g, '');
+
+    // Aplica a máscara baseado no padrão
+    let masked = '';
+    let numIndex = 0;
+
+    for (let i = 0; i < mask.length && numIndex < numbers.length; i++) {
+      if (mask[i] === '9') {
+        masked += numbers[numIndex];
+        numIndex++;
+      } else {
+        masked += mask[i];
+      }
+    }
+
+    return masked;
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const maskedValue = applyMask(e.target.value);
+
+    // Cria um novo evento com o valor mascarado
+    const newEvent = {
+      ...e,
+      target: {
+        ...e.target,
+        value: maskedValue,
+      },
+    } as React.ChangeEvent<HTMLInputElement>;
+
+    onChange(newEvent);
+  };
+
   return (
-    <InputMask
-      mask={mask}
+    <input
+      type={type}
       value={value || ''}
-      onChange={onChange}
+      onChange={handleChange}
       placeholder={placeholder}
       required={required}
-      type={type}
       className={className}
-      maskChar={null} // Remove o _ das posições não preenchidas
     />
   );
 }
 
-// Máscaras pré-definidas para facilitar uso
+// Máscaras pré-definidas
 export const MASKS = {
   CPF: '999.999.999-99',
   CNPJ: '99.999.999/9999-99',

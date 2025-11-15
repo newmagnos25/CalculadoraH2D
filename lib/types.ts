@@ -140,6 +140,23 @@ export interface ClientData {
   createdAt: string;
 }
 
+export type ProjectStatus =
+  | 'quote'        // Orçamento
+  | 'approved'     // Aprovado
+  | 'production'   // Em Produção
+  | 'completed'    // Concluído
+  | 'cancelled';   // Cancelado
+
+export interface FileAttachment {
+  id: string;
+  name: string;
+  type: 'model' | 'image' | 'document'; // model = STL/GCODE/3MF, image = photos, document = outros
+  mimeType: string;
+  size: number; // bytes
+  data: string; // base64 encoded
+  uploadedAt: string;
+}
+
 export interface QuoteData {
   quoteNumber: string;
   date: string;
@@ -161,4 +178,6 @@ export interface QuoteData {
   notes?: string;
   calculation?: CalculationResult; // Link to detailed calculation
   status: 'draft' | 'sent' | 'accepted' | 'rejected';
+  projectStatus?: ProjectStatus; // Status do projeto
+  attachments?: FileAttachment[]; // Arquivos anexados ao projeto
 }

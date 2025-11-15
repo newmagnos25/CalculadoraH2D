@@ -4,9 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import CompanySettings from '@/components/CompanySettings';
 import ClientManager from '@/components/ClientManager';
+import PrinterManager from '@/components/PrinterManager';
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'company' | 'clients'>('company');
+  const [activeTab, setActiveTab] = useState<'company' | 'clients' | 'printers'>('company');
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-orange-50/30 dark:from-black dark:via-slate-950 dark:to-slate-900">
@@ -73,6 +74,21 @@ export default function SettingsPage() {
                 Gerenciar Clientes
               </div>
             </button>
+            <button
+              onClick={() => setActiveTab('printers')}
+              className={`px-6 py-4 font-bold text-sm transition-all border-b-4 ${
+                activeTab === 'printers'
+                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-orange-500 dark:hover:text-orange-400'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                </svg>
+                Impressoras
+              </div>
+            </button>
           </div>
         </div>
       </div>
@@ -93,6 +109,18 @@ export default function SettingsPage() {
                 </p>
               </div>
               <ClientManager showAsList={true} />
+            </div>
+          )}
+
+          {activeTab === 'printers' && (
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border-2 border-orange-200 dark:border-orange-900 p-6">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Gerenciar Impressoras</h2>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Adicione e gerencie suas impressoras 3D customizadas
+                </p>
+              </div>
+              <PrinterManager showAsList={true} />
             </div>
           )}
         </div>
