@@ -14,6 +14,7 @@ interface PDFActionsProps {
   printDetails: {
     printer: string;
     filaments: string;
+    filamentColors?: { name: string; color: string; weight: number }[];
     weight: number;
     printTime: number;
   };
