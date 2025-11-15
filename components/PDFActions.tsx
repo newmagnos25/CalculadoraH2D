@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CalculationResult, ClientData, ProjectStatus } from '@/lib/types';
+import { CalculationResult, ClientData, ProjectStatus, FileAttachment } from '@/lib/types';
 import { getCompanySettings, getClients, getNextInvoiceNumber, incrementInvoiceCounter } from '@/lib/storage';
 import { generateAndDownloadQuote, generateAndDownloadContract, getCurrentDate, getDefaultValidityDate } from '@/lib/pdf-utils';
 import ClientManager from './ClientManager';
 import { StatusSelector } from './StatusBadge';
+import AttachmentManager from './AttachmentManager';
+import Collapse from './Collapse';
 
 interface PDFActionsProps {
   calculation: CalculationResult;
@@ -23,6 +25,7 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
   const [showClientManager, setShowClientManager] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [projectStatus, setProjectStatus] = useState<ProjectStatus>('quote');
+  const [attachments, setAttachments] = useState<FileAttachment[]>([]);
 
   const handleSelectClient = (client: ClientData | null) => {
     if (client) {
@@ -169,6 +172,19 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
           <ClientManager selectedClientId={selectedClientId} onClientSelect={handleSelectClient} />
         )}
       </div>
+
+      {/* File Attachments */}
+      <Collapse
+        title="📎 Anexos do Projeto (Opcional)"
+        defaultOpen={false}
+        variant="technical"
+      >
+        <AttachmentManager
+          attachments={attachments}
+          onChange={setAttachments}
+          maxSizeMB={10}
+        />
+      </Collapse>
 
       {/* PDF Buttons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
