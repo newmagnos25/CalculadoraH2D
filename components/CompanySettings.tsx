@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { CompanySettings as CompanySettingsType } from '@/lib/types';
 import { getCompanySettings, saveCompanySettings, getDefaultCompanySettings } from '@/lib/storage';
+import MaskedInput from './MaskedInput';
+import { formatCNPJ, formatCEP, formatPhone } from '@/lib/input-masks';
 
 interface CompanySettingsProps {
   onSave?: () => void;
@@ -163,8 +165,8 @@ export default function CompanySettings({ onSave }: CompanySettingsProps) {
             <label className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">
               CNPJ
             </label>
-            <input
-              type="text"
+            <MaskedInput
+              mask="99.999.999/9999-99"
               value={settings.cnpj || ''}
               onChange={e => setSettings({ ...settings, cnpj: e.target.value })}
               className="w-full px-3 py-2 border-2 border-orange-200 dark:border-orange-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
@@ -248,11 +250,11 @@ export default function CompanySettings({ onSave }: CompanySettingsProps) {
               <label className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">
                 CEP *
               </label>
-              <input
-                type="text"
-                required
+              <MaskedInput
+                mask="99999-999"
                 value={settings.zipCode}
                 onChange={e => setSettings({ ...settings, zipCode: e.target.value })}
+                required
                 className="w-full px-3 py-2 border-2 border-orange-200 dark:border-orange-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
                 placeholder="00000-000"
               />
@@ -266,11 +268,12 @@ export default function CompanySettings({ onSave }: CompanySettingsProps) {
             <label className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">
               Telefone *
             </label>
-            <input
-              type="tel"
-              required
+            <MaskedInput
+              mask="(99) 99999-9999"
               value={settings.phone}
               onChange={e => setSettings({ ...settings, phone: e.target.value })}
+              type="tel"
+              required
               className="w-full px-3 py-2 border-2 border-orange-200 dark:border-orange-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
               placeholder="(00) 00000-0000"
             />
