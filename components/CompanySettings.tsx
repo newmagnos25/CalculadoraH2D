@@ -132,6 +132,51 @@ export default function CompanySettings({ onSave }: CompanySettingsProps) {
           )}
         </div>
 
+        {/* Cor da Marca */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <label className="block text-sm font-bold mb-2 text-blue-900 dark:text-blue-100">
+            Cor Primária da Marca
+          </label>
+          <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+            Esta cor será usada nos PDFs (orçamentos e contratos) para combinar com a identidade visual da empresa
+          </p>
+          <div className="flex items-center gap-4 flex-wrap">
+            {[
+              { name: 'Laranja', value: '#F97316' },
+              { name: 'Azul', value: '#3B82F6' },
+              { name: 'Verde', value: '#10B981' },
+              { name: 'Vermelho', value: '#EF4444' },
+              { name: 'Roxo', value: '#A855F7' },
+              { name: 'Rosa', value: '#EC4899' },
+              { name: 'Amarelo', value: '#FBBF24' },
+              { name: 'Cinza', value: '#6B7280' },
+            ].map((color) => (
+              <button
+                key={color.value}
+                type="button"
+                onClick={() => setSettings({ ...settings, brandColor: color.value })}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all ${
+                  settings.brandColor === color.value
+                    ? 'border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800'
+                    : 'border-slate-300 dark:border-slate-600 hover:border-blue-300'
+                }`}
+                title={color.name}
+              >
+                <div
+                  className="w-6 h-6 rounded border-2 border-white dark:border-slate-700 shadow-sm"
+                  style={{ backgroundColor: color.value }}
+                />
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{color.name}</span>
+              </button>
+            ))}
+          </div>
+          {settings.brandColor && (
+            <div className="mt-3 text-xs text-slate-600 dark:text-slate-400">
+              Cor selecionada: <span className="font-mono font-semibold">{settings.brandColor}</span>
+            </div>
+          )}
+        </div>
+
         {/* Dados da Empresa */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
