@@ -654,6 +654,14 @@ export default function Calculator() {
                   const fil = allFilaments.find(f => f.id === fu.filamentId);
                   return fil ? `${fil.brand} ${fil.type} (${fu.weight}g)` : '';
                 }).filter(Boolean).join(', '),
+                filamentColors: filamentUsages.map(fu => {
+                  const fil = allFilaments.find(f => f.id === fu.filamentId);
+                  return {
+                    name: fil ? `${fil.brand} ${fil.type}` : 'Desconhecido',
+                    color: fu.color || '#999999',
+                    weight: fu.weight,
+                  };
+                }),
                 weight: totalWeight,
                 printTime: printTime,
               }}

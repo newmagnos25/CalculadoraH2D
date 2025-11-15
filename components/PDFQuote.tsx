@@ -133,6 +133,42 @@ const createStyles = (brandColor: string = '#F97316') => StyleSheet.create({
     color: '#1F2937',
     fontWeight: 'bold',
   },
+  colorsSection: {
+    marginTop: 10,
+    paddingTop: 10,
+    borderTop: '1 solid #E5E7EB',
+  },
+  colorsLabel: {
+    fontSize: 8,
+    fontWeight: 'bold',
+    color: '#6B7280',
+    marginBottom: 6,
+  },
+  colorsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  colorItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#F9FAFB',
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    borderRadius: 4,
+    border: '1 solid #E5E7EB',
+  },
+  colorBox: {
+    width: 12,
+    height: 12,
+    borderRadius: 2,
+    border: '1 solid #9CA3AF',
+  },
+  colorText: {
+    fontSize: 7,
+    color: '#374151',
+  },
   totalBox: {
     backgroundColor: brandColor,
     border: `3 solid ${brandColor}`,
@@ -195,6 +231,7 @@ interface PDFQuoteProps {
   printDetails: {
     printer: string;
     filaments: string;
+    filamentColors?: { name: string; color: string; weight: number }[];
     weight: number;
     printTime: number;
   };
@@ -364,6 +401,21 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
                 <Text style={styles.specValue}>{printDetails.weight}g</Text>
               </View>
             </View>
+
+            {/* Cores dos Filamentos */}
+            {printDetails.filamentColors && printDetails.filamentColors.length > 0 && (
+              <View style={styles.colorsSection}>
+                <Text style={styles.colorsLabel}>CORES DOS FILAMENTOS:</Text>
+                <View style={styles.colorsContainer}>
+                  {printDetails.filamentColors.map((fil, idx) => (
+                    <View key={idx} style={styles.colorItem}>
+                      <View style={[styles.colorBox, { backgroundColor: fil.color }]} />
+                      <Text style={styles.colorText}>{fil.weight}g</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
           </View>
         </View>
 

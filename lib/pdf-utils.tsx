@@ -16,6 +16,7 @@ export interface GenerateQuotePDFParams {
   printDetails: {
     printer: string;
     filaments: string;
+    filamentColors?: { name: string; color: string; weight: number }[]; // Cores dos filamentos
     weight: number;
     printTime: number;
   };
