@@ -17,7 +17,7 @@ interface CollapseProps {
 export default function Collapse({
   title,
   children,
-  defaultOpen = false,
+  defaultOpen = false, // FECHADO por padrão
   variant = 'default'
 }: CollapseProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);

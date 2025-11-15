@@ -213,68 +213,14 @@ export default function Calculator() {
 
           {/* Impressora */}
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">
-              Impressora 3D
-            </label>
-            <select
-              value={printerId}
-              onChange={e => setPrinterId(e.target.value)}
-              className="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200 dark:focus:ring-orange-800 transition-all"
-            >
-              {allPrinters.map(p => (
-                <option key={p.id} value={p.id}>
-                  {p.brand} {p.name}
-                </option>
-              ))}
-            </select>
-
-            {/* Info dinâmica da impressora selecionada */}
-            {(() => {
-              const selectedPrinter = allPrinters.find(p => p.id === printerId);
-              if (!selectedPrinter) return null;
-
-              return (
-                <div className="mt-3 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-lg p-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-slate-900 dark:text-white text-sm">{selectedPrinter.brand} {selectedPrinter.name}</h4>
-                      <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
-                        <div>
-                          <span className="text-slate-600 dark:text-slate-400">Volume:</span>
-                          <span className="ml-1 font-semibold text-orange-600 dark:text-orange-400">
-                            {selectedPrinter.buildVolume.x}×{selectedPrinter.buildVolume.y}×{selectedPrinter.buildVolume.z}mm
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-slate-600 dark:text-slate-400">Consumo:</span>
-                          <span className="ml-1 font-semibold text-orange-600 dark:text-orange-400">
-                            {selectedPrinter.powerConsumption.printing}W
-                          </span>
-                        </div>
-                      </div>
-                      {selectedPrinter.features && selectedPrinter.features.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {selectedPrinter.features.map((feature, idx) => (
-                            <span key={idx} className="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-2 py-0.5 rounded-full">
-                              {feature}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-
-            <div className="mt-2">
-              <PrinterManager onSave={loadCustomData} />
-            </div>
+            <PrinterManager
+              selectedPrinterId={printerId}
+              onPrinterSelect={(printer) => {
+                if (printer) {
+                  setPrinterId(printer.id);
+                }
+              }}
+            />
           </div>
 
           {/* Filamentos/Cores */}
