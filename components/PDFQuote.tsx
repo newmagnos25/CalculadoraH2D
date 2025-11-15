@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { CompanySettings, ClientData, CalculationResult } from '@/lib/types';
 import { formatCurrency } from '@/lib/calculator';
 
-// Estilos do PDF
+// Estilos do PDF - Mais clean e profissional
 const styles = StyleSheet.create({
   page: {
     padding: 40,
@@ -21,32 +21,33 @@ const styles = StyleSheet.create({
   logoSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 10,
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 70,
+    height: 70,
     objectFit: 'contain',
   },
   companyInfo: {
     textAlign: 'right',
-    fontSize: 9,
+    fontSize: 8,
   },
   companyName: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#F97316',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#1F2937',
     marginTop: 20,
     marginBottom: 5,
   },
   subtitle: {
-    fontSize: 11,
+    fontSize: 10,
     color: '#6B7280',
     marginBottom: 20,
   },
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   sectionTitle: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
     color: '#F97316',
     marginBottom: 8,
@@ -75,58 +76,79 @@ const styles = StyleSheet.create({
     color: '#1F2937',
     fontWeight: 'bold',
   },
-  table: {
+  validUntil: {
+    backgroundColor: '#FEF3C7',
+    padding: 8,
+    borderRadius: 5,
+    fontSize: 9,
+    color: '#92400E',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  serviceBox: {
+    backgroundColor: '#FFF7ED',
+    border: '2 solid #FDBA74',
+    borderRadius: 5,
+    padding: 15,
     marginTop: 10,
     marginBottom: 15,
   },
-  tableHeader: {
-    flexDirection: 'row',
-    backgroundColor: '#FED7AA',
-    padding: 8,
+  serviceTitle: {
+    fontSize: 12,
     fontWeight: 'bold',
-    fontSize: 9,
+    color: '#EA580C',
+    marginBottom: 8,
   },
-  tableRow: {
-    flexDirection: 'row',
-    borderBottom: '1 solid #E5E7EB',
-    padding: 8,
+  serviceDesc: {
     fontSize: 9,
+    color: '#1F2937',
+    lineHeight: 1.5,
   },
-  col1: { width: '50%' },
-  col2: { width: '15%', textAlign: 'right' },
-  col3: { width: '15%', textAlign: 'right' },
-  col4: { width: '20%', textAlign: 'right', fontWeight: 'bold' },
-  breakdownRow: {
+  specGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 4,
-    paddingHorizontal: 10,
+    marginTop: 8,
+  },
+  specItem: {
+    width: '48%',
+  },
+  specLabel: {
+    fontSize: 8,
+    color: '#78716C',
+    marginBottom: 2,
+  },
+  specValue: {
     fontSize: 9,
-  },
-  breakdownLabel: {
-    color: '#6B7280',
-  },
-  breakdownValue: {
     color: '#1F2937',
+    fontWeight: 'bold',
   },
   totalBox: {
-    backgroundColor: '#FFF7ED',
-    border: '2 solid #F97316',
-    borderRadius: 5,
-    padding: 15,
-    marginTop: 15,
+    backgroundColor: '#F97316',
+    border: '3 solid #EA580C',
+    borderRadius: 8,
+    padding: 20,
+    marginTop: 20,
     marginBottom: 20,
   },
   totalLabel: {
-    fontSize: 12,
-    color: '#F97316',
-    marginBottom: 5,
+    fontSize: 11,
+    color: '#FFF',
+    marginBottom: 8,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   totalValue: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#EA580C',
+    color: '#FFF',
     textAlign: 'center',
+  },
+  paymentBox: {
+    backgroundColor: '#F9FAFB',
+    padding: 12,
+    borderRadius: 5,
+    marginBottom: 15,
   },
   notes: {
     fontSize: 8,
@@ -143,19 +165,10 @@ const styles = StyleSheet.create({
     left: 40,
     right: 40,
     textAlign: 'center',
-    fontSize: 8,
+    fontSize: 7,
     color: '#9CA3AF',
     borderTop: '1 solid #E5E7EB',
     paddingTop: 10,
-  },
-  validUntil: {
-    backgroundColor: '#FEF3C7',
-    padding: 8,
-    borderRadius: 5,
-    fontSize: 9,
-    color: '#92400E',
-    marginBottom: 15,
-    textAlign: 'center',
   },
 });
 
@@ -282,68 +295,56 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
           )}
         </View>
 
-        {/* Especificações da Impressão */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>ESPECIFICAÇÕES DA IMPRESSÃO 3D</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Impressora:</Text>
-            <Text style={styles.value}>{printDetails.printer}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Filamento(s):</Text>
-            <Text style={styles.value}>{printDetails.filaments}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Peso Total:</Text>
-            <Text style={styles.value}>{printDetails.weight}g</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.label}>Tempo de Impressão:</Text>
-            <Text style={styles.value}>{formatTime(printDetails.printTime)}</Text>
-          </View>
-        </View>
+        {/* Descrição do Serviço */}
+        <View style={styles.serviceBox}>
+          <Text style={styles.serviceTitle}>SERVIÇO DE IMPRESSÃO 3D</Text>
+          <Text style={styles.serviceDesc}>
+            Serviço especializado de manufatura aditiva (impressão 3D) com acabamento profissional,
+            utilizando equipamentos de alta precisão e materiais de qualidade premium.
+          </Text>
 
-        {/* Detalhamento de Custos */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>DETALHAMENTO DE CUSTOS</Text>
+          {/* Especificações Técnicas */}
+          <View style={{ marginTop: 12, paddingTop: 12, borderTop: '1 solid #FDBA74' }}>
+            <Text style={[styles.label, { marginBottom: 6, fontSize: 8, fontWeight: 'bold' }]}>
+              ESPECIFICAÇÕES TÉCNICAS:
+            </Text>
 
-          <View style={styles.table}>
-            <View style={styles.tableHeader}>
-              <Text style={styles.col1}>Descrição</Text>
-              <Text style={styles.col4}>Valor</Text>
-            </View>
-
-            {calculation.breakdown.map((item, idx) => (
-              <View key={idx} style={styles.tableRow}>
-                <Text style={styles.col1}>{item.item}</Text>
-                <Text style={styles.col4}>{formatCurrency(item.value)}</Text>
+            <View style={styles.specGrid}>
+              <View style={styles.specItem}>
+                <Text style={styles.specLabel}>Equipamento:</Text>
+                <Text style={styles.specValue}>{printDetails.printer}</Text>
               </View>
-            ))}
-
-            <View style={[styles.tableRow, { backgroundColor: '#F9FAFB', marginTop: 10 }]}>
-              <Text style={[styles.col1, { fontWeight: 'bold' }]}>Subtotal (Custos)</Text>
-              <Text style={styles.col4}>{formatCurrency(calculation.costs.total)}</Text>
+              <View style={styles.specItem}>
+                <Text style={styles.specLabel}>Tempo de Produção:</Text>
+                <Text style={styles.specValue}>{formatTime(printDetails.printTime)}</Text>
+              </View>
             </View>
 
-            <View style={styles.tableRow}>
-              <Text style={[styles.col1, { color: '#F97316' }]}>Lucro ({calculation.profitMargin}%)</Text>
-              <Text style={[styles.col4, { color: '#F97316' }]}>{formatCurrency(calculation.profitValue)}</Text>
+            <View style={[styles.specGrid, { marginTop: 6 }]}>
+              <View style={styles.specItem}>
+                <Text style={styles.specLabel}>Material Utilizado:</Text>
+                <Text style={styles.specValue}>{printDetails.filaments}</Text>
+              </View>
+              <View style={styles.specItem}>
+                <Text style={styles.specLabel}>Peso do Material:</Text>
+                <Text style={styles.specValue}>{printDetails.weight}g</Text>
+              </View>
             </View>
           </View>
         </View>
 
-        {/* Total */}
+        {/* VALOR TOTAL - Destaque máximo */}
         <View style={styles.totalBox}>
-          <Text style={styles.totalLabel}>VALOR TOTAL DO ORÇAMENTO</Text>
+          <Text style={styles.totalLabel}>Valor Total do Serviço</Text>
           <Text style={styles.totalValue}>{formatCurrency(calculation.finalPrice)}</Text>
         </View>
 
         {/* Condições de Pagamento */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>CONDIÇÕES DE PAGAMENTO</Text>
+        <View style={styles.paymentBox}>
+          <Text style={[styles.sectionTitle, { marginBottom: 6 }]}>CONDIÇÕES DE PAGAMENTO</Text>
           <Text style={{ fontSize: 9, lineHeight: 1.4 }}>{company.paymentTerms}</Text>
           {company.bankDetails && (
-            <View style={{ marginTop: 8 }}>
+            <View style={{ marginTop: 6 }}>
               <Text style={[styles.label, { marginBottom: 3 }]}>Dados Bancários:</Text>
               <Text style={{ fontSize: 9, lineHeight: 1.4 }}>{company.bankDetails}</Text>
             </View>
@@ -363,7 +364,7 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
           <Text>
             © {new Date().getFullYear()} {company.tradeName || company.name} - Orçamento gerado em {formatDate(date)}
           </Text>
-          <Text>CalculadoraH2D PRO by BKreativeLab - Precificação Profissional para Impressão 3D</Text>
+          <Text style={{ marginTop: 2 }}>CalculadoraH2D PRO by BKreativeLab</Text>
         </View>
       </Page>
     </Document>
