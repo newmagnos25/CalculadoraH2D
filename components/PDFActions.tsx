@@ -153,7 +153,7 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
       )}
 
       {/* Project Status */}
-      <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-2 border-orange-300 dark:border-orange-800 rounded-lg p-4">
+      <div className="bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-900/40 dark:to-gray-900/40 border-2 border-slate-300 dark:border-slate-700 rounded-lg p-4">
         <StatusSelector value={projectStatus} onChange={setProjectStatus} />
       </div>
 
