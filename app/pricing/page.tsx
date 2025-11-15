@@ -35,10 +35,10 @@ export default function PricingPage() {
         {/* Trial Banner */}
         <div className="max-w-4xl mx-auto mb-12 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-8 text-center shadow-2xl">
           <h2 className="text-3xl font-black text-white mb-3">
-            🎉 Teste Grátis por 14 Dias
+            🎉 Teste Grátis por 7 Dias
           </h2>
           <p className="text-xl text-white/90">
-            Experimente o plano Professional sem cartão de crédito. Cancele quando quiser.
+            Experimente o plano Professional sem compromisso. Cancele quando quiser.
           </p>
         </div>
 
