@@ -34,9 +34,9 @@ export default function Collapse({
       icon: 'text-blue-600 dark:text-blue-400',
     },
     technical: {
-      container: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800',
-      header: 'text-orange-900 dark:text-orange-100',
-      icon: 'text-orange-600 dark:text-orange-400',
+      container: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
+      header: 'text-green-900 dark:text-green-100',
+      icon: 'text-green-600 dark:text-green-400',
     },
   };
 

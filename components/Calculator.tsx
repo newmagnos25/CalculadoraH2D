@@ -33,10 +33,36 @@ export default function Calculator() {
   const [printTime, setPrintTime] = useState(120);
   const [selectedState, setSelectedState] = useState('SP');
   const [energyTariffId, setEnergyTariffId] = useState('Enel São Paulo');
-  const [laborCost, setLaborCost] = useState(0);
-  const [depreciation, setDepreciation] = useState(1);
-  const [fixedCosts, setFixedCosts] = useState(0.5);
-  const [profitMargin, setProfitMargin] = useState(30);
+
+  // Estados com auto-save (custos e margem)
+  const [laborCost, setLaborCost] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('laborCost');
+      return saved ? parseFloat(saved) : 0;
+    }
+    return 0;
+  });
+  const [depreciation, setDepreciation] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('depreciation');
+      return saved ? parseFloat(saved) : 1;
+    }
+    return 1;
+  });
+  const [fixedCosts, setFixedCosts] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('fixedCosts');
+      return saved ? parseFloat(saved) : 0.5;
+    }
+    return 0.5;
+  });
+  const [profitMargin, setProfitMargin] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('profitMargin');
+      return saved ? parseFloat(saved) : 30;
+    }
+    return 30;
+  });
 
   // Adereços selecionados
   const [selectedAddons, setSelectedAddons] = useState<{ id: string; quantity: number }[]>([]);
@@ -48,6 +74,31 @@ export default function Calculator() {
   useEffect(() => {
     loadCustomData();
   }, []);
+
+  // Auto-save custos e margem quando mudarem
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('laborCost', laborCost.toString());
+    }
+  }, [laborCost]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('depreciation', depreciation.toString());
+    }
+  }, [depreciation]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('fixedCosts', fixedCosts.toString());
+    }
+  }, [fixedCosts]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('profitMargin', profitMargin.toString());
+    }
+  }, [profitMargin]);
 
   const loadCustomData = () => {
     const customFilaments = getCustomFilaments();
@@ -238,25 +289,6 @@ export default function Calculator() {
               </button>
             </div>
 
-            {/* Preview de Cores */}
-            {filamentUsages.length > 0 && (
-              <div className="mb-3 p-3 bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-800/50 dark:to-gray-800/50 rounded-lg border border-slate-200 dark:border-slate-600">
-                <div className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Preview das Cores:</div>
-                <div className="flex flex-wrap gap-2">
-                  {filamentUsages.map((usage) => (
-                    <div key={usage.id} className="flex items-center gap-1.5 bg-white dark:bg-slate-700 px-2 py-1 rounded border border-slate-300 dark:border-slate-600">
-                      <div
-                        className="w-5 h-5 rounded border-2 border-slate-400 dark:border-slate-500 shadow-sm"
-                        style={{ backgroundColor: usage.color || '#999999' }}
-                        title={usage.color || 'Sem cor definida'}
-                      />
-                      <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">{usage.weight}g</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             <div className="space-y-2">
               {filamentUsages.map((usage, idx) => {
                 const commonColors = [
@@ -339,12 +371,42 @@ export default function Calculator() {
               })}
             </div>
 
+            {/* Preview de Cores - MOVIDO para depois de escolher */}
+            {filamentUsages.length > 0 && filamentUsages.some(u => u.color) && (
+              <div className="mt-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border-2 border-green-300 dark:border-green-700">
+                <div className="text-xs font-bold text-green-700 dark:text-green-300 mb-2 flex items-center gap-1.5">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                  </svg>
+                  Preview das Cores:
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {filamentUsages.filter(u => u.color).map((usage) => (
+                    <div key={usage.id} className="flex items-center gap-1.5 bg-white dark:bg-slate-700 px-3 py-1.5 rounded-lg border-2 border-green-400 dark:border-green-600 shadow-sm">
+                      <div
+                        className="w-6 h-6 rounded border-2 border-slate-400 dark:border-slate-500 shadow-md"
+                        style={{ backgroundColor: usage.color }}
+                        title={usage.color}
+                      />
+                      <span className="text-xs text-slate-700 dark:text-slate-300 font-bold">{usage.weight}g</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="mt-2">
               <FilamentManager onSave={loadCustomData} />
             </div>
 
-            <div className="mt-2 text-xs text-slate-700 dark:text-slate-300 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 px-3 py-2 rounded-md border border-orange-200 dark:border-orange-900/50">
-              <strong className="text-orange-600 dark:text-orange-400">Peso total:</strong> {totalWeight}g
+            <div className="mt-2 text-xs text-slate-700 dark:text-slate-300 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 px-3 py-2.5 rounded-md border-2 border-green-400 dark:border-green-700">
+              <strong className="text-green-700 dark:text-green-300 flex items-center gap-1">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                </svg>
+                Peso total:
+              </strong>
+              <span className="text-green-800 dark:text-green-200 font-bold ml-1">{totalWeight}g</span>
             </div>
           </div>
 
