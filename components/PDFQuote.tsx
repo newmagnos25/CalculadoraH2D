@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
-import { CompanySettings, ClientData, CalculationResult } from '@/lib/types';
+import { CompanySettings, ClientData, CalculationResult, ProjectStatus } from '@/lib/types';
 import { formatCurrency } from '@/lib/calculator';
 
 // Estilos do PDF - Mais clean e profissional
@@ -84,6 +84,17 @@ const styles = StyleSheet.create({
     color: '#92400E',
     marginBottom: 15,
     textAlign: 'center',
+  },
+  statusBadge: {
+    backgroundColor: '#DBEAFE',
+    padding: 6,
+    borderRadius: 5,
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#1E40AF',
+    marginBottom: 10,
+    textAlign: 'center',
+    border: '2 solid #BFDBFE',
   },
   serviceBox: {
     backgroundColor: '#FFF7ED',
@@ -180,6 +191,7 @@ interface PDFQuoteProps {
   date: string;
   validUntil: string;
   notes?: string;
+  projectStatus?: ProjectStatus;
   printDetails: {
     printer: string;
     filaments: string;
@@ -196,8 +208,20 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
   date,
   validUntil,
   notes,
+  projectStatus,
   printDetails,
 }) => {
+  const getStatusLabel = (status?: ProjectStatus): string => {
+    if (!status) return 'Orçamento';
+    const labels: Record<ProjectStatus, string> = {
+      quote: 'Orçamento',
+      approved: 'Aprovado',
+      production: 'Em Produção',
+      completed: 'Concluído',
+      cancelled: 'Cancelado',
+    };
+    return labels[status];
+  };
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     return d.toLocaleDateString('pt-BR');
@@ -236,6 +260,13 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
         {/* Title */}
         <Text style={styles.title}>ORÇAMENTO</Text>
         <Text style={styles.subtitle}>Nº {quoteNumber}</Text>
+
+        {/* Status do Projeto */}
+        {projectStatus && (
+          <View style={styles.statusBadge}>
+            <Text>Status: {getStatusLabel(projectStatus)}</Text>
+          </View>
+        )}
 
         {/* Validade */}
         <View style={styles.validUntil}>

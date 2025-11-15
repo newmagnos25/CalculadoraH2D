@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CalculationResult, ClientData } from '@/lib/types';
+import { CalculationResult, ClientData, ProjectStatus } from '@/lib/types';
 import { getCompanySettings, getClients, getNextInvoiceNumber, incrementInvoiceCounter } from '@/lib/storage';
 import { generateAndDownloadQuote, generateAndDownloadContract, getCurrentDate, getDefaultValidityDate } from '@/lib/pdf-utils';
 import ClientManager from './ClientManager';
+import { StatusSelector } from './StatusBadge';
 
 interface PDFActionsProps {
   calculation: CalculationResult;
@@ -21,6 +22,7 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
   const [selectedClientId, setSelectedClientId] = useState<string>('');
   const [showClientManager, setShowClientManager] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [projectStatus, setProjectStatus] = useState<ProjectStatus>('quote');
 
   const handleSelectClient = (client: ClientData | null) => {
     if (client) {
@@ -58,6 +60,7 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
         quoteNumber,
         date,
         validUntil,
+        projectStatus,
         printDetails,
       });
 
@@ -145,6 +148,11 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
           </div>
         </div>
       )}
+
+      {/* Project Status */}
+      <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-2 border-orange-300 dark:border-orange-800 rounded-lg p-4">
+        <StatusSelector value={projectStatus} onChange={setProjectStatus} />
+      </div>
 
       {/* Client Selection */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-300 dark:border-blue-800 rounded-lg p-4">

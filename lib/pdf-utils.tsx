@@ -1,6 +1,6 @@
 import React from 'react';
 import { pdf } from '@react-pdf/renderer';
-import { CompanySettings, ClientData, CalculationResult } from './types';
+import { CompanySettings, ClientData, CalculationResult, ProjectStatus } from './types';
 import PDFQuote from '@/components/PDFQuote';
 import PDFContract from '@/components/PDFContract';
 
@@ -12,6 +12,7 @@ export interface GenerateQuotePDFParams {
   date: string;
   validUntil: string;
   notes?: string;
+  projectStatus?: ProjectStatus;
   printDetails: {
     printer: string;
     filaments: string;

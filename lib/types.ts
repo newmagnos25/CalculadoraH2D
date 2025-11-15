@@ -140,6 +140,13 @@ export interface ClientData {
   createdAt: string;
 }
 
+export type ProjectStatus =
+  | 'quote'        // Orçamento
+  | 'approved'     // Aprovado
+  | 'production'   // Em Produção
+  | 'completed'    // Concluído
+  | 'cancelled';   // Cancelado
+
 export interface QuoteData {
   quoteNumber: string;
   date: string;
@@ -161,4 +168,5 @@ export interface QuoteData {
   notes?: string;
   calculation?: CalculationResult; // Link to detailed calculation
   status: 'draft' | 'sent' | 'accepted' | 'rejected';
+  projectStatus?: ProjectStatus; // Status do projeto
 }
