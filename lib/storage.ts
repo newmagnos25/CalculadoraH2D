@@ -1,4 +1,4 @@
-import { Filament, Addon, Printer } from './types';
+import { Filament, Addon, Printer, CompanySettings, ClientData } from './types';
 
 // LocalStorage helpers para persistência de dados
 
@@ -8,6 +8,9 @@ const KEYS = {
   CUSTOM_PRINTERS: 'bkl_custom_printers',
   LAST_CALCULATION: 'bkl_last_calculation',
   USER_PREFERENCES: 'bkl_preferences',
+  COMPANY_SETTINGS: 'bkl_company_settings',
+  CLIENTS: 'bkl_clients',
+  QUOTES: 'bkl_quotes',
 };
 
 // Filamentos customizados
@@ -112,4 +115,78 @@ export function saveUserPreferences(prefs: UserPreferences): void {
   const existing = getUserPreferences();
   const updated = { ...existing, ...prefs };
   localStorage.setItem(KEYS.USER_PREFERENCES, JSON.stringify(updated));
+}
+
+// Configurações da empresa
+export function getCompanySettings(): CompanySettings | null {
+  if (typeof window === 'undefined') return null;
+  const data = localStorage.getItem(KEYS.COMPANY_SETTINGS);
+  return data ? JSON.parse(data) : null;
+}
+
+export function saveCompanySettings(settings: CompanySettings): void {
+  localStorage.setItem(KEYS.COMPANY_SETTINGS, JSON.stringify(settings));
+}
+
+export function getDefaultCompanySettings(): CompanySettings {
+  return {
+    name: '',
+    address: '',
+    city: '',
+    state: 'SP',
+    zipCode: '',
+    phone: '',
+    email: '',
+    invoicePrefix: 'INV-2025-',
+    invoiceCounter: 1,
+    paymentTerms: 'Pagamento à vista ou parcelado conforme negociação',
+  };
+}
+
+// Clientes
+export function getClients(): ClientData[] {
+  if (typeof window === 'undefined') return [];
+  const data = localStorage.getItem(KEYS.CLIENTS);
+  return data ? JSON.parse(data) : [];
+}
+
+export function saveClient(client: ClientData): void {
+  const existing = getClients();
+  const index = existing.findIndex(c => c.id === client.id);
+
+  if (index >= 0) {
+    existing[index] = client;
+  } else {
+    existing.push(client);
+  }
+
+  localStorage.setItem(KEYS.CLIENTS, JSON.stringify(existing));
+}
+
+export function deleteClient(id: string): void {
+  const existing = getClients();
+  const filtered = existing.filter(c => c.id !== id);
+  localStorage.setItem(KEYS.CLIENTS, JSON.stringify(filtered));
+}
+
+export function getClientById(id: string): ClientData | null {
+  const clients = getClients();
+  return clients.find(c => c.id === id) || null;
+}
+
+// Orçamentos
+export function getNextInvoiceNumber(): string {
+  const settings = getCompanySettings();
+  if (!settings) return 'INV-2025-001';
+
+  const number = settings.invoiceCounter.toString().padStart(3, '0');
+  return `${settings.invoicePrefix}${number}`;
+}
+
+export function incrementInvoiceCounter(): void {
+  const settings = getCompanySettings();
+  if (settings) {
+    settings.invoiceCounter += 1;
+    saveCompanySettings(settings);
+  }
 }

@@ -106,3 +106,59 @@ export interface CalculationResult {
     percentage: number;
   }[];
 }
+
+export interface CompanySettings {
+  name: string;
+  tradeName?: string; // Nome fantasia
+  cnpj?: string; // Tax ID
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  phone: string;
+  email: string;
+  website?: string;
+  logo?: string; // Base64 encoded image
+  invoicePrefix: string; // Ex: "INV-2025-"
+  invoiceCounter: number; // Contador para numeração automática
+  paymentTerms: string; // Condições de pagamento padrão
+  bankDetails?: string; // Dados bancários para pagamento
+  legalNotes?: string; // Observações legais/termos
+}
+
+export interface ClientData {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  cpfCnpj?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface QuoteData {
+  quoteNumber: string;
+  date: string;
+  validUntil: string;
+  clientId?: string;
+  clientName: string;
+  clientEmail?: string;
+  clientPhone?: string;
+  clientAddress?: string;
+  items: {
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    total: number;
+  }[];
+  subtotal: number;
+  discount?: number;
+  total: number;
+  notes?: string;
+  calculation?: CalculationResult; // Link to detailed calculation
+  status: 'draft' | 'sent' | 'accepted' | 'rejected';
+}
