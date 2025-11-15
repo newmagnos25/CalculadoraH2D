@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CalculadoraH2D - Precificação para Impressão 3D",
-  description: "Calculadora profissional de precificação para impressoras Bambu Lab",
+  title: "CalculadoraH2D PRO | BKreativeLab - Precificação para Impressão 3D",
+  description: "Calculadora profissional de precificação para impressoras Bambu Lab. Suporte para múltiplas cores, filamentos customizáveis, adereços personalizados e tarifas regionalizadas. Desenvolvido por BKreativeLab.",
+  keywords: ["impressão 3D", "precificação", "Bambu Lab", "calculadora", "filamento", "H2D", "BKreativeLab"],
 };
 
 export default function RootLayout({
