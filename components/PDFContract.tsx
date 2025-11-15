@@ -1,0 +1,354 @@
+'use client';
+
+import React from 'react';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import { CompanySettings, ClientData } from '@/lib/types';
+import { formatCurrency } from '@/lib/calculator';
+
+// Estilos do PDF
+const styles = StyleSheet.create({
+  page: {
+    padding: 40,
+    fontSize: 10,
+    fontFamily: 'Helvetica',
+    backgroundColor: '#FFFFFF',
+  },
+  header: {
+    marginBottom: 20,
+    borderBottom: '3 solid #F97316',
+    paddingBottom: 15,
+  },
+  logoSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  logo: {
+    width: 60,
+    height: 60,
+    objectFit: 'contain',
+  },
+  companyInfo: {
+    textAlign: 'right',
+    fontSize: 8,
+  },
+  companyName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#F97316',
+    marginBottom: 3,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1F2937',
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  contractNumber: {
+    fontSize: 10,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  section: {
+    marginBottom: 15,
+  },
+  sectionTitle: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#F97316',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+  },
+  paragraph: {
+    fontSize: 9,
+    lineHeight: 1.6,
+    textAlign: 'justify',
+    marginBottom: 10,
+    color: '#374151',
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+  clause: {
+    fontSize: 9,
+    lineHeight: 1.6,
+    textAlign: 'justify',
+    marginBottom: 12,
+    color: '#374151',
+  },
+  clauseTitle: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#1F2937',
+  },
+  highlight: {
+    backgroundColor: '#FEF3C7',
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 10,
+  },
+  table: {
+    marginVertical: 10,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    borderBottom: '1 solid #E5E7EB',
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+  },
+  tableLabel: {
+    width: '40%',
+    fontSize: 9,
+    color: '#6B7280',
+  },
+  tableValue: {
+    width: '60%',
+    fontSize: 9,
+    color: '#1F2937',
+    fontWeight: 'bold',
+  },
+  signatureSection: {
+    marginTop: 40,
+    marginBottom: 20,
+  },
+  signatureBox: {
+    marginTop: 50,
+    paddingTop: 20,
+  },
+  signatureLine: {
+    borderTop: '1 solid #1F2937',
+    width: '60%',
+    marginHorizontal: 'auto',
+    paddingTop: 5,
+  },
+  signatureLabel: {
+    fontSize: 9,
+    textAlign: 'center',
+    color: '#6B7280',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 40,
+    right: 40,
+    textAlign: 'center',
+    fontSize: 7,
+    color: '#9CA3AF',
+    borderTop: '1 solid #E5E7EB',
+    paddingTop: 8,
+  },
+});
+
+interface PDFContractProps {
+  company: CompanySettings;
+  client: ClientData;
+  contractNumber: string;
+  date: string;
+  totalValue: number;
+  description: string;
+  deliveryDays?: number;
+}
+
+export const PDFContract: React.FC<PDFContractProps> = ({
+  company,
+  client,
+  contractNumber,
+  date,
+  totalValue,
+  description,
+  deliveryDays = 7,
+}) => {
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.logoSection}>
+            <View>
+              {company.logo && (
+                <Image src={company.logo} style={styles.logo} />
+              )}
+            </View>
+            <View style={styles.companyInfo}>
+              <Text style={styles.companyName}>{company.tradeName || company.name}</Text>
+              {company.cnpj && <Text>CNPJ: {company.cnpj}</Text>}
+              <Text>{company.address}, {company.city} - {company.state}</Text>
+              <Text>{company.phone} | {company.email}</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Title */}
+        <Text style={styles.title}>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</Text>
+        <Text style={styles.title}>IMPRESSÃO 3D</Text>
+        <Text style={styles.contractNumber}>Contrato Nº {contractNumber}</Text>
+
+        {/* Partes */}
+        <View style={styles.section}>
+          <Text style={styles.paragraph}>
+            Pelo presente instrumento particular, de um lado:
+          </Text>
+
+          <View style={styles.highlight}>
+            <Text style={[styles.paragraph, styles.bold]}>CONTRATANTE:</Text>
+            <Text style={styles.paragraph}>
+              {client.name}
+              {client.cpfCnpj && `, inscrito(a) no CPF/CNPJ sob nº ${client.cpfCnpj}`}
+              {client.address && `, com endereço em ${client.address}, ${client.city} - ${client.state}`}
+              {client.email && `, e-mail: ${client.email}`}
+              {client.phone && `, telefone: ${client.phone}`}
+            </Text>
+          </View>
+
+          <Text style={styles.paragraph}>E de outro lado:</Text>
+
+          <View style={styles.highlight}>
+            <Text style={[styles.paragraph, styles.bold]}>CONTRATADA:</Text>
+            <Text style={styles.paragraph}>
+              {company.name}
+              {company.cnpj && `, inscrita no CNPJ sob nº ${company.cnpj}`}
+              , com sede em {company.address}, {company.city} - {company.state}
+              , telefone: {company.phone}, e-mail: {company.email}
+            </Text>
+          </View>
+        </View>
+
+        {/* Cláusulas */}
+        <View style={styles.section}>
+          <Text style={styles.clauseTitle}>CLÁUSULA PRIMEIRA - DO OBJETO</Text>
+          <Text style={styles.clause}>
+            O presente contrato tem por objeto a prestação de serviços de impressão 3D pela CONTRATADA ao CONTRATANTE,
+            conforme especificações técnicas descritas abaixo:
+          </Text>
+          <Text style={styles.clause}>
+            {description}
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.clauseTitle}>CLÁUSULA SEGUNDA - DO VALOR E FORMA DE PAGAMENTO</Text>
+          <Text style={styles.clause}>
+            O CONTRATANTE pagará à CONTRATADA o valor total de <Text style={styles.bold}>{formatCurrency(totalValue)}</Text>
+            {' '}pelos serviços prestados.
+          </Text>
+          <Text style={styles.clause}>
+            Forma de pagamento: {company.paymentTerms}
+          </Text>
+          {company.bankDetails && (
+            <Text style={styles.clause}>
+              Dados bancários: {company.bankDetails}
+            </Text>
+          )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.clauseTitle}>CLÁUSULA TERCEIRA - DO PRAZO DE ENTREGA</Text>
+          <Text style={styles.clause}>
+            A CONTRATADA se compromete a entregar o serviço em até <Text style={styles.bold}>{deliveryDays} (
+            {deliveryDays === 1 ? 'um dia' :
+             deliveryDays === 7 ? 'sete dias' :
+             deliveryDays === 15 ? 'quinze dias' :
+             deliveryDays === 30 ? 'trinta dias' :
+             `${deliveryDays} dias`}) úteis</Text> a partir da data de confirmação do pagamento.
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.clauseTitle}>CLÁUSULA QUARTA - DAS RESPONSABILIDADES</Text>
+          <Text style={styles.clause}>
+            4.1. A CONTRATADA se responsabiliza pela qualidade técnica da impressão, seguindo as melhores práticas
+            e utilizando materiais de qualidade.
+          </Text>
+          <Text style={styles.clause}>
+            4.2. O CONTRATANTE se responsabiliza por fornecer arquivos em formato adequado (.STL, .OBJ, .3MF) e
+            com especificações técnicas viáveis para impressão 3D.
+          </Text>
+          <Text style={styles.clause}>
+            4.3. A CONTRATADA não se responsabiliza por falhas decorrentes de arquivos inadequados ou com
+            especificações impossíveis de serem atendidas.
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.clauseTitle}>CLÁUSULA QUINTA - DA GARANTIA</Text>
+          <Text style={styles.clause}>
+            A CONTRATADA garante a qualidade da impressão por um período de 30 (trinta) dias corridos após a entrega,
+            desde que o produto seja utilizado conforme recomendações técnicas.
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.clauseTitle}>CLÁUSULA SEXTA - DO CANCELAMENTO</Text>
+          <Text style={styles.clause}>
+            Em caso de cancelamento por parte do CONTRATANTE após o início da impressão, será cobrado 50% do valor
+            total do serviço a título de ressarcimento de custos.
+          </Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.clauseTitle}>CLÁUSULA SÉTIMA - DO FORO</Text>
+          <Text style={styles.clause}>
+            As partes elegem o foro da comarca de {company.city}/{company.state} para dirimir quaisquer dúvidas
+            oriundas do presente contrato.
+          </Text>
+        </View>
+
+        {company.legalNotes && (
+          <View style={styles.section}>
+            <Text style={styles.clauseTitle}>OBSERVAÇÕES ADICIONAIS</Text>
+            <Text style={styles.clause}>{company.legalNotes}</Text>
+          </View>
+        )}
+
+        {/* Data e Local */}
+        <Text style={[styles.paragraph, { marginTop: 20, textAlign: 'center' }]}>
+          {company.city}/{company.state}, {formatDate(date)}
+        </Text>
+
+        {/* Assinaturas */}
+        <View style={styles.signatureSection}>
+          <View style={styles.signatureBox}>
+            <View style={styles.signatureLine}>
+              <Text style={styles.signatureLabel}>CONTRATANTE</Text>
+              <Text style={[styles.signatureLabel, { marginTop: 3 }]}>{client.name}</Text>
+              {client.cpfCnpj && (
+                <Text style={styles.signatureLabel}>{client.cpfCnpj}</Text>
+              )}
+            </View>
+          </View>
+
+          <View style={styles.signatureBox}>
+            <View style={styles.signatureLine}>
+              <Text style={styles.signatureLabel}>CONTRATADA</Text>
+              <Text style={[styles.signatureLabel, { marginTop: 3 }]}>{company.name}</Text>
+              {company.cnpj && (
+                <Text style={styles.signatureLabel}>{company.cnpj}</Text>
+              )}
+            </View>
+          </View>
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text>Contrato gerado via CalculadoraH2D PRO by BKreativeLab</Text>
+          <Text>Este documento possui validade jurídica quando assinado por ambas as partes</Text>
+        </View>
+      </Page>
+    </Document>
+  );
+};
+
+export default PDFContract;

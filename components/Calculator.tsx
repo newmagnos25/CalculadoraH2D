@@ -11,6 +11,7 @@ import { getCustomFilaments, getCustomAddons, getCustomPrinters, saveLastCalcula
 import FilamentManager from './FilamentManager';
 import AddonManager from './AddonManager';
 import PrinterManager from './PrinterManager';
+import PDFActions from './PDFActions';
 
 interface FilamentUsage {
   id: string;
@@ -639,6 +640,20 @@ export default function Calculator() {
                 </span>
               </div>
             </div>
+
+            {/* PDF Actions */}
+            <PDFActions
+              calculation={result}
+              printDetails={{
+                printer: allPrinters.find(p => p.id === printerId)?.name || 'Não especificada',
+                filaments: filamentUsages.map(fu => {
+                  const fil = allFilaments.find(f => f.id === fu.filamentId);
+                  return fil ? `${fil.brand} ${fil.type} (${fu.weight}g)` : '';
+                }).filter(Boolean).join(', '),
+                weight: totalWeight,
+                printTime: printTime,
+              }}
+            />
           </div>
         ) : (
           <div className="text-center py-16">
