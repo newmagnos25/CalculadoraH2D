@@ -21,10 +21,12 @@ create table if not exists public.profiles (
 alter table public.profiles enable row level security;
 
 -- Policies
+drop policy if exists "Usuários podem ver seu próprio perfil" on public.profiles;
 create policy "Usuários podem ver seu próprio perfil"
   on public.profiles for select
   using (auth.uid() = id);
 
+drop policy if exists "Usuários podem atualizar seu próprio perfil" on public.profiles;
 create policy "Usuários podem atualizar seu próprio perfil"
   on public.profiles for update
   using (auth.uid() = id);
@@ -53,6 +55,7 @@ create table if not exists public.subscriptions (
 alter table public.subscriptions enable row level security;
 
 -- Policies
+drop policy if exists "Usuários podem ver sua própria assinatura" on public.subscriptions;
 create policy "Usuários podem ver sua própria assinatura"
   on public.subscriptions for select
   using (auth.uid() = user_id);
@@ -76,14 +79,17 @@ create index if not exists quotes_created_at_idx on public.quotes(created_at des
 alter table public.quotes enable row level security;
 
 -- Policies
+drop policy if exists "Usuários podem ver seus próprios orçamentos" on public.quotes;
 create policy "Usuários podem ver seus próprios orçamentos"
   on public.quotes for select
   using (auth.uid() = user_id);
 
+drop policy if exists "Usuários podem criar orçamentos" on public.quotes;
 create policy "Usuários podem criar orçamentos"
   on public.quotes for insert
   with check (auth.uid() = user_id);
 
+drop policy if exists "Usuários podem deletar seus próprios orçamentos" on public.quotes;
 create policy "Usuários podem deletar seus próprios orçamentos"
   on public.quotes for delete
   using (auth.uid() = user_id);
@@ -110,18 +116,22 @@ create index if not exists clients_user_id_idx on public.clients(user_id);
 alter table public.clients enable row level security;
 
 -- Policies
+drop policy if exists "Usuários podem ver seus próprios clientes" on public.clients;
 create policy "Usuários podem ver seus próprios clientes"
   on public.clients for select
   using (auth.uid() = user_id);
 
+drop policy if exists "Usuários podem criar clientes" on public.clients;
 create policy "Usuários podem criar clientes"
   on public.clients for insert
   with check (auth.uid() = user_id);
 
+drop policy if exists "Usuários podem atualizar seus próprios clientes" on public.clients;
 create policy "Usuários podem atualizar seus próprios clientes"
   on public.clients for update
   using (auth.uid() = user_id);
 
+drop policy if exists "Usuários podem deletar seus próprios clientes" on public.clients;
 create policy "Usuários podem deletar seus próprios clientes"
   on public.clients for delete
   using (auth.uid() = user_id);
