@@ -13,6 +13,7 @@ export async function middleware(request: NextRequest) {
     '/debug-pagamento',
     '/teste-pagamento',
     '/test-supabase',
+    '/test-auth',
     '/api',
   ]
 
