@@ -18,7 +18,7 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3 sm:gap-4">
               <Link
-                href="/"
+                href="/calculator"
                 className="group flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-white hover:bg-orange-50 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl border-2 border-orange-400 dark:border-orange-500 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
               >
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center border-2 border-amber-300 shadow-lg shadow-orange-500/50 group-hover:scale-110 transition-transform">
