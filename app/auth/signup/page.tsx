@@ -67,8 +67,8 @@ export default function SignupPage() {
       }
 
       // Se tudo deu certo, redirecionar com reload completo
-      console.log('Redirecionando para página inicial...');
-      window.location.href = '/';
+      console.log('Redirecionando para calculadora...');
+      window.location.href = '/calculator';
     } catch (err: any) {
       console.error('Erro inesperado:', err);
       setError(`Erro ao conectar: ${err.message || 'Verifique sua conexão com a internet'}`);

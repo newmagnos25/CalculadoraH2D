@@ -33,10 +33,10 @@ export default function LoginPage() {
       }
 
       console.log('Login realizado com sucesso:', data);
-      console.log('Redirecionando para página inicial...');
+      console.log('Redirecionando para calculadora...');
 
       // Redirecionar com reload completo
-      window.location.href = '/';
+      window.location.href = '/calculator';
     } catch (err: any) {
       console.error('Erro inesperado:', err);
       setError('Erro ao conectar. Tente novamente.');
