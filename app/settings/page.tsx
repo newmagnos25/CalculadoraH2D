@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import AccountSettings from '@/components/AccountSettings';
 import CompanySettings from '@/components/CompanySettings';
 import ClientManager from '@/components/ClientManager';
 import PrinterManager from '@/components/PrinterManager';
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'company' | 'clients' | 'printers'>('company');
+  const [activeTab, setActiveTab] = useState<'account' | 'company' | 'clients' | 'printers'>('account');
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-orange-50/30 dark:from-black dark:via-slate-950 dark:to-slate-900">
@@ -52,10 +53,25 @@ export default function SettingsPage() {
       {/* Tabs */}
       <div className="bg-white dark:bg-slate-900 border-b-2 border-orange-200 dark:border-orange-900/50 shadow-md">
         <div className="container mx-auto px-4">
-          <div className="flex gap-4">
+          <div className="flex gap-4 overflow-x-auto">
+            <button
+              onClick={() => setActiveTab('account')}
+              className={`px-6 py-4 font-bold text-sm transition-all border-b-4 whitespace-nowrap ${
+                activeTab === 'account'
+                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-orange-500 dark:hover:text-orange-400'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Minha Conta
+              </div>
+            </button>
             <button
               onClick={() => setActiveTab('company')}
-              className={`px-6 py-4 font-bold text-sm transition-all border-b-4 ${
+              className={`px-6 py-4 font-bold text-sm transition-all border-b-4 whitespace-nowrap ${
                 activeTab === 'company'
                   ? 'border-orange-500 text-orange-600 dark:text-orange-400'
                   : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-orange-500 dark:hover:text-orange-400'
@@ -105,6 +121,10 @@ export default function SettingsPage() {
       {/* Content */}
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-5xl mx-auto">
+          {activeTab === 'account' && (
+            <AccountSettings />
+          )}
+
           {activeTab === 'company' && (
             <CompanySettings />
           )}

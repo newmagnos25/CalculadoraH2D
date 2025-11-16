@@ -34,12 +34,26 @@ export async function POST(request: NextRequest) {
 
     // Get Mercado Pago access token from environment
     const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
     if (!accessToken) {
       console.error('MERCADOPAGO_ACCESS_TOKEN não configurado');
       return NextResponse.json(
         { error: 'Pagamento temporariamente indisponível. Configure o Mercado Pago.' },
         { status: 500 }
+      );
+    }
+
+    // Check if running on localhost (Mercado Pago doesn't accept localhost URLs)
+    if (appUrl.includes('localhost') || appUrl.includes('127.0.0.1')) {
+      console.warn('⚠️ Mercado Pago não aceita URLs localhost!');
+      return NextResponse.json(
+        {
+          error: 'Mercado Pago não funciona em localhost',
+          message: 'Para testar pagamentos, faça deploy na Vercel primeiro. Veja: GUIA-DEPLOY-VERCEL.md',
+          appUrl
+        },
+        { status: 400 }
       );
     }
 
@@ -60,12 +74,12 @@ export async function POST(request: NextRequest) {
         email: 'test@test.com', // Email padrão para forçar guest checkout
       },
       back_urls: {
-        success: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/checkout/success`,
-        failure: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/checkout/failure`,
-        pending: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/checkout/pending`,
+        success: `${appUrl}/checkout/success`,
+        failure: `${appUrl}/checkout/failure`,
+        pending: `${appUrl}/checkout/pending`,
       },
       auto_return: 'approved' as const,
-      notification_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/webhooks/mercadopago`,
+      notification_url: `${appUrl}/api/webhooks/mercadopago`,
       metadata: {
         tier,
         billing_cycle: tier === 'lifetime' ? 'lifetime' : billing_cycle,
