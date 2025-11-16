@@ -82,10 +82,10 @@ export default function CheckoutFailurePage() {
               Tentar Novamente
             </Link>
             <Link
-              href="/"
+              href="/calculator"
               className="block w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold py-4 px-6 rounded-lg transition-all text-center"
             >
-              Voltar para Home
+              Voltar para Calculadora
             </Link>
           </div>
 

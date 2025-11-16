@@ -5,6 +5,7 @@ import { createServerClient } from '@supabase/ssr'
 export async function middleware(request: NextRequest) {
   // Rotas públicas que não precisam de autenticação
   const publicRoutes = [
+    '/', // Landing page pública
     '/auth/login',
     '/auth/signup',
     '/auth/callback',

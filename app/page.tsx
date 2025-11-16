@@ -1,169 +1,130 @@
 import Link from 'next/link';
-import Calculator from '@/components/Calculator';
+import HeaderUser from '@/components/HeaderUser';
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-orange-50/30 dark:from-black dark:via-slate-950 dark:to-slate-900">
-      {/* Header Premium - Preto com Laranja/Dourado */}
-      <div className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-orange-500 shadow-2xl">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center border-2 border-amber-300 shadow-lg shadow-orange-500/50">
-                <svg className="w-10 h-10 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
+    <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900">
+      {/* Header */}
+      <header className="border-b-4 border-orange-500 bg-black/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center border-2 border-amber-300 shadow-lg">
+                <span className="text-white font-black text-2xl">H2D</span>
               </div>
               <div>
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white">
-                    CalculadoraH2D
-                  </h1>
-                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full text-xs font-black border-2 border-amber-300 text-white shadow-lg">
-                    PRO
-                  </span>
-                </div>
-                <p className="text-orange-200 text-xs sm:text-sm md:text-base font-medium">
-                  Precificação Profissional para Impressão 3D
-                </p>
+                <h1 className="text-xl font-black text-white">CalculadoraH2D</h1>
+                <p className="text-orange-400 text-xs font-bold">PRO</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4">
-              <Link
-                href="/settings"
-                className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-3 bg-white hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-orange-600 dark:text-orange-400 font-black text-xs sm:text-sm transition-all shadow-lg border-2 border-orange-400 dark:border-orange-500 hover:scale-105 hover:shadow-xl hover:border-orange-500 dark:hover:border-orange-400"
-              >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span className="hidden xs:inline">⚙️</span>
-                <span className="hidden sm:inline">Configurações</span>
-                <span className="sm:hidden">Config</span>
-              </Link>
-              <div className="text-right hidden md:block">
-                <div className="text-orange-300 text-xs uppercase tracking-widest font-semibold">Powered by</div>
-                <div className="text-2xl font-black bg-gradient-to-r from-orange-500 to-amber-400 bg-clip-text text-transparent drop-shadow-md">
-                  BKreativeLab
-                </div>
-              </div>
-            </div>
+            <HeaderUser />
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Barra de Features - Branco com ícones Laranja/Dourado */}
-      <div className="bg-white dark:bg-slate-900 border-b-2 border-orange-200 dark:border-orange-900/50 shadow-md">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-wrap justify-center gap-8 text-sm">
-            <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200 font-semibold">
-              <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span>Múltiplas Cores</span>
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-20 text-center">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
+            Calcule Orçamentos de
+            <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent"> Impressão 3D </span>
+            em Segundos
+          </h1>
+          <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
+            Ferramenta profissional para calcular custos de impressão 3D, gerar orçamentos PDF e gerenciar seus clientes.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <Link
+              href="/auth/signup"
+              className="px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black rounded-xl text-lg transition-all shadow-2xl shadow-orange-500/50 hover:scale-105"
+            >
+              🚀 Começar Grátis
+            </Link>
+            <Link
+              href="/pricing"
+              className="px-8 py-4 bg-slate-800 hover:bg-slate-700 border-2 border-orange-500 text-white font-black rounded-xl text-lg transition-all"
+            >
+              💎 Ver Planos
+            </Link>
+          </div>
+
+          <p className="text-slate-400 text-sm">
+            ✅ Sem cartão de crédito • 3 orçamentos grátis • Upgrade quando quiser
+          </p>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="container mx-auto px-4 py-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="bg-slate-900 border-2 border-orange-500 rounded-2xl p-8 hover:scale-105 transition-all">
+            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center mb-6">
+              <span className="text-4xl">⚡</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200 font-semibold">
-              <div className="w-6 h-6 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span>Filamentos Customizáveis</span>
+            <h3 className="text-2xl font-black text-white mb-4">Rápido e Preciso</h3>
+            <p className="text-slate-400">
+              Calcule custos de filamento, energia, tempo de impressão e margem de lucro instantaneamente.
+            </p>
+          </div>
+
+          <div className="bg-slate-900 border-2 border-blue-500 rounded-2xl p-8 hover:scale-105 transition-all">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6">
+              <span className="text-4xl">📄</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200 font-semibold">
-              <div className="w-6 h-6 bg-gradient-to-br from-orange-600 to-amber-500 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span>Adereços Personalizados</span>
+            <h3 className="text-2xl font-black text-white mb-4">PDFs Profissionais</h3>
+            <p className="text-slate-400">
+              Gere orçamentos em PDF com sua marca, dados do cliente e valores detalhados.
+            </p>
+          </div>
+
+          <div className="bg-slate-900 border-2 border-purple-500 rounded-2xl p-8 hover:scale-105 transition-all">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6">
+              <span className="text-4xl">👥</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200 font-semibold">
-              <div className="w-6 h-6 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span>Tarifas Regionalizadas</span>
-            </div>
+            <h3 className="text-2xl font-black text-white mb-4">Gestão de Clientes</h3>
+            <p className="text-slate-400">
+              Salve dados dos clientes, histórico de orçamentos e acompanhe suas vendas.
+            </p>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="container mx-auto px-4 py-8">
-        <Calculator />
+      {/* CTA */}
+      <section className="container mx-auto px-4 py-20">
+        <div className="max-w-4xl mx-auto bg-gradient-to-r from-orange-500 to-amber-500 rounded-3xl p-12 text-center">
+          <h2 className="text-4xl font-black text-white mb-6">
+            Pronto para Profissionalizar seus Orçamentos?
+          </h2>
+          <p className="text-xl text-orange-100 mb-8">
+            Crie sua conta grátis e ganhe <strong>3 orçamentos</strong> para testar!
+          </p>
+          <Link
+            href="/auth/signup"
+            className="inline-block px-8 py-4 bg-white hover:bg-slate-100 text-orange-600 font-black rounded-xl text-lg transition-all shadow-2xl hover:scale-105"
+          >
+            🎉 Criar Conta Grátis
+          </Link>
+        </div>
+      </section>
 
-        {/* Footer Premium - Preto com Laranja/Dourado */}
-        <footer className="mt-16 pt-12 pb-8 bg-gradient-to-r from-black via-slate-900 to-black border-t-4 border-orange-500 rounded-t-2xl">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h3 className="font-bold text-white mb-3 flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">CalculadoraH2D</span>
-              </h3>
-              <p className="text-sm text-slate-300">
-                Sistema profissional de precificação para impressão 3D com suporte completo para impressoras Bambu Lab.
-              </p>
+      {/* Footer */}
+      <footer className="border-t-2 border-slate-800 py-12 mt-20">
+        <div className="container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-black text-xl">H2D</span>
             </div>
-            <div>
-              <h3 className="font-bold text-orange-400 mb-3 uppercase tracking-wider text-sm">Funcionalidades</h3>
-              <ul className="text-sm text-slate-300 space-y-2">
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"></div>
-                  Suporte para múltiplas cores
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"></div>
-                  Filamentos customizáveis
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"></div>
-                  Adereços e inserções
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"></div>
-                  Cálculo preciso de energia
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold text-amber-400 mb-3 uppercase tracking-wider text-sm">Informações</h3>
-              <ul className="text-sm text-slate-300 space-y-2">
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full"></div>
-                  Dados de energia: 01/2025
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full"></div>
-                  5 modelos Bambu Lab
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full"></div>
-                  32 distribuidoras Brasil
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full"></div>
-                  40+ itens de adereços
-                </li>
-              </ul>
-            </div>
+            <span className="text-xl font-black text-white">CalculadoraH2D PRO</span>
           </div>
-          <div className="text-center pt-8 border-t border-orange-900/50">
-            <p className="text-sm text-slate-300 mb-2">
-              © 2025 <strong className="text-transparent bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text font-black">BKreativeLab</strong> - Calculadora Profissional para Impressão 3D
-            </p>
-            <p className="text-xs text-orange-300/60">
-              Desenvolvido com tecnologia Next.js e TailwindCSS
-            </p>
-          </div>
-        </footer>
-      </div>
-    </main>
+          <p className="text-slate-400 text-sm mb-4">
+            A ferramenta profissional para calcular orçamentos de impressão 3D
+          </p>
+          <p className="text-slate-600 text-xs">
+            Powered by <span className="text-orange-500 font-bold">BKreativeLab</span>
+          </p>
+        </div>
+      </footer>
+    </div>
   );
 }

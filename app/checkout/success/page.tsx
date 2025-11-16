@@ -74,7 +74,7 @@ function CheckoutSuccessContent() {
           {/* Action Buttons */}
           <div className="grid md:grid-cols-2 gap-4">
             <Link
-              href="/"
+              href="/calculator"
               className="block w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-4 px-6 rounded-lg transition-all shadow-lg text-center"
             >
               Ir para Calculadora

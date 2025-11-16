@@ -120,7 +120,7 @@ export default function UpgradePage() {
 
         <div className="text-center mt-8">
           <Link
-            href="/"
+            href="/calculator"
             className="text-orange-500 hover:text-orange-400 font-bold"
           >
             ← Voltar para a calculadora
