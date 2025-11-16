@@ -185,7 +185,7 @@ export default function AccountSettings() {
                   <div className="w-full bg-white/20 rounded-full h-2">
                     <div
                       className="bg-white rounded-full h-2 transition-all"
-                      style={{ width: `${Math.min((subscription.current / subscription.max) * 100, 100)}%` }}
+                      style={{ width: `${subscription.max ? Math.min((subscription.current / subscription.max) * 100, 100) : 0}%` }}
                     />
                   </div>
                 </div>
