@@ -1,17 +1,17 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
+import { createServerClient } from '@supabase/ssr'
 
 export async function middleware(request: NextRequest) {
-  // Atualizar session do Supabase
-  const supabaseResponse = await updateSession(request)
-
   // Rotas públicas que não precisam de autenticação
   const publicRoutes = [
     '/auth/login',
     '/auth/signup',
+    '/auth/callback',
     '/pricing',
     '/debug-pagamento',
     '/teste-pagamento',
+    '/test-supabase',
     '/api',
   ]
 
@@ -19,16 +19,43 @@ export async function middleware(request: NextRequest) {
 
   // Permitir rotas públicas
   if (publicRoutes.some(route => pathname.startsWith(route))) {
-    return supabaseResponse
+    return await updateSession(request)
   }
 
-  // Verificar se usuário está logado
-  const response = supabaseResponse
-  const cookies = response.cookies
-  const hasSession = cookies.getAll().some(cookie => cookie.name.includes('auth-token'))
+  // Criar cliente Supabase para verificar sessão
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options) {
+          request.cookies.set({ name, value, ...options })
+          response = NextResponse.next({ request: { headers: request.headers } })
+          response.cookies.set({ name, value, ...options })
+        },
+        remove(name: string, options) {
+          request.cookies.set({ name, value: '', ...options })
+          response = NextResponse.next({ request: { headers: request.headers } })
+          response.cookies.set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
+
+  // Verificar se usuário está autenticado
+  const { data: { user } } = await supabase.auth.getUser()
 
   // Se não está logado e tentando acessar rota protegida
-  if (!hasSession && !pathname.startsWith('/auth')) {
+  if (!user && !pathname.startsWith('/auth')) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
     url.searchParams.set('redirect', pathname)
