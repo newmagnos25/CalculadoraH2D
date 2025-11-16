@@ -67,9 +67,12 @@ export async function POST(request: NextRequest) {
         tier,
         billing_cycle: tier === 'lifetime' ? 'lifetime' : billing_cycle,
       },
+      binary_mode: false, // Permite pagamentos pendentes/rejeitados (melhor para testes)
       payment_methods: {
         excluded_payment_types: [],
-        installments: 12, // Allow up to 12 installments
+        excluded_payment_methods: [],
+        installments: 1, // Apenas 1x para facilitar testes
+        default_installments: 1,
       },
     };
 
