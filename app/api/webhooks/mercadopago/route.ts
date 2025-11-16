@@ -1,137 +1,124 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
-/**
- * Webhook handler for Mercado Pago payment notifications
- *
- * This endpoint receives notifications from Mercado Pago when:
- * - Payment is approved
- * - Payment is rejected
- * - Payment is pending
- * - Subscription is created/updated/canceled
- */
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASEs_SUPABASE_SERVICE_ROLE_KEY!;
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    console.log('Mercado Pago Webhook received:', {
-      id: body.id,
-      type: body.type,
-      action: body.action,
-    });
+    console.log('🔔 Webhook Mercado Pago recebido:', JSON.stringify(body, null, 2));
 
-    // Mercado Pago sends different types of notifications
-    const notificationType = body.type;
+    // Mercado Pago envia notificações de pagamento
+    if (body.type === 'payment') {
+      const paymentId = body.data.id;
 
-    switch (notificationType) {
-      case 'payment':
-        return handlePaymentNotification(body);
+      // Buscar detalhes do pagamento
+      const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
 
-      case 'plan':
-      case 'subscription':
-        return handleSubscriptionNotification(body);
+      const paymentResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      });
 
-      default:
-        console.log('Unhandled notification type:', notificationType);
-        return NextResponse.json({ status: 'ignored' }, { status: 200 });
+      if (!paymentResponse.ok) {
+        console.error('Erro ao buscar detalhes do pagamento');
+        return NextResponse.json({ error: 'Erro ao buscar pagamento' }, { status: 500 });
+      }
+
+      const payment = await paymentResponse.json();
+
+      console.log('💳 Detalhes do pagamento:', {
+        id: payment.id,
+        status: payment.status,
+        metadata: payment.metadata,
+        payer_email: payment.payer?.email,
+      });
+
+      // Se o pagamento foi aprovado
+      if (payment.status === 'approved') {
+        const tier = payment.metadata?.tier;
+        const billingCycle = payment.metadata?.billing_cycle;
+        const payerEmail = payment.payer?.email;
+
+        if (!tier || !payerEmail) {
+          console.error('Metadados incompletos no pagamento');
+          return NextResponse.json({ error: 'Metadados incompletos' }, { status: 400 });
+        }
+
+        // Usar service role key para acessar o Supabase sem autenticação
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+        // Buscar usuário pelo email
+        const { data: users, error: userError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', payerEmail)
+          .limit(1);
+
+        if (userError || !users || users.length === 0) {
+          console.error('Usuário não encontrado:', payerEmail);
+          return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
+        }
+
+        const userId = users[0].id;
+
+        // Calcular data de expiração
+        const now = new Date();
+        let periodEnd: Date;
+
+        if (billingCycle === 'lifetime') {
+          // Lifetime: 100 anos no futuro (praticamente vitalício)
+          periodEnd = new Date(now.getFullYear() + 100, now.getMonth(), now.getDate());
+        } else if (billingCycle === 'yearly') {
+          // Anual: + 1 ano
+          periodEnd = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
+        } else {
+          // Mensal: + 1 mês
+          periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+        }
+
+        // Atualizar ou criar assinatura
+        const { error: subError } = await supabase
+          .from('subscriptions')
+          .upsert({
+            user_id: userId,
+            tier,
+            status: 'active',
+            billing_cycle: billingCycle,
+            current_period_start: now.toISOString(),
+            current_period_end: periodEnd.toISOString(),
+            mercadopago_payment_id: payment.id.toString(),
+          }, {
+            onConflict: 'user_id',
+          });
+
+        if (subError) {
+          console.error('Erro ao atualizar assinatura:', subError);
+          return NextResponse.json({ error: 'Erro ao ativar assinatura' }, { status: 500 });
+        }
+
+        console.log('✅ Assinatura ativada com sucesso:', {
+          userId,
+          tier,
+          billingCycle,
+          periodEnd: periodEnd.toISOString(),
+        });
+
+        return NextResponse.json({ success: true, message: 'Assinatura ativada' });
+      }
     }
 
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Webhook processing error:', error);
-    // Always return 200 to prevent Mercado Pago from retrying
-    return NextResponse.json({ status: 'error' }, { status: 200 });
+    console.error('Erro no webhook:', error);
+    return NextResponse.json({ error: 'Erro interno' }, { status: 500 });
   }
 }
 
-async function handlePaymentNotification(body: any) {
-  const paymentId = body.data?.id;
-
-  if (!paymentId) {
-    console.error('Payment ID not found in webhook');
-    return NextResponse.json({ status: 'error' }, { status: 200 });
-  }
-
-  try {
-    // Fetch payment details from Mercado Pago
-    const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
-
-    if (!accessToken) {
-      console.error('MERCADOPAGO_ACCESS_TOKEN not configured');
-      return NextResponse.json({ status: 'error' }, { status: 200 });
-    }
-
-    const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      console.error('Failed to fetch payment from Mercado Pago');
-      return NextResponse.json({ status: 'error' }, { status: 200 });
-    }
-
-    const payment = await response.json();
-
-    console.log('Payment details:', {
-      id: payment.id,
-      status: payment.status,
-      status_detail: payment.status_detail,
-      transaction_amount: payment.transaction_amount,
-      metadata: payment.metadata,
-    });
-
-    // TODO: Save payment to Supabase database
-    // TODO: Update user subscription status based on payment status
-
-    switch (payment.status) {
-      case 'approved':
-        console.log('✅ Payment approved:', payment.id);
-        // TODO: Activate user subscription
-        // await activateSubscription(payment.metadata.tier, payment.metadata.billing_cycle);
-        break;
-
-      case 'pending':
-        console.log('⏳ Payment pending:', payment.id);
-        // TODO: Mark payment as pending in database
-        break;
-
-      case 'rejected':
-      case 'cancelled':
-        console.log('❌ Payment rejected/cancelled:', payment.id);
-        // TODO: Handle payment failure
-        break;
-
-      default:
-        console.log('Unknown payment status:', payment.status);
-    }
-
-    return NextResponse.json({ status: 'processed' }, { status: 200 });
-
-  } catch (error) {
-    console.error('Error processing payment notification:', error);
-    return NextResponse.json({ status: 'error' }, { status: 200 });
-  }
-}
-
-async function handleSubscriptionNotification(body: any) {
-  const subscriptionId = body.data?.id;
-
-  console.log('Subscription notification received:', {
-    id: subscriptionId,
-    action: body.action,
-  });
-
-  // TODO: Implement subscription handling when using recurring payments
-
-  return NextResponse.json({ status: 'processed' }, { status: 200 });
-}
-
-/**
- * GET handler for webhook verification (optional)
- */
-export async function GET(request: NextRequest) {
-  return NextResponse.json({
-    message: 'Mercado Pago Webhook Endpoint',
-    status: 'active',
-  });
+// Mercado Pago também pode enviar GET para validar o endpoint
+export async function GET() {
+  return NextResponse.json({ status: 'Webhook ativo' });
 }
