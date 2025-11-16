@@ -66,9 +66,9 @@ export default function SignupPage() {
         return;
       }
 
-      // Se tudo deu certo, redirecionar
-      router.push('/');
-      router.refresh();
+      // Se tudo deu certo, redirecionar com reload completo
+      console.log('Redirecionando para página inicial...');
+      window.location.href = '/';
     } catch (err: any) {
       console.error('Erro inesperado:', err);
       setError(`Erro ao conectar: ${err.message || 'Verifique sua conexão com a internet'}`);
