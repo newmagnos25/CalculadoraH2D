@@ -62,11 +62,11 @@ export default function PricingPage() {
             <ul className="space-y-3 mb-8 flex-1">
               <li className="flex items-start gap-2 text-sm">
                 <span className="text-green-500 mt-0.5">✓</span>
-                <span className="text-slate-700 dark:text-slate-300">Até 30 orçamentos/mês</span>
+                <span className="text-slate-700 dark:text-slate-300">Até 50 orçamentos/mês</span>
               </li>
               <li className="flex items-start gap-2 text-sm">
                 <span className="text-green-500 mt-0.5">✓</span>
-                <span className="text-slate-700 dark:text-slate-300">Até 10 clientes</span>
+                <span className="text-slate-700 dark:text-slate-300">Até 20 clientes</span>
               </li>
               <li className="flex items-start gap-2 text-sm">
                 <span className="text-green-500 mt-0.5">✓</span>
