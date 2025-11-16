@@ -252,10 +252,10 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
               {tier === 'professional' && (
                 <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-4 border-2 border-green-200 dark:border-green-800 mb-4">
                   <h3 className="text-sm font-bold text-green-900 dark:text-green-100 mb-1">
-                    🎉 Teste Grátis por 14 Dias
+                    🎉 Teste Grátis por 7 Dias
                   </h3>
                   <p className="text-xs text-slate-700 dark:text-slate-300">
-                    Você não será cobrado agora. Teste gratuitamente por 14 dias e cancele quando quiser!
+                    Você não será cobrado agora. Teste gratuitamente por 7 dias e cancele quando quiser!
                   </p>
                 </div>
               )}

@@ -85,14 +85,28 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Mercado Pago API Error:', errorData);
+      console.error('❌ Mercado Pago API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData,
+        preferenceData: JSON.stringify(preferenceData, null, 2)
+      });
       return NextResponse.json(
-        { error: 'Erro ao criar preferência de pagamento' },
+        {
+          error: 'Erro ao criar preferência de pagamento',
+          details: errorData
+        },
         { status: 500 }
       );
     }
 
     const preference = await response.json();
+
+    console.log('✅ Mercado Pago Preference Created:', {
+      preference_id: preference.id,
+      init_point: preference.init_point,
+      sandbox: preference.sandbox_init_point
+    });
 
     return NextResponse.json({
       preference_id: preference.id,
