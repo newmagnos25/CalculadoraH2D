@@ -10,7 +10,7 @@ Erro ao criar conta: **"Failed to fetch"**
 
 O webhook do Mercado Pago precisa da chave de serviço para ativar assinaturas.
 
-**Acesse:** https://app.supabase.com/project/yjadhjdegaxunmgckapn/settings/api
+**Acesse:** https://app.supabase.com/project/jcfqcyayzphcniwsembk/settings/api
 
 **Copie a `service_role` key** e adicione no `.env.local`:
 
@@ -29,7 +29,7 @@ Por padrão, o Supabase exige que usuários confirmem o email antes de fazer log
 
 **Passos:**
 
-1. Acesse: https://app.supabase.com/project/yjadhjdegaxunmgckapn/auth/providers
+1. Acesse: https://app.supabase.com/project/jcfqcyayzphcniwsembk/auth/providers
 2. Clique em **Email** na lista de providers
 3. Role até **"Confirm email"**
 4. **Desabilite** a opção "Enable email confirmations"
@@ -43,7 +43,7 @@ Isso permite que usuários façam login imediatamente após criar a conta.
 
 O sistema precisa das tabelas e funções do banco de dados.
 
-**Acesse:** https://app.supabase.com/project/yjadhjdegaxunmgckapn/sql/new
+**Acesse:** https://app.supabase.com/project/jcfqcyayzphcniwsembk/sql/new
 
 **Execute o arquivo:** `supabase/schema.sql`
 
@@ -114,11 +114,9 @@ Seu arquivo `.env.local` deve ficar assim:
 
 ```bash
 # Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=https://yjadhjdegaxunmgckapn.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqYWRoamRlZ2F4dW5tZ2NrYXBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyMjY5NDgsImV4cCI6MjA3ODgwMjk0OH0.OhnE5akO5gy2_yL0a9NzuBZIIiTau-Uf_Qy-2yotZ7M
-
-# ADICIONE ESTA LINHA (pegue no Supabase Dashboard)
-SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key_aqui
+NEXT_PUBLIC_SUPABASE_URL=https://jcfqcyayzphcniwsembk.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjZnFjeWF5enBoY25pd3NlbWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyNjY0NTgsImV4cCI6MjA3ODg0MjQ1OH0.k7mWLg7xFtS3oOZR_JJ-TefKfFnM0oO61c1Ca88DOHA
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjZnFjeWF5enBoY25pd3NlbWJrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzI2NjQ1OCwiZXhwIjoyMDc4ODQyNDU4fQ.qlRoevFBhiR_VtmxZPUtmETxlJBQWFJmkJ3ABR1yDGc
 
 # Mercado Pago - MODO TESTE
 NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY=TEST-b218a451-a978-4171-a66e-9409f0a7b272
@@ -148,11 +146,11 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ## Links Úteis
 
-- **Dashboard Supabase:** https://app.supabase.com/project/yjadhjdegaxunmgckapn
-- **API Keys:** https://app.supabase.com/project/yjadhjdegaxunmgckapn/settings/api
-- **Auth Providers:** https://app.supabase.com/project/yjadhjdegaxunmgckapn/auth/providers
-- **SQL Editor:** https://app.supabase.com/project/yjadhjdegaxunmgckapn/sql/new
-- **Table Editor:** https://app.supabase.com/project/yjadhjdegaxunmgckapn/editor
+- **Dashboard Supabase:** https://app.supabase.com/project/jcfqcyayzphcniwsembk
+- **API Keys:** https://app.supabase.com/project/jcfqcyayzphcniwsembk/settings/api
+- **Auth Providers:** https://app.supabase.com/project/jcfqcyayzphcniwsembk/auth/providers
+- **SQL Editor:** https://app.supabase.com/project/jcfqcyayzphcniwsembk/sql/new
+- **Table Editor:** https://app.supabase.com/project/jcfqcyayzphcniwsembk/editor
 
 ---
 
