@@ -63,7 +63,7 @@ APRO
 
 **4. Vencimento:**
 ```
-11/25
+11/30
 ```
 
 **5. Código de segurança:**
@@ -101,7 +101,7 @@ APRO
 │ APRO                         ← ISSO!│
 │                                     │
 │ Vencimento      Código              │
-│ 11/25           123                 │
+│ 11/30           123                 │
 │                                     │
 │ CPF                                 │
 │ 12345678909                         │
@@ -144,7 +144,7 @@ APRO
 - [ ] Preencheu email
 - [ ] Número do cartão: 5031 4332 1540 6351
 - [ ] Nome: **APRO** (maiúscula)
-- [ ] Validade: 11/25
+- [ ] Validade: 11/30
 - [ ] CVV: 123
 - [ ] CPF: 12345678909
 - [ ] Clicou em "Pagar"
@@ -168,10 +168,11 @@ Se quiser testar outros cenários:
 
 ### Cartão VISA:
 ```
-Número: 4509 9535 6623 3704
+Número: 4235 6477 2802 5682
 Nome: APRO
 CVV: 123
-Validade: 11/25
+Validade: 11/30
+CPF: 12345678909
 ```
 
 ### Cartão MASTERCARD:
@@ -179,15 +180,17 @@ Validade: 11/25
 Número: 5031 4332 1540 6351
 Nome: APRO
 CVV: 123
-Validade: 11/25
+Validade: 11/30
+CPF: 12345678909
 ```
 
 ### American Express:
 ```
-Número: 3711 8030 3257 522
+Número: 3753 651535 56885
 Nome: APRO
 CVV: 1234 (4 dígitos)
-Validade: 11/25
+Validade: 11/30
+CPF: 12345678909
 ```
 
 ---
