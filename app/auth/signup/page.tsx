@@ -24,24 +24,55 @@ export default function SignupPage() {
       return;
     }
 
-    const supabase = createClient();
+    try {
+      const supabase = createClient();
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
+      // Verificar se o Supabase está configurado
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseKey) {
+        setError('Erro de configuração: Supabase não configurado corretamente');
+        setLoading(false);
+        return;
+      }
+
+      console.log('Tentando criar conta para:', email);
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
-      },
-    });
+      });
 
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    } else {
+      if (error) {
+        console.error('Erro ao criar conta:', error);
+        setError(error.message || 'Erro ao criar conta. Tente novamente.');
+        setLoading(false);
+        return;
+      }
+
+      console.log('Conta criada com sucesso:', data);
+
+      // Verificar se precisa de confirmação de email
+      if (data.user && !data.session) {
+        setError('Verifique seu email para confirmar a conta antes de fazer login.');
+        setLoading(false);
+        return;
+      }
+
+      // Se tudo deu certo, redirecionar
       router.push('/');
       router.refresh();
+    } catch (err: any) {
+      console.error('Erro inesperado:', err);
+      setError(`Erro ao conectar: ${err.message || 'Verifique sua conexão com a internet'}`);
+      setLoading(false);
     }
   };
 
