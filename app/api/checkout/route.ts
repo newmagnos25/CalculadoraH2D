@@ -56,6 +56,9 @@ export async function POST(request: NextRequest) {
           currency_id: 'BRL',
         },
       ],
+      payer: {
+        email: 'test@test.com', // Email padrão para forçar guest checkout
+      },
       back_urls: {
         success: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/checkout/success`,
         failure: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/checkout/failure`,
@@ -67,15 +70,15 @@ export async function POST(request: NextRequest) {
         tier,
         billing_cycle: tier === 'lifetime' ? 'lifetime' : billing_cycle,
       },
-      binary_mode: false, // Permite pagamentos pendentes/rejeitados (melhor para testes)
+      binary_mode: false,
       payment_methods: {
         excluded_payment_types: [],
         excluded_payment_methods: [],
-        installments: 1, // Apenas 1x para facilitar testes
+        installments: 1,
         default_installments: 1,
       },
-      purpose: 'wallet_purchase', // Permite pagamento sem login obrigatório
-      statement_descriptor: 'CalculadoraH2D',
+      marketplace: 'NONE' as const, // Não é marketplace - força checkout direto
+      operation_type: 'regular_payment' as const, // Pagamento regular
     };
 
     // Call Mercado Pago API
