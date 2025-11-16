@@ -1,9 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { CalculationResult, ClientData, ProjectStatus, FileAttachment } from '@/lib/types';
 import { getCompanySettings, getClients, getNextInvoiceNumber, incrementInvoiceCounter } from '@/lib/storage';
 import { generateAndDownloadQuote, generateAndDownloadContract, getCurrentDate, getDefaultValidityDate } from '@/lib/pdf-utils';
+import { createClient } from '@/lib/supabase/client';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 import ClientManager from './ClientManager';
 import { StatusSelector } from './StatusBadge';
 import AttachmentManager from './AttachmentManager';
@@ -21,6 +24,8 @@ interface PDFActionsProps {
 }
 
 export default function PDFActions({ calculation, printDetails }: PDFActionsProps) {
+  const router = useRouter();
+  const { subscription, loading: loadingSubscription, refresh: refreshSubscription } = useSubscription();
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string>('');
   const [showClientManager, setShowClientManager] = useState(false);
@@ -41,6 +46,18 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
   };
 
   const handleGenerateQuote = async () => {
+    // Verificar limite primeiro
+    if (!subscription) {
+      showMessage('error', 'Carregando informações da assinatura...');
+      return;
+    }
+
+    if (!subscription.allowed) {
+      // Redirecionar para upgrade
+      router.push('/upgrade');
+      return;
+    }
+
     const company = getCompanySettings();
     if (!company || !company.name) {
       showMessage('error', 'Configure os dados da empresa primeiro em Configurações');
@@ -69,7 +86,25 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
       });
 
       if (success) {
+        // Salvar no Supabase
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+          await supabase.from('quotes').insert({
+            user_id: user.id,
+            quote_data: {
+              calculation,
+              printDetails,
+              quoteNumber,
+              date,
+              client: client ? { name: client.name, email: client.email } : null,
+            },
+          });
+        }
+
         incrementInvoiceCounter();
+        refreshSubscription(); // Atualizar contador
         showMessage('success', `Orçamento ${quoteNumber} gerado com sucesso!`);
       } else {
         showMessage('error', 'Erro ao gerar orçamento. Tente novamente.');
@@ -186,6 +221,45 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
           maxSizeMB={10}
         />
       </Collapse>
+
+      {/* Usage Banner */}
+      {!loadingSubscription && subscription && (
+        <div className={`p-4 rounded-lg border-2 ${
+          subscription.allowed
+            ? 'bg-green-50 dark:bg-green-900/20 border-green-500'
+            : 'bg-red-50 dark:bg-red-900/20 border-red-500'
+        }`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-slate-900 dark:text-white">
+                📊 Plano {subscription.tier.toUpperCase()}:
+              </span>
+              <span className="text-slate-700 dark:text-slate-300">
+                {subscription.is_unlimited ? (
+                  <>Orçamentos <strong>ilimitados</strong></>
+                ) : (
+                  <>
+                    <strong>{subscription.current}</strong> de <strong>{subscription.max}</strong> orçamentos usados este mês
+                    {subscription.remaining !== null && subscription.remaining > 0 && (
+                      <span className="ml-2 text-green-600 dark:text-green-400 font-semibold">
+                        ({subscription.remaining} restantes)
+                      </span>
+                    )}
+                  </>
+                )}
+              </span>
+            </div>
+            {!subscription.is_unlimited && subscription.remaining !== null && subscription.remaining === 0 && (
+              <button
+                onClick={() => router.push('/upgrade')}
+                className="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded text-sm transition-all"
+              >
+                Fazer Upgrade
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* PDF Buttons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

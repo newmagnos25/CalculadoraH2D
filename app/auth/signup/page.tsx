@@ -1,52 +1,165 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
-export const dynamic = 'force-dynamic';
+import { createClient } from '@/lib/supabase/client';
 
 export default function SignupPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    if (password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres');
+      setLoading(false);
+      return;
+    }
+
+    const supabase = createClient();
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        },
+      },
+    });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+    } else {
+      router.push('/');
+      router.refresh();
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo/Header */}
+    <main className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex items-center justify-center py-12 px-4">
+      <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <div className="inline-block w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-2xl flex items-center justify-center border-4 border-amber-300 shadow-2xl shadow-orange-500/50 mb-4">
-            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <h1 className="text-3xl font-black text-white mb-2">CalculadoraH2D PRO</h1>
-          <p className="text-orange-300">Criar Nova Conta</p>
+          <h1 className="text-4xl font-black text-white mb-2">
+            CalculadoraH2D PRO
+          </h1>
+          <p className="text-slate-400">
+            Crie sua conta gratuitamente
+          </p>
         </div>
 
-        {/* Message Card */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border-2 border-blue-200 dark:border-blue-900 p-8">
-          <div className="text-center">
-            <div className="mb-4">
-              <svg className="w-16 h-16 mx-auto text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border-2 border-orange-500 shadow-2xl">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6">
+            Criar Conta
+          </h2>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg">
+              <p className="text-sm text-red-800 dark:text-red-200">
+                ❌ {error}
+              </p>
             </div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-              Autenticação Temporariamente Desabilitada
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400 mb-6">
-              O sistema de autenticação está sendo configurado. Por enquanto, use a calculadora sem login.
-            </p>
-            <Link
-              href="/"
-              className="inline-block bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-lg"
+          )}
+
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                Nome Completo
+              </label>
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none"
+                placeholder="Seu nome"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                E-mail
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none"
+                placeholder="seu@email.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                Senha
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none"
+                placeholder="••••••••"
+              />
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Mínimo 6 caracteres
+              </p>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 disabled:from-slate-400 disabled:to-slate-500 text-white font-black py-3 px-6 rounded-lg transition-all shadow-lg disabled:cursor-not-allowed"
             >
-              Ir para Calculadora
-            </Link>
+              {loading ? 'Criando conta...' : 'Criar Conta Grátis'}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Já tem uma conta?{' '}
+              <Link href="/auth/login" className="text-orange-500 hover:text-orange-400 font-bold">
+                Fazer login
+              </Link>
+            </p>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="text-center mt-6 text-sm text-slate-400">
-          <p>© 2025 BKreativeLab - Todos os direitos reservados</p>
+        <div className="mt-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl p-6">
+          <h3 className="text-white font-black text-lg mb-3 text-center">
+            🎉 Plano FREE Incluído!
+          </h3>
+          <ul className="space-y-2 text-white text-sm">
+            <li className="flex items-center gap-2">
+              <span>✅</span>
+              <span><strong>3 orçamentos por mês</strong></span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span>✅</span>
+              <span>Geração de PDFs profissionais</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span>✅</span>
+              <span>Sem cartão de crédito necessário</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span>✅</span>
+              <span>Faça upgrade quando quiser</span>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
