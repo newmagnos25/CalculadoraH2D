@@ -148,7 +148,7 @@ export default function PricingPage() {
               href="/checkout/professional"
               className="block w-full bg-white hover:bg-slate-100 text-orange-600 font-black py-3 px-6 rounded-lg text-center transition-all shadow-lg"
             >
-              Testar 14 Dias Grátis
+              Testar 7 Dias Grátis
             </Link>
           </div>
 
@@ -275,7 +275,7 @@ export default function PricingPage() {
                 O teste grátis precisa de cartão de crédito?
               </h3>
               <p className="text-slate-600 dark:text-slate-400">
-                Não! Você pode testar o plano Professional por 14 dias sem precisar cadastrar cartão de crédito.
+                Não! Você pode testar o plano Professional por 7 dias sem precisar cadastrar cartão de crédito.
               </p>
             </div>
 
