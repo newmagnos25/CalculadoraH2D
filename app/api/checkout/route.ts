@@ -74,6 +74,8 @@ export async function POST(request: NextRequest) {
         installments: 1, // Apenas 1x para facilitar testes
         default_installments: 1,
       },
+      purpose: 'wallet_purchase', // Permite pagamento sem login obrigatório
+      statement_descriptor: 'CalculadoraH2D',
     };
 
     // Call Mercado Pago API
