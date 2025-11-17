@@ -75,14 +75,17 @@ export default function HeaderUser() {
 
   const userName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário';
   const userEmail = user.email || '';
+  const userInitial = userName && userName.length > 0 ? userName.charAt(0).toUpperCase() : 'U';
   const tierColors: { [key: string]: string } = {
     free: 'bg-slate-500',
+    test: 'bg-yellow-500',
     starter: 'bg-blue-500',
     professional: 'bg-purple-500',
     enterprise: 'bg-orange-500',
     lifetime: 'bg-green-500',
   };
-  const tierColor = subscription ? tierColors[subscription.tier] || 'bg-slate-500' : 'bg-slate-500';
+  const tierColor = subscription && subscription.tier ? tierColors[subscription.tier] || 'bg-slate-500' : 'bg-slate-500';
+  const tierName = subscription && subscription.tier ? subscription.tier.toUpperCase() : 'FREE';
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -93,7 +96,7 @@ export default function HeaderUser() {
       >
         {/* Avatar */}
         <div className={`w-10 h-10 rounded-full ${tierColor} flex items-center justify-center text-white font-black text-lg shadow-lg group-hover:scale-110 transition-transform`}>
-          {userName.charAt(0).toUpperCase()}
+          {userInitial}
         </div>
 
         {/* User Info - Hidden on mobile */}
@@ -101,14 +104,15 @@ export default function HeaderUser() {
           <div className="text-white font-bold text-sm leading-tight">
             {userName}
           </div>
-          {subscription && (
+          {subscription && subscription.tier && (
             <div className="text-orange-300 text-xs font-semibold">
               {subscription.tier === 'free' && '🆓 '}
+              {subscription.tier === 'test' && '🧪 '}
               {subscription.tier === 'starter' && '⭐ '}
               {subscription.tier === 'professional' && '💎 '}
               {subscription.tier === 'enterprise' && '🏢 '}
               {subscription.tier === 'lifetime' && '♾️ '}
-              {subscription.tier.toUpperCase()}
+              {tierName}
             </div>
           )}
         </div>
@@ -131,7 +135,7 @@ export default function HeaderUser() {
           <div className="bg-gradient-to-r from-orange-500 to-amber-500 p-4">
             <div className="flex items-center gap-3">
               <div className={`w-12 h-12 rounded-full ${tierColor} flex items-center justify-center text-white font-black text-xl shadow-lg`}>
-                {userName.charAt(0).toUpperCase()}
+                {userInitial}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-white font-bold text-sm truncate">
@@ -145,12 +149,12 @@ export default function HeaderUser() {
           </div>
 
           {/* Subscription Info */}
-          {subscription && (
+          {subscription && subscription.tier && (
             <div className="p-4 bg-slate-800/50 border-b border-slate-700">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-slate-400 text-xs font-semibold">Plano Atual:</span>
                 <span className={`px-2 py-1 ${tierColor} text-white text-xs font-bold rounded`}>
-                  {subscription.tier.toUpperCase()}
+                  {tierName}
                 </span>
               </div>
               {!subscription.is_unlimited && (
