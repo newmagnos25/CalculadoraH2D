@@ -117,22 +117,29 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
   };
 
   const handleCalculate = () => {
-    // Calcular peso total e custo de filamento combinado
-    let totalWeight = 0;
-    let totalFilamentCost = 0;
-
-    filamentUsages.forEach(usage => {
-      const filament = allFilaments.find(f => f.id === usage.filamentId);
-      if (filament) {
-        totalWeight += usage.weight;
-        totalFilamentCost += (usage.weight / 1000) * filament.pricePerKg;
+    try {
+      // Validação básica
+      if (filamentUsages.length === 0) {
+        alert('⚠️ Adicione pelo menos um filamento antes de calcular!');
+        return;
       }
-    });
 
-    // Usar o primeiro filamento para o cálculo base (poderia ser melhorado)
-    const input: CalculationInput = {
-      printerId,
-      filamentId: filamentUsages[0].filamentId,
+      // Calcular peso total e custo de filamento combinado
+      let totalWeight = 0;
+      let totalFilamentCost = 0;
+
+      filamentUsages.forEach(usage => {
+        const filament = allFilaments.find(f => f.id === usage.filamentId);
+        if (filament) {
+          totalWeight += usage.weight;
+          totalFilamentCost += (usage.weight / 1000) * filament.pricePerKg;
+        }
+      });
+
+      // Usar o primeiro filamento para o cálculo base (poderia ser melhorado)
+      const input: CalculationInput = {
+        printerId,
+        filamentId: filamentUsages[0].filamentId,
       weight: totalWeight,
       printTime,
       energyTariffId,
@@ -210,7 +217,11 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
     setResult(calculatedResult);
     saveLastCalculation({ input, result: calculatedResult });
-  };
+  } catch (error) {
+    console.error('❌ Erro ao calcular preço:', error);
+    alert('❌ Erro ao calcular o preço. Verifique os dados e tente novamente.');
+  }
+};
 
   const addFilamentUsage = () => {
     setFilamentUsages([

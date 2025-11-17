@@ -81,7 +81,7 @@ export function useAntiPiracy() {
   useEffect(() => {
     if (window.self !== window.top) {
       alert('⚠️ Esta plataforma não pode ser exibida em frames/iframes.');
-      window.top!.location = window.self.location;
+      window.top!.location.href = window.self.location.href;
     }
   }, []);
 
