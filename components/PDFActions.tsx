@@ -15,6 +15,9 @@ import Collapse from './Collapse';
 interface PDFActionsProps {
   calculation: CalculationResult;
   printDetails: {
+    itemDescription?: string;
+    quantity?: number;
+    dimensions?: string;
     printer: string;
     filaments: string;
     filamentColors?: { name: string; color: string; weight: number }[];
@@ -150,7 +153,21 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
       const contractNumber = getNextInvoiceNumber();
       const date = getCurrentDate();
 
-      const description = `Serviço de impressão 3D\nImpressora: ${printDetails.printer}\nFilamento(s): ${printDetails.filaments}\nPeso: ${printDetails.weight}g\nTempo de impressão: ${Math.floor(printDetails.printTime / 60)}h ${printDetails.printTime % 60}min`;
+      // Montar descrição com as novas informações
+      let description = 'Serviço de impressão 3D\n';
+      if (printDetails.itemDescription) {
+        description += `Item: ${printDetails.itemDescription}\n`;
+      }
+      if (printDetails.quantity && printDetails.quantity > 1) {
+        description += `Quantidade: ${printDetails.quantity} unidades\n`;
+      }
+      if (printDetails.dimensions) {
+        description += `Dimensões: ${printDetails.dimensions}\n`;
+      }
+      description += `Impressora: ${printDetails.printer}\n`;
+      description += `Filamento(s): ${printDetails.filaments}\n`;
+      description += `Peso total: ${printDetails.weight}g\n`;
+      description += `Tempo de impressão: ${Math.floor(printDetails.printTime / 60)}h ${printDetails.printTime % 60}min`;
 
       const success = await generateAndDownloadContract({
         company,
@@ -254,7 +271,7 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
       </Collapse>
 
       {/* Usage Banner */}
-      {!loadingSubscription && subscription && (
+      {!loadingSubscription && subscription && subscription.tier && (
         <div className={`p-4 rounded-lg border-2 ${
           subscription.allowed
             ? 'bg-green-50 dark:bg-green-900/20 border-green-500'

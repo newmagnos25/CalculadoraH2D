@@ -191,7 +191,7 @@ export default function AccountSettings() {
       {/* Sidebar */}
       <div className="space-y-6">
         {/* Subscription Info */}
-        {subscription && (
+        {subscription && subscription.tier && (
           <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border-2 border-orange-200 dark:border-orange-900 p-6">
             <h3 className="text-lg font-black text-slate-900 dark:text-white mb-4">
               💎 Minha Assinatura
