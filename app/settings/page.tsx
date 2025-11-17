@@ -11,24 +11,24 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<'account' | 'company' | 'clients' | 'printers'>('account');
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-orange-50/30 dark:from-black dark:via-slate-950 dark:to-slate-900">
+    <main className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-blue-50/30 dark:from-black dark:via-slate-950 dark:to-slate-900">
       {/* Header Premium */}
-      <div className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-orange-500 shadow-2xl">
+      <div className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-blue-500 shadow-2xl">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3 sm:gap-4">
               <Link
                 href="/calculator"
-                className="group flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-white hover:bg-orange-50 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl border-2 border-orange-400 dark:border-orange-500 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                className="group flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-white hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl border-2 border-blue-400 dark:border-blue-500 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
               >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center border-2 border-amber-300 shadow-lg shadow-orange-500/50 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center border-2 border-indigo-300 shadow-lg shadow-blue-500/50 group-hover:scale-110 transition-transform">
                   <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                   </svg>
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs sm:text-sm font-black text-orange-600 dark:text-orange-400 uppercase tracking-wider">← Voltar</span>
+                    <span className="text-xs sm:text-sm font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider">← Voltar</span>
                   </div>
                   <p className="text-xs text-slate-600 dark:text-slate-400 hidden sm:block">Calculadora</p>
                 </div>
@@ -37,12 +37,12 @@ export default function SettingsPage() {
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white">
                   Configurações
                 </h1>
-                <p className="text-orange-200 text-xs sm:text-sm">Gerencie suas configurações</p>
+                <p className="text-blue-200 text-xs sm:text-sm">Gerencie suas configurações</p>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-orange-300 text-xs uppercase tracking-widest font-semibold">Powered by</div>
-              <div className="text-xl font-black bg-gradient-to-r from-orange-500 to-amber-400 bg-clip-text text-transparent drop-shadow-md">
+              <div className="text-blue-300 text-xs uppercase tracking-widest font-semibold">Powered by</div>
+              <div className="text-xl font-black bg-gradient-to-r from-blue-500 to-indigo-400 bg-clip-text text-transparent drop-shadow-md">
                 BKreativeLab
               </div>
             </div>
@@ -51,15 +51,15 @@ export default function SettingsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white dark:bg-slate-900 border-b-2 border-orange-200 dark:border-orange-900/50 shadow-md">
+      <div className="bg-white dark:bg-slate-900 border-b-2 border-blue-200 dark:border-blue-900/50 shadow-md">
         <div className="container mx-auto px-4">
           <div className="flex gap-4 overflow-x-auto">
             <button
               onClick={() => setActiveTab('account')}
               className={`px-6 py-4 font-bold text-sm transition-all border-b-4 whitespace-nowrap ${
                 activeTab === 'account'
-                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-orange-500 dark:hover:text-orange-400'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400'
               }`}
             >
               <div className="flex items-center gap-2">
@@ -73,8 +73,8 @@ export default function SettingsPage() {
               onClick={() => setActiveTab('company')}
               className={`px-6 py-4 font-bold text-sm transition-all border-b-4 whitespace-nowrap ${
                 activeTab === 'company'
-                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-orange-500 dark:hover:text-orange-400'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400'
               }`}
             >
               <div className="flex items-center gap-2">
@@ -88,8 +88,8 @@ export default function SettingsPage() {
               onClick={() => setActiveTab('clients')}
               className={`px-6 py-4 font-bold text-sm transition-all border-b-4 ${
                 activeTab === 'clients'
-                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-orange-500 dark:hover:text-orange-400'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400'
               }`}
             >
               <div className="flex items-center gap-2">
@@ -103,8 +103,8 @@ export default function SettingsPage() {
               onClick={() => setActiveTab('printers')}
               className={`px-6 py-4 font-bold text-sm transition-all border-b-4 ${
                 activeTab === 'printers'
-                  ? 'border-orange-500 text-orange-600 dark:text-orange-400'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-orange-500 dark:hover:text-orange-400'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400'
               }`}
             >
               <div className="flex items-center gap-2">
@@ -142,7 +142,7 @@ export default function SettingsPage() {
           )}
 
           {activeTab === 'printers' && (
-            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border-2 border-orange-200 dark:border-orange-900 p-6">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border-2 border-blue-200 dark:border-blue-800 p-6">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Gerenciar Impressoras</h2>
                 <p className="text-slate-600 dark:text-slate-400">
