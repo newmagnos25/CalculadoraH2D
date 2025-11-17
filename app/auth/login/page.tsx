@@ -33,10 +33,19 @@ export default function LoginPage() {
       }
 
       console.log('Login realizado com sucesso:', data);
-      console.log('Redirecionando para calculadora...');
 
-      // Redirecionar com reload completo
-      window.location.href = '/calculator';
+      // Verificar se tem redirect ou tier salvo
+      const redirectTo = searchParams.get('redirect');
+      const savedTier = localStorage.getItem('checkout_tier_intent');
+
+      if (redirectTo) {
+        window.location.href = redirectTo;
+      } else if (savedTier) {
+        localStorage.removeItem('checkout_tier_intent');
+        window.location.href = `/checkout/${savedTier}`;
+      } else {
+        window.location.href = '/calculator';
+      }
     } catch (err: any) {
       console.error('Erro inesperado:', err);
       setError('Erro ao conectar. Tente novamente.');
@@ -124,5 +133,17 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex items-center justify-center">
+        <div className="text-white">Carregando...</div>
+      </main>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }

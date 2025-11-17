@@ -4,6 +4,7 @@ import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { TIER_CONFIGS, SubscriptionTier } from '@/lib/types/database';
+import { createClient } from '@/lib/supabase/client';
 
 interface CheckoutPageProps {
   params: Promise<{
@@ -19,15 +20,53 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const tierConfig = TIER_CONFIGS[tier];
 
+  // Check authentication FIRST
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      // Salvar tier desejado no localStorage para redirecionar após signup
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('checkout_tier_intent', tier);
+      }
+      // Redirecionar para signup
+      router.push(`/auth/signup?redirect=/checkout/${tier}`);
+      return;
+    }
+
+    setIsAuthenticated(true);
+    setIsCheckingAuth(false);
+  };
+
   // Redirect if invalid tier
   useEffect(() => {
-    if (!tierConfig) {
+    if (!tierConfig && !isCheckingAuth) {
       router.push('/pricing');
     }
-  }, [tierConfig, router]);
+  }, [tierConfig, router, isCheckingAuth]);
+
+  // Show loading while checking auth
+  if (isCheckingAuth || !isAuthenticated) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg font-semibold">Verificando autenticação...</p>
+          <p className="text-slate-400 text-sm mt-2">Você será redirecionado em instantes</p>
+        </div>
+      </main>
+    );
+  }
 
   if (!tierConfig) {
     return null;
