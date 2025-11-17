@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Calculator from '@/components/Calculator';
 import { createClient } from '@/lib/supabase/client';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 
 export default function Home() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { subscription, loading: subLoading } = useSubscription();
 
   useEffect(() => {
     checkAuth();
@@ -28,7 +30,7 @@ export default function Home() {
     setLoading(false);
   };
 
-  if (loading) {
+  if (loading || subLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex items-center justify-center">
         <div className="text-center">
@@ -41,6 +43,96 @@ export default function Home() {
 
   if (!isAuthenticated) {
     return null;
+  }
+
+  // Verificar se não tem plano ou plano free sem acesso
+  if (!subscription || (subscription.tier === 'free' && !subscription.allowed)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex items-center justify-center py-12 px-4">
+        <div className="max-w-2xl w-full">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 md:p-12 text-center shadow-2xl border-2 border-orange-500">
+            {/* Icon */}
+            <div className="mb-6 flex justify-center">
+              <div className="w-24 h-24 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center shadow-lg">
+                <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Title */}
+            <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4">
+              🔒 Acesso Restrito
+            </h1>
+
+            {/* Message */}
+            <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
+              {subscription?.tier === 'free' && subscription.current >= (subscription.max || 0) ? (
+                <>
+                  Você atingiu o limite de <strong>{subscription.max} orçamentos</strong> do plano FREE.
+                  <br />
+                  Faça upgrade para continuar usando!
+                </>
+              ) : (
+                <>
+                  Você precisa de um plano ativo para acessar a calculadora.
+                  <br />
+                  Escolha um plano e comece agora mesmo!
+                </>
+              )}
+            </p>
+
+            {/* Benefits */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6 mb-8 text-left border-2 border-blue-200 dark:border-blue-800">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4 text-center">
+                🎁 O Que Você Ganha:
+              </h2>
+              <ul className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</span>
+                  <span>Cálculos precisos de custos de impressão 3D</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</span>
+                  <span>PDFs profissionais para seus clientes</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</span>
+                  <span>Gestão completa de filamentos e custos</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</span>
+                  <span>Suporte prioritário</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <Link
+                href="/pricing"
+                className="block w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-4 px-6 rounded-lg transition-all shadow-lg text-center"
+              >
+                🚀 Ver Planos
+              </Link>
+              <Link
+                href="/settings"
+                className="block w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold py-4 px-6 rounded-lg transition-all text-center"
+              >
+                ⚙️ Configurações
+              </Link>
+            </div>
+
+            {/* Trial Info */}
+            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                💡 <strong>Dica:</strong> Experimente nosso plano de teste por apenas <strong>R$ 2,99</strong> e tenha 7 dias de acesso completo!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
