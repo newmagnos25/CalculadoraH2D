@@ -1,52 +1,53 @@
 import { EnergyTariff } from '@/lib/types';
 
-// Tarifas de energia elétrica no Brasil (2025)
-// Valores médios residenciais SEM impostos (ICMS, PIS/COFINS, etc)
-// Fonte: ANEEL e distribuidoras locais
+// Tarifas de energia elétrica no Brasil (Novembro 2024)
+// Valores médios residenciais COM tributos inclusos
+// Fonte: ANEEL - Ranking das Tarifas de Energia (Nov/2024)
+// Atualizado: 17/11/2024
 
 export const energyTariffs: EnergyTariff[] = [
-  // Região Norte
+  // Região Norte (valores atualizados Nov/2024)
   {
     state: 'PA',
     distributor: 'Equatorial Pará',
-    pricePerKwh: 0.938,
-    updated: '2025-01',
+    pricePerKwh: 0.95,
+    updated: '2024-11',
   },
   {
     state: 'AM',
     distributor: 'Amazonas Energia',
-    pricePerKwh: 0.86,
-    updated: '2025-01',
+    pricePerKwh: 0.89,
+    updated: '2024-11',
   },
   {
     state: 'RO',
     distributor: 'Energisa Rondônia',
-    pricePerKwh: 0.72,
-    updated: '2025-01',
+    pricePerKwh: 0.74,
+    updated: '2024-11',
   },
   {
     state: 'AC',
     distributor: 'Energisa Acre',
-    pricePerKwh: 0.75,
-    updated: '2025-01',
+    pricePerKwh: 0.77,
+    updated: '2024-11',
   },
   {
     state: 'RR',
     distributor: 'Boa Vista Energia',
-    pricePerKwh: 0.68,
-    updated: '2025-01',
+    pricePerKwh: 0.71,
+    updated: '2024-11',
   },
   {
     state: 'AP',
     distributor: 'CEA',
-    pricePerKwh: 0.71,
-    updated: '2025-01',
+    pricePerKwh: 0.73,
+    updated: '2024-11',
   },
   {
     state: 'TO',
     distributor: 'Energisa Tocantins',
-    pricePerKwh: 0.69,
-    updated: '2025-01',
+    pricePerKwh: 0.72,
+    updated: '2024-11',
   },
 
   // Região Nordeste

@@ -346,7 +346,7 @@ export const PDFContract: React.FC<PDFContractProps> = ({
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text>Contrato gerado via CalculadoraH2D PRO by BKreativeLab</Text>
+          <Text>Contrato gerado via Precifica3D PRO by BKreativeLab</Text>
           <Text>Este documento possui validade jurídica quando assinado por ambas as partes</Text>
         </View>
       </Page>

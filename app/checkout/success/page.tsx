@@ -35,7 +35,7 @@ function CheckoutSuccessContent() {
 
           {/* Message */}
           <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
-            Obrigado pela sua assinatura! Seu acesso ao <strong className="text-orange-600">CalculadoraH2D PRO</strong> foi ativado com sucesso.
+            Obrigado pela sua assinatura! Seu acesso ao <strong className="text-orange-600">Precifica3D PRO</strong> foi ativado com sucesso.
           </p>
 
           {/* Payment ID */}

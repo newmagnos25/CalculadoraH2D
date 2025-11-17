@@ -1,7 +1,48 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Calculator from '@/components/Calculator';
+import { createClient } from '@/lib/supabase/client';
 
 export default function Home() {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.push('/auth/login?redirect=/calculator');
+      return;
+    }
+
+    setIsAuthenticated(true);
+    setLoading(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg font-semibold">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-orange-50/30 dark:from-black dark:via-slate-950 dark:to-slate-900">
       {/* Header Premium - Preto com Laranja/Dourado */}
@@ -17,7 +58,7 @@ export default function Home() {
               <div>
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white">
-                    CalculadoraH2D
+                    Precifica3D
                   </h1>
                   <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full text-xs font-black border-2 border-amber-300 text-white shadow-lg">
                     PRO
@@ -105,7 +146,7 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">CalculadoraH2D</span>
+                <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">Precifica3D</span>
               </h3>
               <p className="text-sm text-slate-300">
                 Sistema profissional de precificação para impressão 3D com suporte completo para impressoras Bambu Lab.

@@ -3,6 +3,32 @@ import { getPrinterById, getFilamentById, getAddonById } from './storage';
 import { energyTariffs } from '@/data/energy-tariffs';
 
 /**
+ * Arredonda valor para múltiplo de 5 ou 10 de forma inteligente
+ *
+ * Exemplos:
+ * - 23.26 → 25.00
+ * - 72.11 → 70.00
+ * - 78.21 → 80.00
+ * - 47.80 → 50.00
+ * - 12.30 → 10.00
+ *
+ * Lógica:
+ * - Valores terminados em .x1 a .x4 → arredonda para baixo (múltiplo de 5)
+ * - Valores terminados em .x5 a .x9 → arredonda para cima (múltiplo de 5)
+ */
+export function smartRoundPrice(value: number): number {
+  // Se for menor que 5, retornar o valor arredondado para 2 casas
+  if (value < 5) {
+    return Math.round(value * 100) / 100;
+  }
+
+  // Arredondar para o múltiplo de 5 mais próximo
+  const rounded = Math.round(value / 5) * 5;
+
+  return rounded;
+}
+
+/**
  * Engine de cálculo de custos para impressão 3D
  *
  * Calcula todos os custos envolvidos em uma impressão:
@@ -76,8 +102,9 @@ export function calculatePrintCost(input: CalculationInput): CalculationResult {
   const profitMargin = input.profitMargin || 0;
   const profitValue = (totalCost * profitMargin) / 100;
 
-  // 11. Preço final
-  const finalPrice = totalCost + profitValue;
+  // 11. Preço final COM arredondamento inteligente
+  const rawFinalPrice = totalCost + profitValue;
+  const finalPrice = smartRoundPrice(rawFinalPrice);
 
   // 12. Calcular breakdown (composição do preço)
   const breakdown = [
