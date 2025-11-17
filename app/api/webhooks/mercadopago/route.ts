@@ -1,27 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
+  console.log('🚀 [WEBHOOK] Início do processamento');
 
-    console.log('🔔 Webhook Mercado Pago recebido:', JSON.stringify(body, null, 2));
+  try {
+    // Validar variáveis de ambiente PRIMEIRO
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const mercadoPagoToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+
+    console.log('🔍 [WEBHOOK] Verificando variáveis de ambiente:', {
+      hasSupabaseUrl: !!supabaseUrl,
+      hasSupabaseServiceKey: !!supabaseServiceKey,
+      hasMercadoPagoToken: !!mercadoPagoToken,
+    });
+
+    if (!supabaseUrl || !supabaseServiceKey || !mercadoPagoToken) {
+      console.error('❌ [WEBHOOK] Variáveis de ambiente faltando:', {
+        supabaseUrl: !!supabaseUrl,
+        supabaseServiceKey: !!supabaseServiceKey,
+        mercadoPagoToken: !!mercadoPagoToken,
+      });
+      return NextResponse.json({
+        error: 'Configuração incompleta',
+        missing: {
+          supabaseUrl: !supabaseUrl,
+          supabaseServiceKey: !supabaseServiceKey,
+          mercadoPagoToken: !mercadoPagoToken,
+        }
+      }, { status: 500 });
+    }
+
+    const body = await request.json();
+    console.log('🔔 [WEBHOOK] Webhook Mercado Pago recebido:', JSON.stringify(body, null, 2));
 
     // Mercado Pago envia notificações de pagamento
     if (body.type === 'payment') {
       const paymentId = body.data.id;
+      console.log('💳 [WEBHOOK] Processando pagamento ID:', paymentId);
 
       // Buscar detalhes do pagamento
-      const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
-
+      console.log('🔄 [WEBHOOK] Buscando detalhes do pagamento no Mercado Pago...');
       const paymentResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
+          'Authorization': `Bearer ${mercadoPagoToken}`,
         },
       });
+
+      console.log('📡 [WEBHOOK] Resposta do Mercado Pago:', paymentResponse.status, paymentResponse.statusText);
 
       if (!paymentResponse.ok) {
         console.error('Erro ao buscar detalhes do pagamento');
@@ -62,9 +89,11 @@ export async function POST(request: NextRequest) {
         }
 
         // Usar service role key para acessar o Supabase sem autenticação
+        console.log('🔐 [WEBHOOK] Criando cliente Supabase...');
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
         // Verificar se o usuário existe (validação de segurança)
+        console.log('👤 [WEBHOOK] Verificando usuário:', userId);
         const { data: existingUser, error: userError } = await supabase.auth.admin.getUserById(userId);
 
         if (userError || !existingUser) {
@@ -97,23 +126,27 @@ export async function POST(request: NextRequest) {
         }
 
         // Atualizar ou criar assinatura
+        console.log('💾 [WEBHOOK] Atualizando assinatura no banco de dados...');
+        const subscriptionData = {
+          user_id: userId,
+          tier,
+          status: 'active',
+          billing_cycle: billingCycle,
+          current_period_start: now.toISOString(),
+          current_period_end: periodEnd.toISOString(),
+          mercadopago_payment_id: payment.id.toString(),
+        };
+        console.log('📝 [WEBHOOK] Dados da assinatura:', subscriptionData);
+
         const { error: subError } = await supabase
           .from('subscriptions')
-          .upsert({
-            user_id: userId,
-            tier,
-            status: 'active',
-            billing_cycle: billingCycle,
-            current_period_start: now.toISOString(),
-            current_period_end: periodEnd.toISOString(),
-            mercadopago_payment_id: payment.id.toString(),
-          }, {
+          .upsert(subscriptionData, {
             onConflict: 'user_id',
           });
 
         if (subError) {
-          console.error('Erro ao atualizar assinatura:', subError);
-          return NextResponse.json({ error: 'Erro ao ativar assinatura' }, { status: 500 });
+          console.error('❌ [WEBHOOK] Erro ao atualizar assinatura:', subError);
+          return NextResponse.json({ error: 'Erro ao ativar assinatura', details: subError.message }, { status: 500 });
         }
 
         console.log('✅ Assinatura ativada com sucesso:', {
