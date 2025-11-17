@@ -41,35 +41,51 @@ export async function POST(request: NextRequest) {
       if (payment.status === 'approved') {
         const tier = payment.metadata?.tier;
         const billingCycle = payment.metadata?.billing_cycle;
-        const payerEmail = payment.payer?.email;
+        const userId = payment.metadata?.user_id; // ← NOVO: Pega user_id dos metadados
+        const userEmail = payment.metadata?.user_email || payment.payer?.email; // ← Backup
 
-        if (!tier || !payerEmail) {
-          console.error('Metadados incompletos no pagamento');
+        console.log('📦 Metadados recebidos:', {
+          tier,
+          billingCycle,
+          userId,
+          userEmail,
+        });
+
+        if (!tier || !userId) {
+          console.error('❌ Metadados incompletos no pagamento:', {
+            tier,
+            userId,
+            has_user_id: !!userId,
+            metadata: payment.metadata,
+          });
           return NextResponse.json({ error: 'Metadados incompletos' }, { status: 400 });
         }
 
         // Usar service role key para acessar o Supabase sem autenticação
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-        // Buscar usuário pelo email
-        const { data: users, error: userError } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('email', payerEmail)
-          .limit(1);
+        // Verificar se o usuário existe (validação de segurança)
+        const { data: existingUser, error: userError } = await supabase.auth.admin.getUserById(userId);
 
-        if (userError || !users || users.length === 0) {
-          console.error('Usuário não encontrado:', payerEmail);
+        if (userError || !existingUser) {
+          console.error('❌ Usuário não encontrado no Auth:', userId, userError);
           return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
         }
 
-        const userId = users[0].id;
+        console.log('✅ Usuário encontrado:', {
+          id: existingUser.user.id,
+          email: existingUser.user.email,
+        });
 
         // Calcular data de expiração
         const now = new Date();
         let periodEnd: Date;
 
-        if (billingCycle === 'lifetime') {
+        if (tier === 'test') {
+          // Plano teste: 7 dias
+          periodEnd = new Date(now);
+          periodEnd.setDate(periodEnd.getDate() + 7);
+        } else if (billingCycle === 'lifetime') {
           // Lifetime: 100 anos no futuro (praticamente vitalício)
           periodEnd = new Date(now.getFullYear() + 100, now.getMonth(), now.getDate());
         } else if (billingCycle === 'yearly') {
