@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TIER_CONFIGS, SubscriptionTier } from '@/lib/types/database';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
   try {
+    // Verificar autenticação PRIMEIRO
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      console.error('Usuário não autenticado:', authError);
+      return NextResponse.json(
+        { error: 'Você precisa estar logado para fazer checkout' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { tier, billing_cycle } = body as {
       tier: SubscriptionTier;
@@ -71,7 +84,7 @@ export async function POST(request: NextRequest) {
         },
       ],
       payer: {
-        email: 'test@test.com', // Email padrão para forçar guest checkout
+        email: user.email || 'noreply@precifica3d.com', // Email real do usuário
       },
       back_urls: {
         success: `${appUrl}/checkout/success`,
@@ -83,6 +96,8 @@ export async function POST(request: NextRequest) {
       metadata: {
         tier,
         billing_cycle: tier === 'lifetime' ? 'lifetime' : billing_cycle,
+        user_id: user.id, // ← CRÍTICO: Envia user_id para o webhook conseguir ativar
+        user_email: user.email, // ← Backup: email do usuário para logs
       },
       binary_mode: false,
       payment_methods: {
