@@ -88,19 +88,27 @@ export function calculatePrintCost(input: CalculationInput): CalculationResult {
     postProcessingCost = input.postProcessing.reduce((sum, pp) => sum + pp.cost, 0);
   }
 
-  // 9. Custo total (sem lucro)
+  // 9. Custo total (sem lucro) - arredondar cada componente
+  const roundedFilamentCost = Math.round(filamentCost * 100) / 100;
+  const roundedEnergyCost = Math.round(energyCost * 100) / 100;
+  const roundedLaborCost = Math.round(laborCost * 100) / 100;
+  const roundedDepreciation = Math.round(depreciation * 100) / 100;
+  const roundedFixedCosts = Math.round(fixedCosts * 100) / 100;
+  const roundedAddonsCost = Math.round(addonsCost * 100) / 100;
+  const roundedPostProcessingCost = Math.round(postProcessingCost * 100) / 100;
+
   const totalCost =
-    filamentCost +
-    energyCost +
-    laborCost +
-    depreciation +
-    fixedCosts +
-    addonsCost +
-    postProcessingCost;
+    roundedFilamentCost +
+    roundedEnergyCost +
+    roundedLaborCost +
+    roundedDepreciation +
+    roundedFixedCosts +
+    roundedAddonsCost +
+    roundedPostProcessingCost;
 
   // 10. Calcular margem de lucro
   const profitMargin = input.profitMargin || 0;
-  const profitValue = (totalCost * profitMargin) / 100;
+  const profitValue = Math.round((totalCost * profitMargin) / 100 * 100) / 100;
 
   // 11. Preço final COM arredondamento inteligente
   const rawFinalPrice = totalCost + profitValue;
@@ -110,66 +118,66 @@ export function calculatePrintCost(input: CalculationInput): CalculationResult {
   const breakdown = [
     {
       item: 'Filamento',
-      value: filamentCost,
-      percentage: (filamentCost / totalCost) * 100,
+      value: roundedFilamentCost,
+      percentage: (roundedFilamentCost / totalCost) * 100,
     },
     {
       item: 'Energia',
-      value: energyCost,
-      percentage: (energyCost / totalCost) * 100,
+      value: roundedEnergyCost,
+      percentage: (roundedEnergyCost / totalCost) * 100,
     },
   ];
 
-  if (laborCost > 0) {
+  if (roundedLaborCost > 0) {
     breakdown.push({
       item: 'Mão de obra',
-      value: laborCost,
-      percentage: (laborCost / totalCost) * 100,
+      value: roundedLaborCost,
+      percentage: (roundedLaborCost / totalCost) * 100,
     });
   }
 
-  if (depreciation > 0) {
+  if (roundedDepreciation > 0) {
     breakdown.push({
       item: 'Depreciação',
-      value: depreciation,
-      percentage: (depreciation / totalCost) * 100,
+      value: roundedDepreciation,
+      percentage: (roundedDepreciation / totalCost) * 100,
     });
   }
 
-  if (fixedCosts > 0) {
+  if (roundedFixedCosts > 0) {
     breakdown.push({
       item: 'Custos fixos',
-      value: fixedCosts,
-      percentage: (fixedCosts / totalCost) * 100,
+      value: roundedFixedCosts,
+      percentage: (roundedFixedCosts / totalCost) * 100,
     });
   }
 
-  if (addonsCost > 0) {
+  if (roundedAddonsCost > 0) {
     breakdown.push({
       item: 'Adereços',
-      value: addonsCost,
-      percentage: (addonsCost / totalCost) * 100,
+      value: roundedAddonsCost,
+      percentage: (roundedAddonsCost / totalCost) * 100,
     });
   }
 
-  if (postProcessingCost > 0) {
+  if (roundedPostProcessingCost > 0) {
     breakdown.push({
       item: 'Pós-processamento',
-      value: postProcessingCost,
-      percentage: (postProcessingCost / totalCost) * 100,
+      value: roundedPostProcessingCost,
+      percentage: (roundedPostProcessingCost / totalCost) * 100,
     });
   }
 
   return {
     costs: {
-      filament: filamentCost,
-      energy: energyCost,
-      labor: laborCost,
-      depreciation,
-      fixedCosts,
-      addons: addonsCost,
-      postProcessing: postProcessingCost,
-      total: totalCost,
+      filament: roundedFilamentCost,
+      energy: roundedEnergyCost,
+      labor: roundedLaborCost,
+      depreciation: roundedDepreciation,
+      fixedCosts: roundedFixedCosts,
+      addons: roundedAddonsCost,
+      postProcessing: roundedPostProcessingCost,
+      total: Math.round(totalCost * 100) / 100,
     },
     profitMargin,
     profitValue,
