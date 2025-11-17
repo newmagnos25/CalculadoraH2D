@@ -134,7 +134,7 @@ export default function Home() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <Calculator />
+        <Calculator isAuthenticated={true} />
 
         {/* Footer Premium - Preto com Laranja/Dourado */}
         <footer className="mt-16 pt-12 pb-8 bg-gradient-to-r from-black via-slate-900 to-black border-t-4 border-orange-500 rounded-t-2xl">

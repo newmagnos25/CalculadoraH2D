@@ -33,13 +33,19 @@ export default function PricingPage() {
       {/* Pricing Cards */}
       <div className="container mx-auto px-4 py-16">
         {/* Trial Banner */}
-        <div className="max-w-4xl mx-auto mb-12 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-8 text-center shadow-2xl">
+        <div className="max-w-4xl mx-auto mb-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-8 text-center shadow-2xl">
           <h2 className="text-3xl font-black text-white mb-3">
-            🎉 Teste Grátis por 7 Dias
+            🎉 Teste Agora por Apenas R$ 2,99
           </h2>
-          <p className="text-xl text-white/90">
-            Experimente o plano Professional sem compromisso. Cancele quando quiser.
+          <p className="text-xl text-white/90 mb-4">
+            7 dias de acesso completo ao plano Professional. Sem compromisso!
           </p>
+          <Link
+            href="/checkout/test"
+            className="inline-block px-8 py-3 bg-white text-green-600 font-black rounded-lg hover:bg-gray-100 transition-all shadow-lg text-lg"
+          >
+            Começar Teste por R$ 2,99
+          </Link>
         </div>
 
         {/* Plans Grid */}

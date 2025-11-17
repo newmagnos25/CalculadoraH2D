@@ -19,7 +19,11 @@ interface FilamentUsage {
   color?: string;
 }
 
-export default function Calculator() {
+interface CalculatorProps {
+  isAuthenticated?: boolean;
+}
+
+export default function Calculator({ isAuthenticated = false }: CalculatorProps) {
   // Filamentos, adereços e impressoras (padrão + customizados)
   const [allPrinters, setAllPrinters] = useState(getAllPrinters());
   const [allFilaments, setAllFilaments] = useState(filaments);
@@ -644,17 +648,53 @@ export default function Calculator() {
 
         {result ? (
           <div className="space-y-4">
+            {/* Aviso: Não autenticado */}
+            {!isAuthenticated && (
+              <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-2 border-orange-500 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0">
+                    <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-orange-900 dark:text-orange-200 mb-1">
+                      🔒 Cálculo Limitado - Faça Login
+                    </h3>
+                    <p className="text-sm text-orange-800 dark:text-orange-300 mb-3">
+                      Você está vendo apenas o custo base. Para calcular o preço final com sua margem de lucro, salvar orçamentos e gerar PDFs profissionais:
+                    </p>
+                    <div className="flex gap-2">
+                      <a href="/auth/login" className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-sm transition-all">
+                        Fazer Login
+                      </a>
+                      <a href="/auth/signup" className="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-orange-600 dark:text-orange-400 font-bold rounded-lg text-sm transition-all border-2 border-orange-600">
+                        Criar Conta Grátis
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Preço Final Destaque */}
             <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-green-900/20 dark:via-emerald-900/20 dark:to-teal-900/20 border-2 border-green-300 dark:border-green-700 rounded-xl p-6 text-center shadow-lg shadow-green-200/50 dark:shadow-green-900/20">
               <div className="text-sm font-semibold text-green-700 dark:text-green-300 mb-1 uppercase tracking-wide">
-                Valor Total a Cobrar
+                {isAuthenticated ? 'Valor Total a Cobrar' : 'Custo Base (sem margem)'}
               </div>
               <div className="text-5xl font-black bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent drop-shadow-sm">
-                {formatCurrency(result.finalPrice)}
+                {isAuthenticated ? formatCurrency(result.finalPrice) : formatCurrency(result.costs.total)}
               </div>
-              <div className="mt-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
-                Inclui margem de {result.profitMargin}% de lucro
-              </div>
+              {isAuthenticated && (
+                <div className="mt-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
+                  Inclui margem de {result.profitMargin}% de lucro
+                </div>
+              )}
+              {!isAuthenticated && (
+                <div className="mt-2 text-xs text-orange-600 dark:text-orange-400 font-medium">
+                  ⚠️ Faça login para adicionar margem de lucro
+                </div>
+              )}
             </div>
 
             {/* Breakdown de Custos */}

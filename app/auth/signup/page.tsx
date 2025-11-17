@@ -52,7 +52,16 @@ export default function SignupPage() {
 
       if (error) {
         console.error('Erro ao criar conta:', error);
-        setError(error.message || 'Erro ao criar conta. Tente novamente.');
+
+        // Tratar erro de email duplicado
+        if (error.message.includes('already registered') || error.message.includes('already exists')) {
+          setError('Este email já está cadastrado. Faça login ou use outro email.');
+        } else if (error.message.includes('invalid email')) {
+          setError('Email inválido. Verifique e tente novamente.');
+        } else {
+          setError(error.message || 'Erro ao criar conta. Tente novamente.');
+        }
+
         setLoading(false);
         return;
       }
