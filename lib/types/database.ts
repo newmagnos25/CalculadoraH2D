@@ -2,7 +2,7 @@
  * Database Types - Supabase Schema
  */
 
-export type SubscriptionTier = 'starter' | 'professional' | 'enterprise' | 'lifetime';
+export type SubscriptionTier = 'test' | 'starter' | 'professional' | 'enterprise' | 'lifetime';
 export type SubscriptionStatus = 'active' | 'canceled' | 'past_due' | 'trialing' | 'expired';
 export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded';
 
@@ -108,6 +108,24 @@ export interface TierConfig {
 }
 
 export const TIER_CONFIGS: Record<SubscriptionTier, TierConfig> = {
+  test: {
+    name: 'Teste 7 Dias',
+    tier: 'test',
+    price_monthly: 2.99,
+    price_yearly: 2.99, // pagamento único por 7 dias
+    max_quotes: 10, // limite durante o teste
+    max_clients: 5,
+    max_companies: 1,
+    features: {
+      pdf_generation: true,
+      quote_history: true,
+      dashboard: true,
+      data_export: false,
+      white_label: false,
+      priority_support: false,
+      api_access: false,
+    },
+  },
   starter: {
     name: 'Starter',
     tier: 'starter',

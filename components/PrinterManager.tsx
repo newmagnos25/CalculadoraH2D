@@ -241,14 +241,14 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
               <div className="flex gap-2">
                 <button
                   type="submit"
-                  className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-2 px-4 rounded-md text-sm transition-all shadow-lg"
+                  className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-2 px-4 rounded-md text-sm transition-all shadow-lg"
                 >
                   {editingId ? 'Atualizar Impressora' : 'Salvar Impressora'}
                 </button>
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-4 py-2 text-sm text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-md font-semibold"
+                  className="px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-md font-semibold"
                 >
                   Cancelar
                 </button>
@@ -258,7 +258,7 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
         ) : (
           <button
             onClick={() => setIsAddingNew(true)}
-            className="w-full py-3 px-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-lg transition-all shadow-lg flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold rounded-lg transition-all shadow-lg flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -273,7 +273,7 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
             <h3 className="font-bold text-slate-900 dark:text-white mb-3">Minhas Impressoras</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {customPrinters.map(printer => (
-                <div key={printer.id} className="bg-white dark:bg-slate-800 border-2 border-orange-200 dark:border-orange-900 rounded-lg p-3">
+                <div key={printer.id} className="bg-white dark:bg-slate-800 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-3">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
                       <h4 className="font-bold text-slate-900 dark:text-white">{printer.name}</h4>

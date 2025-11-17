@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -52,7 +53,16 @@ export default function SignupPage() {
 
       if (error) {
         console.error('Erro ao criar conta:', error);
-        setError(error.message || 'Erro ao criar conta. Tente novamente.');
+
+        // Tratar erro de email duplicado
+        if (error.message.includes('already registered') || error.message.includes('already exists')) {
+          setError('Este email já está cadastrado. Faça login ou use outro email.');
+        } else if (error.message.includes('invalid email')) {
+          setError('Email inválido. Verifique e tente novamente.');
+        } else {
+          setError(error.message || 'Erro ao criar conta. Tente novamente.');
+        }
+
         setLoading(false);
         return;
       }
@@ -66,9 +76,24 @@ export default function SignupPage() {
         return;
       }
 
-      // Se tudo deu certo, redirecionar com reload completo
-      console.log('Redirecionando para calculadora...');
-      window.location.href = '/calculator';
+      // Se tudo deu certo, redirecionar
+      console.log('Conta criada com sucesso!');
+
+      // Verificar se tem redirect query param ou tier salvo
+      const redirectTo = searchParams.get('redirect');
+      const savedTier = localStorage.getItem('checkout_tier_intent');
+
+      if (redirectTo) {
+        // Redirecionar para onde estava tentando ir
+        window.location.href = redirectTo;
+      } else if (savedTier) {
+        // Redirecionar para checkout do tier salvo
+        localStorage.removeItem('checkout_tier_intent');
+        window.location.href = `/checkout/${savedTier}`;
+      } else {
+        // Redirecionar para calculadora
+        window.location.href = '/calculator';
+      }
     } catch (err: any) {
       console.error('Erro inesperado:', err);
       setError(`Erro ao conectar: ${err.message || 'Verifique sua conexão com a internet'}`);
@@ -192,5 +217,17 @@ export default function SignupPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex items-center justify-center">
+        <div className="text-white">Carregando...</div>
+      </main>
+    }>
+      <SignupForm />
+    </Suspense>
   );
 }
