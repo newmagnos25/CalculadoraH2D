@@ -18,6 +18,7 @@ interface PDFActionsProps {
     itemDescription?: string;
     quantity?: number;
     dimensions?: string;
+    productImage?: string;
     printer: string;
     filaments: string;
     filamentColors?: { name: string; color: string; weight: number }[];
