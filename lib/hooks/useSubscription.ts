@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 export interface SubscriptionData {
-  tier: 'free' | 'starter' | 'professional' | 'enterprise' | 'lifetime';
+  tier: 'free' | 'test' | 'starter' | 'professional' | 'enterprise' | 'lifetime';
   status: 'active' | 'cancelled' | 'expired' | 'trialing';
   current: number;
   max: number | null;
