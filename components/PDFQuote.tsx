@@ -236,6 +236,7 @@ interface PDFQuoteProps {
     itemDescription?: string;
     quantity?: number;
     dimensions?: string;
+    productImage?: string;
     printer: string;
     filaments: string;
     filamentColors?: { name: string; color: string; weight: number }[];
@@ -381,7 +382,7 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
             utilizando equipamentos de alta precisão e materiais de qualidade premium.
           </Text>
 
-          {/* Descrição do Item */}
+          {/* Descrição do Item + Imagem */}
           {printDetails.itemDescription && (
             <View style={{ marginTop: 12, paddingTop: 12, borderTop: '1 solid #FDBA74' }}>
               <Text style={[styles.label, { marginBottom: 4, fontSize: 8, fontWeight: 'bold' }]}>
@@ -391,17 +392,32 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
                 {printDetails.itemDescription}
               </Text>
 
-              <View style={styles.specGrid}>
-                {printDetails.quantity && printDetails.quantity > 1 && (
-                  <View style={styles.specItem}>
-                    <Text style={styles.specLabel}>Quantidade:</Text>
-                    <Text style={styles.specValue}>{printDetails.quantity} unidades</Text>
+              <View style={{ flexDirection: 'row', gap: 12 }}>
+                {/* Informações */}
+                <View style={{ flex: 1 }}>
+                  <View style={styles.specGrid}>
+                    {printDetails.quantity && printDetails.quantity > 1 && (
+                      <View style={styles.specItem}>
+                        <Text style={styles.specLabel}>Quantidade:</Text>
+                        <Text style={styles.specValue}>{printDetails.quantity} unidades</Text>
+                      </View>
+                    )}
+                    {printDetails.dimensions && (
+                      <View style={styles.specItem}>
+                        <Text style={styles.specLabel}>Dimensões:</Text>
+                        <Text style={styles.specValue}>{printDetails.dimensions}</Text>
+                      </View>
+                    )}
                   </View>
-                )}
-                {printDetails.dimensions && (
-                  <View style={styles.specItem}>
-                    <Text style={styles.specLabel}>Dimensões:</Text>
-                    <Text style={styles.specValue}>{printDetails.dimensions}</Text>
+                </View>
+
+                {/* Imagem do Produto */}
+                {printDetails.productImage && (
+                  <View style={{ width: 80, height: 80 }}>
+                    <Image
+                      src={printDetails.productImage}
+                      style={{ width: '100%', height: '100%', objectFit: 'contain', border: '1 solid #FDBA74', borderRadius: 4 }}
+                    />
                   </View>
                 )}
               </View>
@@ -420,19 +436,8 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
                 <Text style={styles.specValue}>{printDetails.printer}</Text>
               </View>
               <View style={styles.specItem}>
-                <Text style={styles.specLabel}>Tempo de Produção:</Text>
-                <Text style={styles.specValue}>{formatTime(printDetails.printTime)}</Text>
-              </View>
-            </View>
-
-            <View style={[styles.specGrid, { marginTop: 6 }]}>
-              <View style={styles.specItem}>
                 <Text style={styles.specLabel}>Material Utilizado:</Text>
                 <Text style={styles.specValue}>{printDetails.filaments}</Text>
-              </View>
-              <View style={styles.specItem}>
-                <Text style={styles.specLabel}>Peso do Material:</Text>
-                <Text style={styles.specValue}>{printDetails.weight}g</Text>
               </View>
             </View>
 
@@ -444,7 +449,7 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
                   {printDetails.filamentColors.map((fil, idx) => (
                     <View key={idx} style={styles.colorItem}>
                       <View style={[styles.colorBox, { backgroundColor: fil.color }]} />
-                      <Text style={styles.colorText}>{fil.weight}g</Text>
+                      <Text style={styles.colorText}>{fil.name}</Text>
                     </View>
                   ))}
                 </View>
