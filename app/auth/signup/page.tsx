@@ -12,15 +12,17 @@ function SignupForm() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [messageType, setMessageType] = useState<'error' | 'warning' | 'success'>('error');
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setMessage(null);
 
     if (password.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres');
+      setMessage('A senha deve ter pelo menos 6 caracteres');
+      setMessageType('error');
       setLoading(false);
       return;
     }
@@ -33,12 +35,16 @@ function SignupForm() {
       const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
       if (!supabaseUrl || !supabaseKey) {
-        setError('Erro de configuração: Supabase não configurado corretamente');
+        setMessage('Erro de configuração: Supabase não configurado corretamente');
+        setMessageType('error');
         setLoading(false);
         return;
       }
 
       console.log('Tentando criar conta para:', email);
+
+      // Usar NEXT_PUBLIC_APP_URL se disponível, senão usar window.location.origin
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -47,7 +53,7 @@ function SignupForm() {
           data: {
             full_name: fullName,
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${appUrl}/auth/callback`,
         },
       });
 
@@ -56,11 +62,14 @@ function SignupForm() {
 
         // Tratar erro de email duplicado
         if (error.message.includes('already registered') || error.message.includes('already exists')) {
-          setError('Este email já está cadastrado. Faça login ou use outro email.');
+          setMessage('Este email já está cadastrado. Faça login ou use outro email.');
+          setMessageType('error');
         } else if (error.message.includes('invalid email')) {
-          setError('Email inválido. Verifique e tente novamente.');
+          setMessage('Email inválido. Verifique e tente novamente.');
+          setMessageType('error');
         } else {
-          setError(error.message || 'Erro ao criar conta. Tente novamente.');
+          setMessage(error.message || 'Erro ao criar conta. Tente novamente.');
+          setMessageType('error');
         }
 
         setLoading(false);
@@ -71,7 +80,8 @@ function SignupForm() {
 
       // Verificar se precisa de confirmação de email
       if (data.user && !data.session) {
-        setError('Verifique seu email para confirmar a conta antes de fazer login.');
+        setMessage('Verifique seu email para confirmar a conta antes de fazer login.');
+        setMessageType('warning');
         setLoading(false);
         return;
       }
@@ -96,7 +106,8 @@ function SignupForm() {
       }
     } catch (err: any) {
       console.error('Erro inesperado:', err);
-      setError(`Erro ao conectar: ${err.message || 'Verifique sua conexão com a internet'}`);
+      setMessage(`Erro ao conectar: ${err.message || 'Verifique sua conexão com a internet'}`);
+      setMessageType('error');
       setLoading(false);
     }
   };
@@ -118,10 +129,22 @@ function SignupForm() {
             Criar Conta
           </h2>
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg">
-              <p className="text-sm text-red-800 dark:text-red-200">
-                ❌ {error}
+          {message && (
+            <div className={`mb-6 p-4 border-2 rounded-lg ${
+              messageType === 'success'
+                ? 'bg-green-50 dark:bg-green-900/20 border-green-500'
+                : messageType === 'warning'
+                ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
+                : 'bg-red-50 dark:bg-red-900/20 border-red-500'
+            }`}>
+              <p className={`text-sm font-semibold ${
+                messageType === 'success'
+                  ? 'text-green-800 dark:text-green-200'
+                  : messageType === 'warning'
+                  ? 'text-yellow-800 dark:text-yellow-200'
+                  : 'text-red-800 dark:text-red-200'
+              }`}>
+                {messageType === 'success' ? '✅' : messageType === 'warning' ? '⚠️' : '❌'} {message}
               </p>
             </div>
           )}
