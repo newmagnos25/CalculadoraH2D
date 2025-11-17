@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
 /**
  * Endpoint ADMIN para confirmar email manualmente
  *
@@ -15,6 +12,20 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
  */
 export async function POST(request: NextRequest) {
   try {
+    // Verificar variáveis de ambiente
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      return NextResponse.json(
+        {
+          error: 'Configuração do servidor incompleta',
+          details: 'SUPABASE_SERVICE_ROLE_KEY não configurada no Vercel'
+        },
+        { status: 500 }
+      );
+    }
+
     // 🔒 SEGURANÇA: Verificar senha admin
     const authHeader = request.headers.get('authorization');
     const adminSecret = process.env.ADMIN_SECRET || 'admin-secret-2024';
