@@ -322,7 +322,7 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
             🛡️ Garantia de 30 Dias
           </h3>
           <p className="text-white/90 max-w-2xl mx-auto">
-            Se você não estiver satisfeito com o CalculadoraH2D PRO, devolvemos 100% do seu dinheiro.
+            Se você não estiver satisfeito com o Precifica3D PRO, devolvemos 100% do seu dinheiro.
             Sem perguntas, sem complicação.
           </p>
         </div>

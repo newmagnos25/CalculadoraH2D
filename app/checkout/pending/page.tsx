@@ -99,7 +99,7 @@ function CheckoutPendingContent() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
-                <span>Seu acesso ao CalculadoraH2D PRO será ativado automaticamente</span>
+                <span>Seu acesso ao Precifica3D PRO será ativado automaticamente</span>
               </li>
             </ol>
           </div>

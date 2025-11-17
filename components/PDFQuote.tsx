@@ -454,7 +454,7 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
           <Text>
             © {new Date().getFullYear()} {company.tradeName || company.name} - Orçamento gerado em {formatDate(date)}
           </Text>
-          <Text style={{ marginTop: 2 }}>CalculadoraH2D PRO by BKreativeLab</Text>
+          <Text style={{ marginTop: 2 }}>Precifica3D PRO by BKreativeLab</Text>
         </View>
       </Page>
     </Document>

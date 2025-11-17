@@ -118,6 +118,18 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
   };
 
   const handleGenerateContract = async () => {
+    // Verificar limite primeiro (contratos também contam como documentos)
+    if (!subscription) {
+      showMessage('error', 'Carregando informações da assinatura...');
+      return;
+    }
+
+    if (!subscription.allowed) {
+      // Redirecionar para upgrade
+      router.push('/upgrade');
+      return;
+    }
+
     const company = getCompanySettings();
     if (!company || !company.name) {
       showMessage('error', 'Configure os dados da empresa primeiro em Configurações');
@@ -151,7 +163,26 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
       });
 
       if (success) {
+        // Salvar no Supabase também para contar no limite
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+          await supabase.from('quotes').insert({
+            user_id: user.id,
+            quote_data: {
+              calculation,
+              printDetails,
+              contractNumber,
+              date,
+              client: { name: client.name, email: client.email },
+              type: 'contract',
+            },
+          });
+        }
+
         incrementInvoiceCounter();
+        refreshSubscription(); // Atualizar contador
         showMessage('success', `Contrato ${contractNumber} gerado com sucesso!`);
       } else {
         showMessage('error', 'Erro ao gerar contrato. Tente novamente.');

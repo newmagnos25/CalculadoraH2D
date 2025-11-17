@@ -10,10 +10,10 @@ export default function LandingPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center border-2 border-amber-300 shadow-lg">
-                <span className="text-white font-black text-2xl">H2D</span>
+                <span className="text-white font-black text-2xl">P3D</span>
               </div>
               <div>
-                <h1 className="text-xl font-black text-white">CalculadoraH2D</h1>
+                <h1 className="text-xl font-black text-white">Precifica3D</h1>
                 <p className="text-orange-400 text-xs font-bold">PRO</p>
               </div>
             </div>
@@ -113,9 +113,9 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-6">
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-black text-xl">H2D</span>
+              <span className="text-white font-black text-xl">P3D</span>
             </div>
-            <span className="text-xl font-black text-white">CalculadoraH2D PRO</span>
+            <span className="text-xl font-black text-white">Precifica3D PRO</span>
           </div>
           <p className="text-slate-400 text-sm mb-4">
             A ferramenta profissional para calcular orçamentos de impressão 3D

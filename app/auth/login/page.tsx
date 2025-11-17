@@ -49,7 +49,7 @@ export default function LoginPage() {
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-black text-white mb-2">
-            CalculadoraH2D PRO
+            Precifica3D PRO
           </h1>
           <p className="text-slate-400">
             Faça login para continuar
