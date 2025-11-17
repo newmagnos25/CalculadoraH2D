@@ -63,14 +63,9 @@ function CheckoutPendingContent() {
                 <span className="text-2xl">⚡</span>
                 <div>
                   <p className="font-semibold">PIX</p>
-                  <p className="text-xs">Aprovação em até 1 hora após o pagamento</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-2xl">📄</span>
-                <div>
-                  <p className="font-semibold">Boleto Bancário</p>
-                  <p className="text-xs">Aprovação em até 2 dias úteis após o pagamento</p>
+                  <p className="text-xs">
+                    <strong className="text-green-600 dark:text-green-400">Geralmente instantâneo!</strong> Aprovação em até 10 minutos após o pagamento
+                  </p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
@@ -78,6 +73,13 @@ function CheckoutPendingContent() {
                 <div>
                   <p className="font-semibold">Cartão de Crédito</p>
                   <p className="text-xs">Geralmente aprovado em minutos, mas pode levar até 24h</p>
+                </div>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-2xl">📄</span>
+                <div>
+                  <p className="font-semibold">Boleto Bancário</p>
+                  <p className="text-xs">Aprovação em até 2 dias úteis após o pagamento</p>
                 </div>
               </li>
             </ul>
@@ -91,30 +93,40 @@ function CheckoutPendingContent() {
             <ol className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                <span>Aguarde a confirmação do pagamento pela instituição financeira</span>
+                <span>O Mercado Pago está processando seu pagamento</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                <span>Você receberá um email de confirmação assim que for aprovado</span>
+                <span>Assim que aprovado, seu plano é <strong>ativado automaticamente</strong></span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
-                <span>Seu acesso ao Precifica3D PRO será ativado automaticamente</span>
+                <span>Você pode clicar em "Verificar Status" abaixo para atualizar</span>
               </li>
             </ol>
           </div>
 
           {/* Action Buttons */}
           <div className="grid md:grid-cols-2 gap-4">
+            <button
+              onClick={() => window.location.reload()}
+              className="block w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-4 px-6 rounded-lg transition-all shadow-lg text-center"
+            >
+              🔄 Verificar Status Agora
+            </button>
             <Link
               href="/calculator"
               className="block w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-4 px-6 rounded-lg transition-all shadow-lg text-center"
             >
               Ir para Calculadora
             </Link>
+          </div>
+
+          {/* Help Button */}
+          <div className="mt-4">
             <a
               href="mailto:suporte@calculadorah2d.com"
-              className="block w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold py-4 px-6 rounded-lg transition-all text-center"
+              className="block w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold py-3 px-6 rounded-lg transition-all text-center text-sm"
             >
               Preciso de Ajuda
             </a>
