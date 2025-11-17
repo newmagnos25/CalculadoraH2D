@@ -195,14 +195,80 @@ function CheckoutPendingContent() {
             </Link>
           </div>
 
-          {/* Help Button */}
-          <div className="mt-4">
-            <a
-              href="mailto:suporte@calculadorah2d.com"
-              className="block w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold py-3 px-6 rounded-lg transition-all text-center text-sm"
-            >
-              Preciso de Ajuda
-            </a>
+          {/* FAQ/Help Section */}
+          <div className="mt-8 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-6 border-2 border-purple-200 dark:border-purple-800">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+              <span>❓</span> Perguntas Frequentes
+            </h2>
+
+            <div className="space-y-4 text-sm">
+              <details className="group">
+                <summary className="font-semibold text-slate-900 dark:text-white cursor-pointer hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                  💳 Paguei, mas meu plano não foi ativado. O que fazer?
+                </summary>
+                <div className="mt-2 pl-4 text-slate-700 dark:text-slate-300 space-y-2">
+                  <p><strong>PIX:</strong> Normalmente é instantâneo! Clique em "🔄 Verificar Status Agora" acima para atualizar.</p>
+                  <p><strong>Cartão:</strong> Aprovação em até 5 minutos. Recarregue a página.</p>
+                  <p><strong>Boleto:</strong> Pode levar de 1 a 3 dias úteis após pagamento.</p>
+                  <p className="mt-3 pt-3 border-t border-purple-200 dark:border-purple-700">
+                    Se após 10 minutos (PIX) ou 1 hora (cartão) o plano não ativar, entre em contato pelo email abaixo.
+                  </p>
+                </div>
+              </details>
+
+              <details className="group">
+                <summary className="font-semibold text-slate-900 dark:text-white cursor-pointer hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                  🔍 Como verifico se meu pagamento foi aprovado?
+                </summary>
+                <div className="mt-2 pl-4 text-slate-700 dark:text-slate-300 space-y-2">
+                  <p>1. Verifique seu email - o Mercado Pago envia confirmação</p>
+                  <p>2. Clique no botão "🔄 Verificar Status Agora" acima</p>
+                  <p>3. Acesse seu <Link href="/settings" className="text-orange-600 dark:text-orange-400 font-semibold hover:underline">painel de controle</Link> e veja se o plano aparece</p>
+                  <p>4. Se o pagamento foi aprovado mas o plano não ativou, nos envie o <strong>ID do pagamento</strong> por email</p>
+                </div>
+              </details>
+
+              <details className="group">
+                <summary className="font-semibold text-slate-900 dark:text-white cursor-pointer hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                  ⚡ Quanto tempo demora para o PIX ser aprovado?
+                </summary>
+                <div className="mt-2 pl-4 text-slate-700 dark:text-slate-300">
+                  <p>O PIX é <strong className="text-green-600 dark:text-green-400">geralmente instantâneo!</strong> Em até 10 minutos seu plano deve estar ativo.</p>
+                  <p className="mt-2">Se demorar mais de 10 minutos, pode ser um problema técnico. Entre em contato conosco pelo email abaixo com o ID do pagamento.</p>
+                </div>
+              </details>
+
+              <details className="group">
+                <summary className="font-semibold text-slate-900 dark:text-white cursor-pointer hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                  🛡️ Onde encontro o ID do meu pagamento?
+                </summary>
+                <div className="mt-2 pl-4 text-slate-700 dark:text-slate-300 space-y-2">
+                  <p>O ID do pagamento está em:</p>
+                  <p>• <strong>Email do Mercado Pago</strong> (número grande, exemplo: 123456789)</p>
+                  <p>• <strong>URL desta página</strong> (parâmetro <code className="bg-slate-200 dark:bg-slate-700 px-1 py-0.5 rounded">payment_id</code>)</p>
+                  <p>• <strong>Comprovante do PIX/Boleto</strong> que você recebeu</p>
+                </div>
+              </details>
+
+              <details className="group">
+                <summary className="font-semibold text-slate-900 dark:text-white cursor-pointer hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                  📧 Preciso de ajuda urgente!
+                </summary>
+                <div className="mt-2 pl-4 text-slate-700 dark:text-slate-300">
+                  <p>Entre em contato conosco:</p>
+                  <p className="mt-2">
+                    <strong>Email:</strong>{' '}
+                    <a href="mailto:suporte@precifica3d.com" className="text-orange-600 dark:text-orange-400 font-semibold hover:underline">
+                      suporte@precifica3d.com
+                    </a>
+                  </p>
+                  <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                    Inclua no email: seu email cadastrado, ID do pagamento e prints da tela de pagamento.
+                    Respondemos em até 24 horas (geralmente muito menos!).
+                  </p>
+                </div>
+              </details>
+            </div>
           </div>
 
           {/* Important Note */}

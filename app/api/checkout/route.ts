@@ -74,20 +74,21 @@ export async function POST(request: NextRequest) {
     const preferenceData = {
       items: [
         {
-          title: `Precifica3D PRO - ${tierConfig.name}`,
+          title: `Plano ${tierConfig.name} - Precifica3D`,
           description: tier === 'lifetime'
-            ? 'Acesso vitalício ao Precifica3D PRO'
+            ? 'Acesso vitalício à calculadora de orçamentos 3D'
             : tier === 'test'
-            ? 'Teste de 7 dias do Precifica3D PRO'
-            : `Assinatura ${billing_cycle === 'monthly' ? 'Mensal' : 'Anual'}`,
+            ? 'Teste de 7 dias - Precifica3D'
+            : `Assinatura ${billing_cycle === 'monthly' ? 'Mensal' : 'Anual'} - Precifica3D`,
           quantity: 1,
           unit_price: price,
           currency_id: 'BRL',
         },
       ],
       payer: {
-        email: user.email || 'noreply@precifica3d.com', // Email real do usuário
+        email: user.email || 'noreply@precifica3d.com',
       },
+      statement_descriptor: 'PRECIFICA3D', // Nome que aparece na fatura do cartão (max 13 chars)
       back_urls: {
         success: `${appUrl}/checkout/success`,
         failure: `${appUrl}/checkout/failure`,
@@ -98,8 +99,8 @@ export async function POST(request: NextRequest) {
       metadata: {
         tier,
         billing_cycle: tier === 'lifetime' ? 'lifetime' : billing_cycle,
-        user_id: user.id, // ← CRÍTICO: Envia user_id para o webhook conseguir ativar
-        user_email: user.email, // ← Backup: email do usuário para logs
+        user_id: user.id,
+        user_email: user.email,
       },
       binary_mode: false,
       payment_methods: {
@@ -108,8 +109,8 @@ export async function POST(request: NextRequest) {
         installments: 1,
         default_installments: 1,
       },
-      marketplace: 'NONE' as const, // Não é marketplace - força checkout direto
-      operation_type: 'regular_payment' as const, // Pagamento regular
+      marketplace: 'NONE' as const,
+      operation_type: 'regular_payment' as const,
     };
 
     // Call Mercado Pago API
