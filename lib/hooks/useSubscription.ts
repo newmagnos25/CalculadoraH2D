@@ -11,6 +11,7 @@ export interface SubscriptionData {
   remaining: number | null;
   is_unlimited: boolean;
   allowed: boolean;
+  current_period_end?: string;
 }
 
 export function useSubscription() {
