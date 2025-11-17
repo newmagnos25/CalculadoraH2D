@@ -14,6 +14,9 @@ export interface GenerateQuotePDFParams {
   notes?: string;
   projectStatus?: ProjectStatus;
   printDetails: {
+    itemDescription?: string;
+    quantity?: number;
+    dimensions?: string;
     printer: string;
     filaments: string;
     filamentColors?: { name: string; color: string; weight: number }[]; // Cores dos filamentos

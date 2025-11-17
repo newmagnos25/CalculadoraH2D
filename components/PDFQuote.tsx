@@ -233,6 +233,9 @@ interface PDFQuoteProps {
   notes?: string;
   projectStatus?: ProjectStatus;
   printDetails: {
+    itemDescription?: string;
+    quantity?: number;
+    dimensions?: string;
     printer: string;
     filaments: string;
     filamentColors?: { name: string; color: string; weight: number }[];
@@ -377,6 +380,33 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
             Serviço especializado de manufatura aditiva (impressão 3D) com acabamento profissional,
             utilizando equipamentos de alta precisão e materiais de qualidade premium.
           </Text>
+
+          {/* Descrição do Item */}
+          {printDetails.itemDescription && (
+            <View style={{ marginTop: 12, paddingTop: 12, borderTop: '1 solid #FDBA74' }}>
+              <Text style={[styles.label, { marginBottom: 4, fontSize: 8, fontWeight: 'bold' }]}>
+                ITEM:
+              </Text>
+              <Text style={[styles.specValue, { fontSize: 9, marginBottom: 8, color: '#1F2937' }]}>
+                {printDetails.itemDescription}
+              </Text>
+
+              <View style={styles.specGrid}>
+                {printDetails.quantity && printDetails.quantity > 1 && (
+                  <View style={styles.specItem}>
+                    <Text style={styles.specLabel}>Quantidade:</Text>
+                    <Text style={styles.specValue}>{printDetails.quantity} unidades</Text>
+                  </View>
+                )}
+                {printDetails.dimensions && (
+                  <View style={styles.specItem}>
+                    <Text style={styles.specLabel}>Dimensões:</Text>
+                    <Text style={styles.specValue}>{printDetails.dimensions}</Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
 
           {/* Especificações Técnicas */}
           <View style={{ marginTop: 12, paddingTop: 12, borderTop: '1 solid #FDBA74' }}>

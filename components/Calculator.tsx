@@ -75,6 +75,11 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
   // Adereços selecionados
   const [selectedAddons, setSelectedAddons] = useState<{ id: string; quantity: number }[]>([]);
 
+  // Detalhes da peça
+  const [itemDescription, setItemDescription] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [dimensions, setDimensions] = useState('');
+
   // Resultado
   const [result, setResult] = useState<CalculationResult | null>(null);
 
@@ -257,7 +262,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
   };
 
   const stateTariffs = getTariffsByState(selectedState);
-  const totalWeight = filamentUsages.reduce((sum, f) => sum + f.weight, 0);
+  const totalWeight = parseFloat(filamentUsages.reduce((sum, f) => sum + f.weight, 0).toFixed(2));
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -289,6 +294,54 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
                 }
               }}
             />
+          </div>
+
+          {/* Detalhes do Item */}
+          <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300 dark:border-blue-700">
+            <div className="flex items-center gap-2 mb-3">
+              <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <label className="text-sm font-bold text-blue-900 dark:text-blue-200">
+                📝 Descrição do Item
+              </label>
+            </div>
+
+            <input
+              type="text"
+              value={itemDescription}
+              onChange={e => setItemDescription(e.target.value)}
+              placeholder="Ex: Miniatura Pokemon, Suporte para celular, Chaveiro personalizado..."
+              className="w-full px-4 py-2.5 mb-3 border-2 border-blue-200 dark:border-blue-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all text-sm"
+            />
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold mb-1 text-blue-800 dark:text-blue-300">
+                  📦 Quantidade
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-full px-3 py-2 border-2 border-blue-200 dark:border-blue-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold mb-1 text-blue-800 dark:text-blue-300">
+                  📏 Dimensões (opcional)
+                </label>
+                <input
+                  type="text"
+                  value={dimensions}
+                  onChange={e => setDimensions(e.target.value)}
+                  placeholder="Ex: 10x5x3cm"
+                  className="w-full px-3 py-2 border-2 border-blue-200 dark:border-blue-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all text-sm"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Filamentos/Cores */}
@@ -768,6 +821,9 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
             <PDFActions
               calculation={result}
               printDetails={{
+                itemDescription: itemDescription || 'Impressão 3D',
+                quantity: quantity,
+                dimensions: dimensions,
                 printer: allPrinters.find(p => p.id === printerId)?.name || 'Não especificada',
                 filaments: filamentUsages.map(fu => {
                   const fil = allFilaments.find(f => f.id === fu.filamentId);
