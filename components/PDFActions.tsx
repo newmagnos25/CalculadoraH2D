@@ -254,7 +254,7 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
       </Collapse>
 
       {/* Usage Banner */}
-      {!loadingSubscription && subscription && (
+      {!loadingSubscription && subscription && subscription.tier && (
         <div className={`p-4 rounded-lg border-2 ${
           subscription.allowed
             ? 'bg-green-50 dark:bg-green-900/20 border-green-500'

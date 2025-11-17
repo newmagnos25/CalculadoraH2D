@@ -34,7 +34,7 @@ export default function UpgradePage() {
             <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
               <div className="bg-white/20 backdrop-blur rounded-lg p-4">
                 <div className="text-3xl font-black text-white">
-                  {subscription?.tier.toUpperCase()}
+                  {subscription?.tier?.toUpperCase() || 'FREE'}
                 </div>
                 <div className="text-sm text-white/80">Plano Atual</div>
               </div>
