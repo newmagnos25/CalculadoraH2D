@@ -6,7 +6,17 @@ import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json();
+    const { email, secretKey } = await request.json();
+
+    // Verificar senha secreta
+    const validSecret = process.env.ADMIN_CONFIRM_SECRET || 'dev-secret-12345';
+
+    if (secretKey !== validSecret) {
+      return NextResponse.json(
+        { error: 'Não autorizado - senha incorreta' },
+        { status: 401 }
+      );
+    }
 
     if (!email) {
       return NextResponse.json(

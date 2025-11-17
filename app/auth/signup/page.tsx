@@ -131,7 +131,10 @@ function SignupForm() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          secretKey: 'dev-secret-12345' // Senha hardcoded apenas para testes
+        }),
       });
 
       const data = await response.json();
