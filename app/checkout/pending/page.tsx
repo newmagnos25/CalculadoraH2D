@@ -3,10 +3,12 @@
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 
 function CheckoutPendingContent() {
   const searchParams = useSearchParams();
   const [paymentId, setPaymentId] = useState<string | null>(null);
+  const { subscription } = useSubscription();
 
   useEffect(() => {
     // Get payment ID from URL params
@@ -50,6 +52,77 @@ function CheckoutPendingContent() {
               <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">
                 Guarde este número para referência
               </p>
+            </div>
+          )}
+
+          {/* Current Plan Status */}
+          {subscription && subscription.tier && (
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-6 mb-8 text-left border-2 border-purple-200 dark:border-purple-800">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
+                📊 Seu Plano Atual:
+              </h2>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between bg-white/50 dark:bg-slate-800/50 rounded-lg p-3">
+                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Plano:</span>
+                  <span className="text-sm font-bold text-purple-600 dark:text-purple-400">
+                    {subscription.tier === 'free' && '🆓 FREE'}
+                    {subscription.tier === 'test' && '🧪 TEST'}
+                    {subscription.tier === 'starter' && '⭐ STARTER'}
+                    {subscription.tier === 'professional' && '💎 PROFESSIONAL'}
+                    {subscription.tier === 'enterprise' && '🏢 ENTERPRISE'}
+                    {subscription.tier === 'lifetime' && '♾️ LIFETIME'}
+                  </span>
+                </div>
+                {!subscription.is_unlimited && (
+                  <div className="flex items-center justify-between bg-white/50 dark:bg-slate-800/50 rounded-lg p-3">
+                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Orçamentos:</span>
+                    <span className="text-sm font-bold text-slate-900 dark:text-white">
+                      {subscription.current} / {subscription.max}
+                    </span>
+                  </div>
+                )}
+                {subscription.is_unlimited && (
+                  <div className="flex items-center justify-center bg-white/50 dark:bg-slate-800/50 rounded-lg p-3">
+                    <span className="text-sm font-bold text-green-600 dark:text-green-400">
+                      ♾️ Orçamentos Ilimitados
+                    </span>
+                  </div>
+                )}
+                {subscription.current_period_end && (
+                  <div className="flex items-center justify-between bg-white/50 dark:bg-slate-800/50 rounded-lg p-3">
+                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Expira em:</span>
+                    <span className="text-sm font-bold text-orange-600 dark:text-orange-400">
+                      {(() => {
+                        const endDate = new Date(subscription.current_period_end);
+                        const now = new Date();
+                        const diffTime = endDate.getTime() - now.getTime();
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                        if (diffDays < 0) {
+                          return '⚠️ Expirado';
+                        } else if (diffDays === 0) {
+                          return '⏰ Hoje';
+                        } else if (diffDays === 1) {
+                          return '⏰ Amanhã';
+                        } else if (diffDays < 7) {
+                          return `⏰ ${diffDays} dias`;
+                        } else if (diffDays < 30) {
+                          const weeks = Math.floor(diffDays / 7);
+                          return `📅 ${weeks} ${weeks === 1 ? 'semana' : 'semanas'}`;
+                        } else if (diffDays < 365) {
+                          const months = Math.floor(diffDays / 30);
+                          return `📅 ${months} ${months === 1 ? 'mês' : 'meses'}`;
+                        } else if (diffDays > 36500) {
+                          return '♾️ Vitalício';
+                        } else {
+                          const years = Math.floor(diffDays / 365);
+                          return `📅 ${years} ${years === 1 ? 'ano' : 'anos'}`;
+                        }
+                      })()}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

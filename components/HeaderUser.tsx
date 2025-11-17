@@ -151,14 +151,14 @@ export default function HeaderUser() {
           {/* Subscription Info */}
           {subscription && subscription.tier && (
             <div className="p-4 bg-slate-800/50 border-b border-slate-700">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-3">
                 <span className="text-slate-400 text-xs font-semibold">Plano Atual:</span>
                 <span className={`px-2 py-1 ${tierColor} text-white text-xs font-bold rounded`}>
                   {tierName}
                 </span>
               </div>
               {!subscription.is_unlimited && (
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-3">
                   <span className="text-slate-400 text-xs">Orçamentos:</span>
                   <span className="text-white text-xs font-bold">
                     {subscription.current} / {subscription.max}
@@ -166,8 +166,51 @@ export default function HeaderUser() {
                 </div>
               )}
               {subscription.is_unlimited && (
-                <div className="text-green-400 text-xs font-bold text-center">
+                <div className="text-green-400 text-xs font-bold text-center mb-3">
                   ♾️ Orçamentos Ilimitados
+                </div>
+              )}
+              {subscription.current_period_end && (
+                <div className="mt-2 pt-2 border-t border-slate-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400 text-xs">Expira em:</span>
+                    <span className="text-orange-300 text-xs font-bold">
+                      {(() => {
+                        const endDate = new Date(subscription.current_period_end);
+                        const now = new Date();
+                        const diffTime = endDate.getTime() - now.getTime();
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                        if (diffDays < 0) {
+                          return '⚠️ Expirado';
+                        } else if (diffDays === 0) {
+                          return '⏰ Hoje';
+                        } else if (diffDays === 1) {
+                          return '⏰ Amanhã';
+                        } else if (diffDays < 7) {
+                          return `⏰ ${diffDays} dias`;
+                        } else if (diffDays < 30) {
+                          const weeks = Math.floor(diffDays / 7);
+                          return `📅 ${weeks} ${weeks === 1 ? 'semana' : 'semanas'}`;
+                        } else if (diffDays < 365) {
+                          const months = Math.floor(diffDays / 30);
+                          return `📅 ${months} ${months === 1 ? 'mês' : 'meses'}`;
+                        } else if (diffDays > 36500) {
+                          return '♾️ Vitalício';
+                        } else {
+                          const years = Math.floor(diffDays / 365);
+                          return `📅 ${years} ${years === 1 ? 'ano' : 'anos'}`;
+                        }
+                      })()}
+                    </span>
+                  </div>
+                  <div className="text-slate-500 text-[10px] mt-1">
+                    {new Date(subscription.current_period_end).toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    })}
+                  </div>
                 </div>
               )}
             </div>

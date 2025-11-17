@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { filaments } from '@/data/filaments';
 import { energyTariffs, getStates, getTariffsByState } from '@/data/energy-tariffs';
 import { addons, addonCategories } from '@/data/addons';
-import { calculatePrintCost, formatCurrency, formatPercentage } from '@/lib/calculator';
+import { calculatePrintCost, formatCurrency, formatPercentage, smartRoundPrice } from '@/lib/calculator';
 import { CalculationInput, CalculationResult } from '@/lib/types';
 import { getCustomFilaments, getCustomAddons, getAllPrinters, saveLastCalculation, getLastCalculation } from '@/lib/storage';
 import { useAntiPiracy } from '@/lib/hooks/useAntiPiracy';
@@ -161,10 +161,12 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
     const calculatedResult = calculatePrintCost(input);
 
-    // Ajustar custo de filamento para usar o calculado manualmente
-    calculatedResult.costs.filament = totalFilamentCost;
-    calculatedResult.costs.total =
-      totalFilamentCost +
+    // Ajustar custo de filamento para usar o calculado manualmente (com arredondamento)
+    const roundedTotalFilamentCost = Math.round(totalFilamentCost * 100) / 100;
+    calculatedResult.costs.filament = roundedTotalFilamentCost;
+
+    const roundedTotal =
+      roundedTotalFilamentCost +
       calculatedResult.costs.energy +
       calculatedResult.costs.labor +
       calculatedResult.costs.depreciation +
@@ -172,15 +174,21 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
       calculatedResult.costs.addons +
       calculatedResult.costs.postProcessing;
 
-    calculatedResult.profitValue = (calculatedResult.costs.total * profitMargin) / 100;
-    calculatedResult.finalPrice = calculatedResult.costs.total + calculatedResult.profitValue;
+    calculatedResult.costs.total = Math.round(roundedTotal * 100) / 100;
+
+    const profitValue = Math.round((calculatedResult.costs.total * profitMargin) / 100 * 100) / 100;
+    calculatedResult.profitValue = profitValue;
+
+    // Aplicar arredondamento inteligente no preço final
+    const rawFinalPrice = calculatedResult.costs.total + profitValue;
+    calculatedResult.finalPrice = smartRoundPrice(rawFinalPrice);
 
     // Recalcular breakdown
     calculatedResult.breakdown = [
       {
         item: 'Filamento',
-        value: totalFilamentCost,
-        percentage: (totalFilamentCost / calculatedResult.costs.total) * 100,
+        value: roundedTotalFilamentCost,
+        percentage: (roundedTotalFilamentCost / calculatedResult.costs.total) * 100,
       },
       {
         item: 'Energia',
