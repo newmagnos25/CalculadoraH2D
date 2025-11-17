@@ -7,6 +7,7 @@ import { addons, addonCategories } from '@/data/addons';
 import { calculatePrintCost, formatCurrency, formatPercentage } from '@/lib/calculator';
 import { CalculationInput, CalculationResult } from '@/lib/types';
 import { getCustomFilaments, getCustomAddons, getAllPrinters, saveLastCalculation, getLastCalculation } from '@/lib/storage';
+import { useAntiPiracy } from '@/lib/hooks/useAntiPiracy';
 import FilamentManager from './FilamentManager';
 import AddonManager from './AddonManager';
 import PrinterManager from './PrinterManager';
@@ -24,6 +25,9 @@ interface CalculatorProps {
 }
 
 export default function Calculator({ isAuthenticated = false }: CalculatorProps) {
+  // Proteção anti-pirataria
+  useAntiPiracy();
+
   // Filamentos, adereços e impressoras (padrão + customizados)
   const [allPrinters, setAllPrinters] = useState(getAllPrinters());
   const [allFilaments, setAllFilaments] = useState(filaments);
