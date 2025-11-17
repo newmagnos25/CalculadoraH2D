@@ -15,6 +15,7 @@ function LoginForm() {
   const [messageType, setMessageType] = useState<'error' | 'warning' | 'success'>('error');
   const [resendingEmail, setResendingEmail] = useState(false);
   const [resettingPassword, setResettingPassword] = useState(false);
+  const [confirmingManually, setConfirmingManually] = useState(false);
 
   // Capturar erro da URL (vindo do callback)
   useEffect(() => {
@@ -152,6 +153,50 @@ function LoginForm() {
     }
   };
 
+  const handleManualConfirmation = async () => {
+    if (!email) {
+      setMessage('Digite seu email para confirmar');
+      setMessageType('error');
+      return;
+    }
+
+    setConfirmingManually(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch('/api/admin/confirm-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.error || 'Erro ao confirmar email');
+        setMessageType('error');
+        setConfirmingManually(false);
+        return;
+      }
+
+      setMessage('✅ Email confirmado! Faça login novamente.');
+      setMessageType('success');
+
+      // Limpar formulário após 2 segundos para refazer login
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+
+    } catch (err: any) {
+      setMessage('Erro ao confirmar email. Tente novamente.');
+      setMessageType('error');
+    } finally {
+      setConfirmingManually(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full">
@@ -188,14 +233,25 @@ function LoginForm() {
               </p>
 
               {messageType !== 'success' && (message.includes('confirmação') || message.includes('expirado')) && (
-                <button
-                  type="button"
-                  onClick={handleResendConfirmation}
-                  disabled={resendingEmail}
-                  className="mt-3 w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white text-sm font-bold rounded-lg transition-colors"
-                >
-                  {resendingEmail ? 'Reenviando...' : '📧 Reenviar Email de Confirmação'}
-                </button>
+                <div className="mt-3 space-y-2">
+                  <button
+                    type="button"
+                    onClick={handleResendConfirmation}
+                    disabled={resendingEmail}
+                    className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white text-sm font-bold rounded-lg transition-colors"
+                  >
+                    {resendingEmail ? 'Reenviando...' : '📧 Reenviar Email de Confirmação'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleManualConfirmation}
+                    disabled={confirmingManually}
+                    className="w-full py-2 px-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:from-slate-400 disabled:to-slate-500 text-white text-sm font-bold rounded-lg transition-all shadow-lg"
+                  >
+                    {confirmingManually ? '⏳ Confirmando...' : '✅ Confirmar Manualmente (Teste)'}
+                  </button>
+                </div>
               )}
             </div>
           )}

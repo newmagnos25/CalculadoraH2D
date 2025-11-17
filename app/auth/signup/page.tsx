@@ -14,6 +14,8 @@ function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<'error' | 'warning' | 'success'>('error');
+  const [confirmingManually, setConfirmingManually] = useState(false);
+  const [needsConfirmation, setNeedsConfirmation] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,8 +82,9 @@ function SignupForm() {
 
       // Verificar se precisa de confirmação de email
       if (data.user && !data.session) {
-        setMessage('Verifique seu email para confirmar a conta antes de fazer login.');
+        setMessage('Verifique seu email para confirmar a conta. Não recebeu? Clique no botão abaixo.');
         setMessageType('warning');
+        setNeedsConfirmation(true);
         setLoading(false);
         return;
       }
@@ -109,6 +112,51 @@ function SignupForm() {
       setMessage(`Erro ao conectar: ${err.message || 'Verifique sua conexão com a internet'}`);
       setMessageType('error');
       setLoading(false);
+    }
+  };
+
+  const handleManualConfirmation = async () => {
+    if (!email) {
+      setMessage('Digite seu email primeiro');
+      setMessageType('error');
+      return;
+    }
+
+    setConfirmingManually(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch('/api/admin/confirm-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.error || 'Erro ao confirmar email');
+        setMessageType('error');
+        setConfirmingManually(false);
+        return;
+      }
+
+      setMessage('✅ Email confirmado! Agora você pode fazer login.');
+      setMessageType('success');
+      setNeedsConfirmation(false);
+
+      // Redirecionar para login após 2 segundos
+      setTimeout(() => {
+        window.location.href = '/auth/login';
+      }, 2000);
+
+    } catch (err: any) {
+      setMessage('Erro ao confirmar email. Tente novamente.');
+      setMessageType('error');
+    } finally {
+      setConfirmingManually(false);
     }
   };
 
@@ -146,6 +194,17 @@ function SignupForm() {
               }`}>
                 {messageType === 'success' ? '✅' : messageType === 'warning' ? '⚠️' : '❌'} {message}
               </p>
+
+              {needsConfirmation && messageType === 'warning' && (
+                <button
+                  type="button"
+                  onClick={handleManualConfirmation}
+                  disabled={confirmingManually}
+                  className="mt-3 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:from-slate-400 disabled:to-slate-500 text-white text-sm font-bold rounded-lg transition-all shadow-lg"
+                >
+                  {confirmingManually ? '⏳ Confirmando...' : '✅ Confirmar Email Manualmente (Teste)'}
+                </button>
+              )}
             </div>
           )}
 
