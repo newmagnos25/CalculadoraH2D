@@ -11,10 +11,7 @@ export async function middleware(request: NextRequest) {
     '/auth/callback',
     '/auth/reset-password',
     '/pricing',
-    '/debug-pagamento',
-    '/teste-pagamento',
-    '/test-supabase',
-    '/test-auth',
+    '/teste-pagamento', // Guia de teste de pagamento
     '/api',
   ]
 
