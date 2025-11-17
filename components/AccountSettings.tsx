@@ -12,8 +12,9 @@ export default function AccountSettings() {
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [canceling, setCanceling] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-  const { subscription } = useSubscription();
+  const { subscription, refresh } = useSubscription();
 
   useEffect(() => {
     loadUserData();
@@ -72,6 +73,41 @@ export default function AccountSettings() {
     }, 1500);
   };
 
+  const handleCancelSubscription = async () => {
+    if (!confirm('Tem certeza que deseja cancelar sua assinatura? Você perderá acesso aos recursos premium.')) {
+      return;
+    }
+
+    setCanceling(true);
+    setMessage(null);
+
+    const supabase = createClient();
+
+    // Cancelar via RPC function (vamos criar depois)
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({
+        status: 'canceled',
+        canceled_at: new Date().toISOString()
+      })
+      .eq('user_id', user?.id);
+
+    if (error) {
+      setMessage({ type: 'error', text: 'Erro ao cancelar assinatura: ' + error.message });
+      setCanceling(false);
+      return;
+    }
+
+    setMessage({ type: 'success', text: 'Assinatura cancelada. Você ainda tem acesso até o fim do período pago.' });
+    setCanceling(false);
+
+    // Recarregar subscription
+    setTimeout(() => {
+      refresh();
+      window.location.reload();
+    }, 2000);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -82,6 +118,7 @@ export default function AccountSettings() {
 
   const tierColors: { [key: string]: string } = {
     free: 'from-slate-500 to-slate-600',
+    test: 'from-yellow-500 to-yellow-600',
     starter: 'from-blue-500 to-blue-600',
     professional: 'from-purple-500 to-purple-600',
     enterprise: 'from-orange-500 to-orange-600',
@@ -164,6 +201,7 @@ export default function AccountSettings() {
               <div className="text-center mb-3">
                 <div className="text-3xl mb-2">
                   {subscription.tier === 'free' && '🆓'}
+                  {subscription.tier === 'test' && '🧪'}
                   {subscription.tier === 'starter' && '⭐'}
                   {subscription.tier === 'professional' && '💎'}
                   {subscription.tier === 'enterprise' && '🏢'}
@@ -209,8 +247,20 @@ export default function AccountSettings() {
             )}
 
             {subscription.tier !== 'free' && (
-              <div className="text-center text-xs text-slate-600 dark:text-slate-400">
-                Obrigado por ser um usuário {subscription.tier.toUpperCase()}!
+              <div className="space-y-3">
+                <div className="text-center text-xs text-slate-600 dark:text-slate-400">
+                  Obrigado por ser um usuário {subscription.tier.toUpperCase()}!
+                </div>
+                <button
+                  onClick={handleCancelSubscription}
+                  disabled={canceling}
+                  className="w-full px-4 py-2 bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {canceling ? '⏳ Cancelando...' : '❌ Cancelar Assinatura'}
+                </button>
+                <p className="text-xs text-center text-slate-500 dark:text-slate-400">
+                  Você manterá acesso até o fim do período pago
+                </p>
               </div>
             )}
           </div>

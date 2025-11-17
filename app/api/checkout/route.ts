@@ -74,9 +74,11 @@ export async function POST(request: NextRequest) {
     const preferenceData = {
       items: [
         {
-          title: `CalculadoraH2D PRO - ${tierConfig.name}`,
+          title: `Precifica3D PRO - ${tierConfig.name}`,
           description: tier === 'lifetime'
-            ? 'Acesso vitalício ao CalculadoraH2D PRO'
+            ? 'Acesso vitalício ao Precifica3D PRO'
+            : tier === 'test'
+            ? 'Teste de 7 dias do Precifica3D PRO'
             : `Assinatura ${billing_cycle === 'monthly' ? 'Mensal' : 'Anual'}`,
           quantity: 1,
           unit_price: price,
