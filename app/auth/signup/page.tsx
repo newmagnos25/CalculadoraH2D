@@ -40,6 +40,9 @@ function SignupForm() {
 
       console.log('Tentando criar conta para:', email);
 
+      // Usar NEXT_PUBLIC_APP_URL se disponível, senão usar window.location.origin
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -47,7 +50,7 @@ function SignupForm() {
           data: {
             full_name: fullName,
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${appUrl}/auth/callback`,
         },
       });
 

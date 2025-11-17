@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
@@ -12,11 +12,57 @@ function LoginForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resendingEmail, setResendingEmail] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
+
+  // Capturar erro da URL (vindo do callback)
+  useEffect(() => {
+    const urlError = searchParams.get('error');
+    if (urlError) {
+      setError(decodeURIComponent(urlError));
+    }
+  }, [searchParams]);
+
+  const handleResendConfirmation = async () => {
+    if (!email) {
+      setError('Digite seu email para reenviar a confirmação');
+      return;
+    }
+
+    setResendingEmail(true);
+    setError(null);
+    setResendSuccess(false);
+
+    try {
+      const supabase = createClient();
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: `${appUrl}/auth/callback`,
+        }
+      });
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setResendSuccess(true);
+        setError('Email de confirmação reenviado! Verifique sua caixa de entrada.');
+      }
+    } catch (err: any) {
+      setError('Erro ao reenviar email. Tente novamente.');
+    } finally {
+      setResendingEmail(false);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setResendSuccess(false);
 
     try {
       const supabase = createClient();
@@ -28,7 +74,14 @@ function LoginForm() {
 
       if (error) {
         console.error('Erro ao fazer login:', error);
-        setError(error.message);
+
+        // Se o erro for de email não confirmado
+        if (error.message.includes('Email not confirmed')) {
+          setError('Email não confirmado. Clique no botão abaixo para reenviar o email de confirmação.');
+        } else {
+          setError(error.message);
+        }
+
         setLoading(false);
         return;
       }
@@ -72,10 +125,29 @@ function LoginForm() {
           </h2>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg">
-              <p className="text-sm text-red-800 dark:text-red-200">
-                ❌ {error}
+            <div className={`mb-6 p-4 border-2 rounded-lg ${
+              resendSuccess
+                ? 'bg-green-50 dark:bg-green-900/20 border-green-500'
+                : 'bg-red-50 dark:bg-red-900/20 border-red-500'
+            }`}>
+              <p className={`text-sm ${
+                resendSuccess
+                  ? 'text-green-800 dark:text-green-200'
+                  : 'text-red-800 dark:text-red-200'
+              }`}>
+                {resendSuccess ? '✅' : '❌'} {error}
               </p>
+
+              {!resendSuccess && (error.includes('confirmação') || error.includes('expirado')) && (
+                <button
+                  type="button"
+                  onClick={handleResendConfirmation}
+                  disabled={resendingEmail}
+                  className="mt-3 w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white text-sm font-bold rounded-lg transition-colors"
+                >
+                  {resendingEmail ? 'Reenviando...' : '📧 Reenviar Email de Confirmação'}
+                </button>
+              )}
             </div>
           )}
 
