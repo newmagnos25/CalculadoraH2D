@@ -9,6 +9,7 @@ export async function middleware(request: NextRequest) {
     '/auth/login',
     '/auth/signup',
     '/auth/callback',
+    '/auth/reset-password',
     '/pricing',
     '/debug-pagamento',
     '/teste-pagamento',

@@ -11,27 +11,35 @@ function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [messageType, setMessageType] = useState<'error' | 'warning' | 'success'>('error');
   const [resendingEmail, setResendingEmail] = useState(false);
-  const [resendSuccess, setResendSuccess] = useState(false);
+  const [resettingPassword, setResettingPassword] = useState(false);
 
   // Capturar erro da URL (vindo do callback)
   useEffect(() => {
     const urlError = searchParams.get('error');
     if (urlError) {
-      setError(decodeURIComponent(urlError));
+      const errorMsg = decodeURIComponent(urlError);
+      setMessage(errorMsg);
+      // Se for sobre confirmação/expiração, é warning; senão é erro
+      if (errorMsg.includes('confirmação') || errorMsg.includes('expirado')) {
+        setMessageType('warning');
+      } else {
+        setMessageType('error');
+      }
     }
   }, [searchParams]);
 
   const handleResendConfirmation = async () => {
     if (!email) {
-      setError('Digite seu email para reenviar a confirmação');
+      setMessage('Digite seu email para reenviar a confirmação');
+      setMessageType('error');
       return;
     }
 
     setResendingEmail(true);
-    setError(null);
-    setResendSuccess(false);
+    setMessage(null);
 
     try {
       const supabase = createClient();
@@ -46,23 +54,57 @@ function LoginForm() {
       });
 
       if (error) {
-        setError(error.message);
+        setMessage(error.message);
+        setMessageType('error');
       } else {
-        setResendSuccess(true);
-        setError('Email de confirmação reenviado! Verifique sua caixa de entrada.');
+        setMessage('Email de confirmação reenviado! Verifique sua caixa de entrada.');
+        setMessageType('warning');
       }
     } catch (err: any) {
-      setError('Erro ao reenviar email. Tente novamente.');
+      setMessage('Erro ao reenviar email. Tente novamente.');
+      setMessageType('error');
     } finally {
       setResendingEmail(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setMessage('Digite seu email para recuperar a senha');
+      setMessageType('error');
+      return;
+    }
+
+    setResettingPassword(true);
+    setMessage(null);
+
+    try {
+      const supabase = createClient();
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${appUrl}/auth/reset-password`,
+      });
+
+      if (error) {
+        setMessage(error.message);
+        setMessageType('error');
+      } else {
+        setMessage('Email de recuperação enviado! Verifique sua caixa de entrada.');
+        setMessageType('warning');
+      }
+    } catch (err: any) {
+      setMessage('Erro ao enviar email de recuperação. Tente novamente.');
+      setMessageType('error');
+    } finally {
+      setResettingPassword(false);
     }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
-    setResendSuccess(false);
+    setMessage(null);
 
     try {
       const supabase = createClient();
@@ -77,9 +119,11 @@ function LoginForm() {
 
         // Se o erro for de email não confirmado
         if (error.message.includes('Email not confirmed')) {
-          setError('Email não confirmado. Clique no botão abaixo para reenviar o email de confirmação.');
+          setMessage('Email não confirmado. Clique no botão abaixo para reenviar o email de confirmação.');
+          setMessageType('warning');
         } else {
-          setError(error.message);
+          setMessage(error.message);
+          setMessageType('error');
         }
 
         setLoading(false);
@@ -102,7 +146,8 @@ function LoginForm() {
       }
     } catch (err: any) {
       console.error('Erro inesperado:', err);
-      setError('Erro ao conectar. Tente novamente.');
+      setMessage('Erro ao conectar. Tente novamente.');
+      setMessageType('error');
       setLoading(false);
     }
   };
@@ -124,21 +169,25 @@ function LoginForm() {
             Entrar
           </h2>
 
-          {error && (
+          {message && (
             <div className={`mb-6 p-4 border-2 rounded-lg ${
-              resendSuccess
+              messageType === 'success'
                 ? 'bg-green-50 dark:bg-green-900/20 border-green-500'
+                : messageType === 'warning'
+                ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
                 : 'bg-red-50 dark:bg-red-900/20 border-red-500'
             }`}>
-              <p className={`text-sm ${
-                resendSuccess
+              <p className={`text-sm font-semibold ${
+                messageType === 'success'
                   ? 'text-green-800 dark:text-green-200'
+                  : messageType === 'warning'
+                  ? 'text-yellow-800 dark:text-yellow-200'
                   : 'text-red-800 dark:text-red-200'
               }`}>
-                {resendSuccess ? '✅' : '❌'} {error}
+                {messageType === 'success' ? '✅' : messageType === 'warning' ? '⚠️' : '❌'} {message}
               </p>
 
-              {!resendSuccess && (error.includes('confirmação') || error.includes('expirado')) && (
+              {messageType !== 'success' && (message.includes('confirmação') || message.includes('expirado')) && (
                 <button
                   type="button"
                   onClick={handleResendConfirmation}
@@ -167,9 +216,19 @@ function LoginForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                Senha
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300">
+                  Senha
+                </label>
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={resettingPassword}
+                  className="text-xs font-bold text-blue-500 hover:text-blue-400 disabled:text-blue-300 transition-colors"
+                >
+                  {resettingPassword ? 'Enviando...' : 'Esqueci minha senha'}
+                </button>
+              </div>
               <input
                 type="password"
                 value={password}
