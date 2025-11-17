@@ -14,6 +14,57 @@ function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<'error' | 'warning' | 'success'>('error');
+  const [resendingEmail, setResendingEmail] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+
+  // Cooldown timer
+  useEffect(() => {
+    if (cooldownSeconds > 0) {
+      const timer = setTimeout(() => setCooldownSeconds(cooldownSeconds - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldownSeconds]);
+
+  const handleResendConfirmation = async () => {
+    if (!email) {
+      setMessage('Digite seu email para reenviar a confirmação');
+      setMessageType('error');
+      return;
+    }
+
+    if (cooldownSeconds > 0) {
+      return; // Ainda em cooldown
+    }
+
+    setResendingEmail(true);
+
+    try {
+      const supabase = createClient();
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: `${appUrl}/auth/callback`,
+        }
+      });
+
+      if (error) {
+        setMessage(`Erro ao reenviar: ${error.message}`);
+        setMessageType('error');
+      } else {
+        setMessage('✅ Email reenviado! Verifique sua caixa de entrada e spam.');
+        setMessageType('success');
+        setCooldownSeconds(60); // Cooldown de 60 segundos
+      }
+    } catch (err: any) {
+      setMessage('Erro ao reenviar email. Tente novamente em instantes.');
+      setMessageType('error');
+    } finally {
+      setResendingEmail(false);
+    }
+  };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,6 +197,29 @@ function SignupForm() {
               }`}>
                 {messageType === 'success' ? '✅' : messageType === 'warning' ? '⚠️' : '❌'} {message}
               </p>
+
+              {/* Botão de reenviar email - só aparece se for warning (precisa confirmar) */}
+              {messageType === 'warning' && message.includes('Verifique seu email') && (
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={handleResendConfirmation}
+                    disabled={resendingEmail || cooldownSeconds > 0}
+                    className="w-full py-2.5 px-4 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed text-white text-sm font-bold rounded-lg transition-colors shadow-md"
+                  >
+                    {resendingEmail ? (
+                      '📧 Reenviando...'
+                    ) : cooldownSeconds > 0 ? (
+                      `⏱️ Aguarde ${cooldownSeconds}s para reenviar`
+                    ) : (
+                      '📧 Não recebeu? Reenviar Email'
+                    )}
+                  </button>
+                  <p className="text-xs text-center mt-2 text-yellow-700 dark:text-yellow-300">
+                    Verifique também sua pasta de spam/lixo eletrônico
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
