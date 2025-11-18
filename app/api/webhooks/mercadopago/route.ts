@@ -65,70 +65,80 @@ async function processPayment(
   console.log('🔄 [1] Processing payment:', paymentId);
 
   try {
-    // Step 1: Fetch with timeout
+    // Step 1: Fetch WITHOUT timeout (let Vercel's default 60s limit handle it)
     console.log('📡 [2] Fetching from MP...');
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    console.log('🔑 [2a] Using token:', mercadoPagoToken.substring(0, 15) + '...');
+    console.log('🔗 [2b] URL:', `https://api.mercadopago.com/v1/payments/${paymentId}`);
 
     let paymentResponse;
     try {
       paymentResponse = await fetch(
         `https://api.mercadopago.com/v1/payments/${paymentId}`,
         {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${mercadoPagoToken}`,
             'Content-Type': 'application/json',
           },
-          signal: controller.signal,
+          // NO timeout/signal - let it take as long as needed
         }
       );
-      clearTimeout(timeoutId);
-      console.log('✅ [3] Fetch OK:', paymentResponse.status);
+      console.log('✅ [3] Fetch completed. Status:', paymentResponse.status);
+      console.log('✅ [3a] Status text:', paymentResponse.statusText);
     } catch (fetchErr) {
-      clearTimeout(timeoutId);
-      console.error('❌ [3] Fetch failed:', fetchErr);
+      console.error('❌ [3] Fetch error:', fetchErr);
+      console.error('❌ [3a] Error name:', fetchErr?.constructor?.name);
+      console.error('❌ [3b] Error message:', fetchErr instanceof Error ? fetchErr.message : String(fetchErr));
       throw fetchErr;
     }
 
     if (!paymentResponse.ok) {
-      console.error('❌ [3] Non-OK status:', paymentResponse.status);
+      const errorText = await paymentResponse.text();
+      console.error('❌ [3c] Non-OK response body:', errorText);
       return;
     }
 
-    // Step 2: Parse JSON with explicit error handling
+    // Step 2: Parse JSON
     console.log('📄 [4] Parsing JSON...');
     let payment;
     try {
       const text = await paymentResponse.text();
-      console.log('📄 [4a] Raw response length:', text.length);
+      console.log('📄 [4a] Response length:', text.length, 'bytes');
       payment = JSON.parse(text);
-      console.log('✅ [5] Parsed. Status:', payment.status);
+      console.log('✅ [5] Parsed successfully');
+      console.log('✅ [5a] Payment status:', payment.status);
+      console.log('✅ [5b] Payment ID:', payment.id);
     } catch (parseErr) {
-      console.error('❌ [4] Parse failed:', parseErr);
+      console.error('❌ [4] JSON parse error:', parseErr);
       throw parseErr;
     }
 
     // Step 3: Check approval
     if (payment.status !== 'approved') {
-      console.log('⏳ [5] Not approved:', payment.status);
+      console.log('⏳ [6] Payment not approved yet. Status:', payment.status);
       return;
     }
 
-    // Step 4: Extract metadata
-    console.log('📋 [6] Extracting metadata...');
-    const tier = payment.metadata?.tier;
-    const billingCycle = payment.metadata?.billing_cycle || payment.metadata?.billingCycle;
-    const userId = payment.metadata?.user_id || payment.metadata?.userId;
+    console.log('✅ [6] Payment is APPROVED');
 
-    console.log('📋 [6] Metadata:', { tier, billingCycle, userId });
+    // Step 4: Extract metadata
+    console.log('📋 [7] Extracting metadata...');
+    const metadata = payment.metadata || {};
+    console.log('📋 [7a] Full metadata:', JSON.stringify(metadata, null, 2));
+
+    const tier = metadata.tier;
+    const billingCycle = metadata.billing_cycle || metadata.billingCycle;
+    const userId = metadata.user_id || metadata.userId;
+
+    console.log('📋 [7b] Extracted:', { tier, billingCycle, userId });
 
     if (!tier || !userId) {
-      console.error('❌ [6] Incomplete metadata');
+      console.error('❌ [7c] Missing required metadata. Tier:', tier, 'UserID:', userId);
       return;
     }
 
     // Step 5: Calculate dates
-    console.log('📅 [7] Calculating dates...');
+    console.log('📅 [8] Calculating subscription period...');
     const now = new Date();
     let periodEnd: Date;
 
@@ -142,8 +152,11 @@ async function processPayment(
       periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
     }
 
+    console.log('📅 [8a] Period start:', now.toISOString());
+    console.log('📅 [8b] Period end:', periodEnd.toISOString());
+
     // Step 6: Save to Supabase
-    console.log('💾 [8] Saving to Supabase...');
+    console.log('💾 [9] Initializing Supabase client...');
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
@@ -158,7 +171,7 @@ async function processPayment(
       mercadopago_payment_id: payment.id.toString(),
     };
 
-    console.log('📝 [8] Data:', subscriptionData);
+    console.log('💾 [9a] Data to upsert:', JSON.stringify(subscriptionData, null, 2));
 
     const { data, error } = await supabase
       .from('subscriptions')
@@ -166,17 +179,30 @@ async function processPayment(
       .select();
 
     if (error) {
-      console.error('❌ [8] Supabase error:', error);
+      console.error('❌ [9b] Supabase error code:', error.code);
+      console.error('❌ [9c] Supabase error message:', error.message);
+      console.error('❌ [9d] Supabase error details:', error.details);
+      console.error('❌ [9e] Supabase error hint:', error.hint);
       throw error;
     }
 
-    console.log('✅✅✅ [SUCCESS] Subscription saved');
-    console.log('🎉 User:', userId, '| Tier:', tier);
+    console.log('✅ [10] Supabase upsert successful');
+    console.log('✅ [10a] Returned data:', JSON.stringify(data, null, 2));
+    console.log('');
+    console.log('🎉🎉🎉 SUBSCRIPTION ACTIVATED SUCCESSFULLY 🎉🎉🎉');
+    console.log('🎉 User ID:', userId);
+    console.log('🎉 Tier:', tier);
+    console.log('🎉 Billing:', billingCycle);
+    console.log('🎉 Expires:', periodEnd.toISOString());
+    console.log('');
 
   } catch (error) {
-    console.error('❌❌❌ [FATAL]:', error);
-    console.error('Type:', error?.constructor?.name);
-    console.error('Message:', error instanceof Error ? error.message : String(error));
+    console.error('');
+    console.error('❌❌❌ FATAL ERROR IN PAYMENT PROCESSING ❌❌❌');
+    console.error('Error type:', error?.constructor?.name);
+    console.error('Error message:', error instanceof Error ? error.message : String(error));
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error('');
   }
 }
 
