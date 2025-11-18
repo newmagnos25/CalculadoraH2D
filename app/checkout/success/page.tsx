@@ -3,16 +3,29 @@
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { showWelcomePurchasePopup } from '@/lib/motivational-popups';
+import { useSubscription } from '@/lib/hooks/useSubscription';
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const [paymentId, setPaymentId] = useState<string | null>(null);
+  const { subscription } = useSubscription();
 
   useEffect(() => {
     // Get payment ID from URL params
     const id = searchParams.get('payment_id') || searchParams.get('collection_id');
     setPaymentId(id);
   }, [searchParams]);
+
+  // Show welcome popup when subscription is loaded
+  useEffect(() => {
+    if (subscription && subscription.tier) {
+      // Delay para dar tempo da página carregar completamente
+      setTimeout(() => {
+        showWelcomePurchasePopup(subscription.tier);
+      }, 1500);
+    }
+  }, [subscription]);
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900 flex items-center justify-center p-4">

@@ -8,7 +8,7 @@ export default function LandingPage() {
       <header className="border-b-4 border-orange-500 bg-black/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
               <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center border-2 border-amber-300 shadow-lg">
                 <span className="text-white font-black text-2xl">P3D</span>
               </div>
@@ -16,7 +16,7 @@ export default function LandingPage() {
                 <h1 className="text-xl font-black text-white">Precifica3D</h1>
                 <p className="text-orange-400 text-xs font-bold">PRO</p>
               </div>
-            </div>
+            </Link>
             <HeaderUser />
           </div>
         </div>

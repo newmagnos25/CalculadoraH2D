@@ -17,6 +17,7 @@ import PrinterManager from './PrinterManager';
 import PDFActions from './PDFActions';
 import TemplatesManager from './TemplatesManager';
 import { ProductTemplate } from '@/lib/templates';
+import { showMotivationalPopup } from '@/lib/motivational-popups';
 
 interface FilamentUsage {
   id: string;
@@ -46,7 +47,9 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
   const [filamentUsages, setFilamentUsages] = useState<FilamentUsage[]>([
     { id: '1', filamentId: filaments[0].id, weight: 50 }
   ]);
-  const [printTime, setPrintTime] = useState(120);
+  const [printTime, setPrintTime] = useState(120); // mantém em minutos internamente
+  const [printHours, setPrintHours] = useState(2);
+  const [printMinutes, setPrintMinutes] = useState(0);
   const [selectedState, setSelectedState] = useState('SP');
   const [energyTariffId, setEnergyTariffId] = useState('Enel São Paulo');
 
@@ -130,6 +133,24 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
       localStorage.setItem('profitMargin', profitMargin.toString());
     }
   }, [profitMargin]);
+
+  // Sincronizar printTime com horas e minutos
+  useEffect(() => {
+    const totalMinutes = printHours * 60 + printMinutes;
+    if (totalMinutes !== printTime) {
+      setPrintTime(totalMinutes);
+    }
+  }, [printHours, printMinutes]);
+
+  // Inicializar horas e minutos a partir de printTime (ao restaurar dados)
+  useEffect(() => {
+    const hours = Math.floor(printTime / 60);
+    const minutes = printTime % 60;
+    if (hours !== printHours || minutes !== printMinutes) {
+      setPrintHours(hours);
+      setPrintMinutes(minutes);
+    }
+  }, [printTime]);
 
   const loadCustomData = () => {
     const customFilaments = getCustomFilaments();
@@ -287,6 +308,11 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
     setResult(calculatedResult);
     saveLastCalculation({ input, result: calculatedResult });
+
+    // Mostrar popup motivacional baseado em progresso
+    if (subscription && !subscription.is_unlimited) {
+      showMotivationalPopup(subscription.remaining || 0, subscription.max || 0);
+    }
   } catch (error) {
     console.error('❌ Erro ao calcular preço:', error);
     toast.error('Erro ao calcular o preço. Verifique os dados e tente novamente.');
@@ -610,16 +636,49 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
           {/* Tempo e Energia */}
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">
-              Tempo de Impressão (minutos)
+              ⏱️ Tempo de Impressão
             </label>
-            <input
-              type="number"
-              value={printTime}
-              onChange={e => setPrintTime(Number(e.target.value))}
-              className="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200 dark:focus:ring-orange-800 transition-all"
-            />
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              ≈ {Math.floor(printTime / 60)}h {printTime % 60}min
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium mb-1 text-slate-600 dark:text-slate-400">
+                  Horas
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="999"
+                  value={printHours}
+                  onChange={e => setPrintHours(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200 dark:focus:ring-orange-800 transition-all text-center font-bold text-lg"
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1 text-slate-600 dark:text-slate-400">
+                  Minutos
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="59"
+                  value={printMinutes}
+                  onChange={e => {
+                    const val = parseInt(e.target.value) || 0;
+                    if (val >= 60) {
+                      // Converter minutos extras em horas
+                      setPrintHours(printHours + Math.floor(val / 60));
+                      setPrintMinutes(val % 60);
+                    } else {
+                      setPrintMinutes(Math.max(0, Math.min(59, val)));
+                    }
+                  }}
+                  className="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200 dark:focus:ring-orange-800 transition-all text-center font-bold text-lg"
+                  placeholder="0"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">
+              ⏱️ Total: <strong className="text-orange-600 dark:text-orange-400">{printTime} minutos</strong> ({printHours}h {printMinutes}min)
             </p>
           </div>
 
