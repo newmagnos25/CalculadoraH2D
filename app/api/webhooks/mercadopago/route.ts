@@ -143,23 +143,8 @@ async function processPayment(
     console.log('🔐 Criando cliente Supabase...');
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Verificar se usuário existe
-    console.log('👤 Verificando usuário:', userId);
-    const { data: existingUser, error: userError } = await supabase.auth.admin.getUserById(userId);
-
-    if (userError) {
-      console.error('❌ Erro ao buscar usuário:', userError);
-      throw new Error(`Erro ao buscar usuário: ${userError.message}`);
-    }
-
-    if (!existingUser) {
-      console.error('❌ Usuário não encontrado no Supabase');
-      throw new Error(`Usuário não encontrado: ${userId}`);
-    }
-
-    console.log('✅ Usuário encontrado:', existingUser.user.email);
-
     // Calcular data de expiração
+    console.log('📅 Calculando período de assinatura...');
     const now = new Date();
     let periodEnd: Date;
 
@@ -178,8 +163,8 @@ async function processPayment(
       end: periodEnd.toISOString(),
     });
 
-    // Atualizar assinatura
-    console.log('💾 Atualizando assinatura no banco...');
+    // Atualizar assinatura (COM TIMEOUT DE 10 SEGUNDOS)
+    console.log('💾 Salvando assinatura no banco de dados...');
     const subscriptionData = {
       user_id: userId,
       tier,
@@ -192,25 +177,42 @@ async function processPayment(
 
     console.log('📝 Dados a serem salvos:', subscriptionData);
 
-    const { data: savedData, error: subError } = await supabase
+    // Criar promise de timeout
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('⏱️ Timeout ao salvar no Supabase (10s)')), 10000)
+    );
+
+    // Criar promise do upsert
+    const upsertPromise = supabase
       .from('subscriptions')
       .upsert(subscriptionData, {
         onConflict: 'user_id',
       })
       .select();
 
+    // Executar com timeout
+    const { data: savedData, error: subError } = await Promise.race([
+      upsertPromise,
+      timeoutPromise
+    ]);
+
     if (subError) {
-      console.error('❌ Erro ao salvar no banco:', subError);
-      throw new Error(`Erro ao atualizar assinatura: ${subError.message}`);
+      console.error('❌ Erro do Supabase:', {
+        code: subError.code,
+        message: subError.message,
+        details: subError.details,
+        hint: subError.hint,
+      });
+      throw new Error(`Erro ao salvar assinatura: ${subError.message}`);
     }
 
-    console.log('✅ Dados salvos com sucesso:', savedData);
-    console.log('✅ Assinatura ativada:', {
-      userId,
-      tier,
-      billingCycle,
-      periodEnd: periodEnd.toISOString(),
-    });
+    console.log('✅✅✅ ASSINATURA ATIVADA COM SUCESSO! ✅✅✅');
+    console.log('🎉 User ID:', userId);
+    console.log('🎉 Plano:', tier);
+    console.log('🎉 Billing Cycle:', billingCycle);
+    console.log('🎉 Expira em:', periodEnd.toISOString());
+    console.log('🎉 Payment ID:', payment.id);
+    console.log('💾 Dados salvos:', savedData);
 
   } catch (error) {
     console.error('❌ Erro no processamento:', error);
