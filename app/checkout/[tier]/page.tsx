@@ -17,13 +17,16 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
   const tier = resolvedParams.tier as SubscriptionTier;
   const router = useRouter();
 
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const tierConfig = TIER_CONFIGS[tier];
+
+  // Set initial billing cycle - yearly for lifetime, monthly for others
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>(
+    tier === 'lifetime' ? 'yearly' : 'monthly'
+  );
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
-  const tierConfig = TIER_CONFIGS[tier];
 
   // Check authentication FIRST
   useEffect(() => {
