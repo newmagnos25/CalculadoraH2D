@@ -7,6 +7,7 @@ import { getCompanySettings, getClients, getNextInvoiceNumber, incrementInvoiceC
 import { generateAndDownloadQuote, generateAndDownloadContract, getCurrentDate, getDefaultValidityDate } from '@/lib/pdf-utils';
 import { createClient } from '@/lib/supabase/client';
 import { useSubscription } from '@/lib/hooks/useSubscription';
+import { showMotivationalPopup } from '@/lib/motivational-popups';
 import ClientManager from './ClientManager';
 import { StatusSelector } from './StatusBadge';
 import AttachmentManager from './AttachmentManager';
@@ -108,8 +109,14 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
         }
 
         incrementInvoiceCounter();
-        refreshSubscription(); // Atualizar contador
+        await refreshSubscription(); // Atualizar contador
         showMessage('success', `Orçamento ${quoteNumber} gerado com sucesso!`);
+
+        // Mostrar popup motivacional após consumir crédito
+        if (subscription && !subscription.is_unlimited) {
+          const newRemaining = (subscription.remaining || 0) - 1;
+          showMotivationalPopup(newRemaining, subscription.max || 0);
+        }
       } else {
         showMessage('error', 'Erro ao gerar orçamento. Tente novamente.');
       }
@@ -200,8 +207,14 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
         }
 
         incrementInvoiceCounter();
-        refreshSubscription(); // Atualizar contador
+        await refreshSubscription(); // Atualizar contador
         showMessage('success', `Contrato ${contractNumber} gerado com sucesso!`);
+
+        // Mostrar popup motivacional após consumir crédito
+        if (subscription && !subscription.is_unlimited) {
+          const newRemaining = (subscription.remaining || 0) - 1;
+          showMotivationalPopup(newRemaining, subscription.max || 0);
+        }
       } else {
         showMessage('error', 'Erro ao gerar contrato. Tente novamente.');
       }

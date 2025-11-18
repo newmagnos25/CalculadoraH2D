@@ -100,6 +100,7 @@ export interface CalculationResult {
   profitMargin: number;
   profitValue: number;
   finalPrice: number;
+  rawFinalPrice?: number; // Valor antes do arredondamento inteligente
   breakdown: {
     item: string;
     value: number;
