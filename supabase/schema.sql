@@ -13,6 +13,7 @@ create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   email text unique not null,
   full_name text,
+  default_printer_id text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );

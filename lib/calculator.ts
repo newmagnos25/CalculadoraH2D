@@ -41,9 +41,9 @@ export function smartRoundPrice(value: number): number {
  * - Pós-processamento (lixamento, pintura, etc)
  * - Margem de lucro
  */
-export function calculatePrintCost(input: CalculationInput): CalculationResult {
+export async function calculatePrintCost(input: CalculationInput): Promise<CalculationResult> {
   // 1. Buscar dados (inclui default + customizados do localStorage)
-  const printer = getPrinterById(input.printerId);
+  const printer = await getPrinterById(input.printerId);
   const filament = getFilamentById(input.filamentId);
   const tariff = energyTariffs.find(t => t.distributor === input.energyTariffId);
 

@@ -42,9 +42,19 @@ function savePopupState(state: PopupState) {
 }
 
 /**
+ * Tipo para mensagens de milestone
+ */
+interface MilestoneMessage {
+  emoji: string;
+  title: string;
+  message: string;
+  cta?: boolean;
+}
+
+/**
  * Mensagens motivacionais variadas
  */
-const MILESTONE_MESSAGES = {
+const MILESTONE_MESSAGES: Record<number, MilestoneMessage[]> = {
   10: [
     { emoji: '🎯', title: 'Primeira Dúzia!', message: 'Você já criou 10 orçamentos! Está dominando a ferramenta!' },
     { emoji: '🔥', title: 'Produtividade em Alta!', message: '10 orçamentos concluídos! Seu negócio está crescendo!' },
@@ -184,29 +194,10 @@ export function showMotivationalPopup(remaining: number, max: number) {
 
       if (msg.cta) {
         // Milestones com CTA (call-to-action)
+        const toastMessage = `${msg.emoji} ${msg.title}\n\n${msg.message}\n\n💎 Vá em "Ver Planos" no menu para fazer upgrade!`;
+
         toast(
-          <div>
-            <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>
-              {msg.emoji} {msg.title}
-            </div>
-            <div style={{ marginBottom: '12px' }}>{msg.message}</div>
-            <button
-              onClick={() => {
-                window.location.href = '/pricing';
-              }}
-              style={{
-                background: '#fff',
-                color: '#f97316',
-                padding: '8px 16px',
-                borderRadius: '8px',
-                fontWeight: 'bold',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              Ver Planos Premium →
-            </button>
-          </div>,
+          toastMessage,
           {
             duration: 12000,
             icon: msg.emoji,
@@ -258,18 +249,10 @@ export function showWelcomePurchasePopup(tier: string) {
   if (!welcome) return;
 
   // Popup especial com confete (simulado com emoji)
-  toast(
-    <div style={{ textAlign: 'center' }}>
-      <div style={{ fontSize: '48px', marginBottom: '12px' }}>
-        {welcome.emoji}
-      </div>
-      <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '12px' }}>
-        {welcome.title}
-      </div>
-      <div style={{ fontSize: '14px', whiteSpace: 'pre-line', lineHeight: '1.6' }}>
-        {welcome.message}
-      </div>
-    </div>,
+  const welcomeMessage = `${welcome.emoji}\n\n${welcome.title}\n\n${welcome.message}`;
+
+  toast.success(
+    welcomeMessage,
     {
       duration: welcome.duration,
       style: {
@@ -278,6 +261,9 @@ export function showWelcomePurchasePopup(tier: string) {
         padding: '24px',
         minWidth: '350px',
         maxWidth: '400px',
+        textAlign: 'center',
+        whiteSpace: 'pre-line',
+        lineHeight: '1.6',
       },
     }
   );

@@ -29,12 +29,14 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
     loadPrinters();
   }, []);
 
-  const loadPrinters = () => {
-    setAllPrinters(getAllPrinters());
-    setCustomPrinters(getCustomPrinters());
+  const loadPrinters = async () => {
+    const allPrintersData = await getAllPrinters();
+    setAllPrinters(allPrintersData);
+    const customPrintersData = await getCustomPrinters();
+    setCustomPrinters(customPrintersData);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newPrinter: Printer = {
@@ -47,8 +49,8 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
       features: formData.features || [],
     };
 
-    saveCustomPrinter(newPrinter);
-    loadPrinters();
+    await saveCustomPrinter(newPrinter);
+    await loadPrinters();
     resetForm();
   };
 
@@ -71,10 +73,10 @@ export default function PrinterManager({ selectedPrinterId, onPrinterSelect, sho
     setIsAddingNew(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir esta impressora?')) {
-      deleteCustomPrinter(id);
-      loadPrinters();
+      await deleteCustomPrinter(id);
+      await loadPrinters();
       if (selectedPrinterId === id && onPrinterSelect) {
         onPrinterSelect(null);
       }

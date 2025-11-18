@@ -2,6 +2,7 @@ import { Filament, Addon, Printer, CompanySettings, ClientData } from './types';
 import { printers as defaultPrinters } from '@/data/printers';
 import { filaments as defaultFilaments } from '@/data/filaments';
 import { addons as defaultAddons } from '@/data/addons';
+import { getCustomPrintersFromDB, saveCustomPrinterToDB, deleteCustomPrinterFromDB } from './supabase-printers';
 
 // LocalStorage helpers para persistência de dados
 
@@ -68,30 +69,81 @@ export function deleteCustomAddon(id: string): void {
   localStorage.setItem(KEYS.CUSTOM_ADDONS, JSON.stringify(filtered));
 }
 
-// Impressoras customizadas
-export function getCustomPrinters(): Printer[] {
+// Impressoras customizadas (HÍBRIDO: Supabase + localStorage fallback)
+export async function getCustomPrinters(): Promise<Printer[]> {
+  // Tentar buscar do Supabase primeiro
+  try {
+    const dbPrinters = await getCustomPrintersFromDB();
+
+    if (dbPrinters.length > 0) {
+      // Converter formato do DB para formato Printer
+      return dbPrinters.map(p => ({
+        id: p.printer_id,
+        name: p.name,
+        brand: p.model || 'Custom',
+        buildVolume: { x: 220, y: 220, z: 250 }, // Valores padrão
+        maxTemp: { hotend: 300, bed: 100 },
+        powerConsumption: {
+          idle: Math.floor(p.power_consumption * 0.1),
+          heating: Math.floor(p.power_consumption * 0.6),
+          printing: p.power_consumption
+        },
+        features: [],
+        isCustom: true,
+      }));
+    }
+  } catch (error) {
+    console.warn('Failed to load from Supabase, using localStorage:', error);
+  }
+
+  // Fallback para localStorage
   if (typeof window === 'undefined') return [];
   const data = localStorage.getItem(KEYS.CUSTOM_PRINTERS);
   return data ? JSON.parse(data) : [];
 }
 
-export function saveCustomPrinter(printer: Printer): void {
-  const existing = getCustomPrinters();
-  const index = existing.findIndex(p => p.id === printer.id);
+export async function saveCustomPrinter(printer: Printer): Promise<void> {
+  // Salvar no Supabase
+  try {
+    await saveCustomPrinterToDB({
+      printer_id: printer.id,
+      name: printer.name,
+      model: printer.brand,
+      power_consumption: printer.powerConsumption?.printing || 150,
+    });
+  } catch (error) {
+    console.warn('Failed to save to Supabase, using localStorage:', error);
 
-  if (index >= 0) {
-    existing[index] = printer;
-  } else {
-    existing.push(printer);
+    // Fallback para localStorage
+    const existing = await getCustomPrinters();
+    const index = existing.findIndex(p => p.id === printer.id);
+
+    if (index >= 0) {
+      existing[index] = printer;
+    } else {
+      existing.push(printer);
+    }
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(KEYS.CUSTOM_PRINTERS, JSON.stringify(existing));
+    }
   }
-
-  localStorage.setItem(KEYS.CUSTOM_PRINTERS, JSON.stringify(existing));
 }
 
-export function deleteCustomPrinter(id: string): void {
-  const existing = getCustomPrinters();
-  const filtered = existing.filter(p => p.id !== id);
-  localStorage.setItem(KEYS.CUSTOM_PRINTERS, JSON.stringify(filtered));
+export async function deleteCustomPrinter(id: string): Promise<void> {
+  // Deletar do Supabase
+  try {
+    await deleteCustomPrinterFromDB(id);
+  } catch (error) {
+    console.warn('Failed to delete from Supabase, using localStorage:', error);
+
+    // Fallback para localStorage
+    const existing = await getCustomPrinters();
+    const filtered = existing.filter(p => p.id !== id);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(KEYS.CUSTOM_PRINTERS, JSON.stringify(filtered));
+    }
+  }
 }
 
 // Última calculação
@@ -204,8 +256,16 @@ export function incrementInvoiceCounter(): void {
 /**
  * Retorna todas as impressoras (default + customizadas)
  */
-export function getAllPrinters(): Printer[] {
-  return [...defaultPrinters, ...getCustomPrinters()];
+export async function getAllPrinters(): Promise<Printer[]> {
+  const customPrinters = await getCustomPrinters();
+  return [...defaultPrinters, ...customPrinters];
+}
+
+/**
+ * Retorna apenas impressoras default (síncrono)
+ */
+export function getDefaultPrinters(): Printer[] {
+  return defaultPrinters;
 }
 
 /**
@@ -225,8 +285,16 @@ export function getAllAddons(): Addon[] {
 /**
  * Busca impressora por ID (default ou customizada)
  */
-export function getPrinterById(id: string): Printer | undefined {
-  return getAllPrinters().find(p => p.id === id);
+export async function getPrinterById(id: string): Promise<Printer | undefined> {
+  const allPrinters = await getAllPrinters();
+  return allPrinters.find(p => p.id === id);
+}
+
+/**
+ * Busca impressora por ID apenas em default printers (síncrono)
+ */
+export function getDefaultPrinterById(id: string): Printer | undefined {
+  return defaultPrinters.find(p => p.id === id);
 }
 
 /**
