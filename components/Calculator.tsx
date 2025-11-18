@@ -96,7 +96,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
   // Resultado
   const [result, setResult] = useState<CalculationResult | null>(null);
-  const [currentQuoteId, setCurrentQuoteId] = useState<string | null>(null); // ID do quote salvo no banco
+  const [currentQuoteId, setCurrentQuoteId] = useState<string | null>(null); // ID do quote salvo (PDF grátis)
 
   // Templates modal
   const [showTemplatesModal, setShowTemplatesModal] = useState(false);
@@ -135,6 +135,13 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
       saveCurrentState();
     }
   }, [printerId, filamentUsages, printTime, selectedState, energyTariffId, selectedAddons, itemDescription, quantity, dimensions, isRestoring]);
+
+  // Resetar quoteId quando dados mudarem (forçar novo cálculo = novo crédito)
+  useEffect(() => {
+    if (!isRestoring && currentQuoteId) {
+      setCurrentQuoteId(null); // Dados mudaram, precisa recalcular
+    }
+  }, [printerId, filamentUsages, printTime, energyTariffId, laborCost, depreciation, fixedCosts, profitMargin, selectedAddons, isRestoring]);
 
   // Auto-save custos e margem quando mudarem
   useEffect(() => {
@@ -354,7 +361,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     const { data: { user } } = await supabase.auth.getUser();
 
     if (user) {
-      await supabase.from('quotes').insert({
+      const { data: quoteData } = await supabase.from('quotes').insert({
         user_id: user.id,
         quote_data: {
           calculation: calculatedResult,
@@ -373,14 +380,18 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
           },
           type: 'calculation',
         },
-      });
+      }).select('id').single();
+
+      if (quoteData) {
+        setCurrentQuoteId(quoteData.id);
+      }
     }
 
     await refreshSubscription(); // Atualizar contador de créditos
 
-    toast.success('Orçamento calculado! 1 crédito consumido. PDF e Contrato consomem créditos adicionais.', {
-      duration: 4000,
-      icon: '✅',
+    toast.success('✅ Orçamento calculado! 1 crédito gasto. PDF GRÁTIS, Contrato +1 crédito.', {
+      duration: 5000,
+      icon: '💰',
     });
 
     // Mostrar popup motivacional após consumir crédito
@@ -1113,6 +1124,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
             {/* PDF Actions */}
             <PDFActions
               calculation={result}
+              quoteId={currentQuoteId}
               printDetails={{
                 itemDescription: itemDescription || 'Impressão 3D',
                 quantity: quantity,
