@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { validateEmail, validatePassword, EmailValidationResult, PasswordValidationResult } from '@/lib/validation';
 
 function SignupForm() {
   const router = useRouter();
@@ -16,6 +17,30 @@ function SignupForm() {
   const [messageType, setMessageType] = useState<'error' | 'warning' | 'success'>('error');
   const [resendingEmail, setResendingEmail] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [emailValidation, setEmailValidation] = useState<EmailValidationResult | null>(null);
+  const [passwordValidation, setPasswordValidation] = useState<PasswordValidationResult | null>(null);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
+
+  // Validação de email em tempo real
+  useEffect(() => {
+    if (email && emailTouched) {
+      const validation = validateEmail(email);
+      setEmailValidation(validation);
+    } else {
+      setEmailValidation(null);
+    }
+  }, [email, emailTouched]);
+
+  // Validação de senha em tempo real
+  useEffect(() => {
+    if (password && passwordTouched) {
+      const validation = validatePassword(password);
+      setPasswordValidation(validation);
+    } else {
+      setPasswordValidation(null);
+    }
+  }, [password, passwordTouched]);
 
   // Cooldown timer
   useEffect(() => {
@@ -71,10 +96,22 @@ function SignupForm() {
     setLoading(true);
     setMessage(null);
 
+    // Validar email
+    const emailCheck = validateEmail(email);
+    if (!emailCheck.isValid) {
+      setMessage(emailCheck.error || 'Email inválido');
+      setMessageType('error');
+      setLoading(false);
+      setEmailTouched(true);
+      return;
+    }
+
+    // Validar senha
     if (password.length < 6) {
       setMessage('A senha deve ter pelo menos 6 caracteres');
       setMessageType('error');
       setLoading(false);
+      setPasswordTouched(true);
       return;
     }
 
@@ -246,10 +283,41 @@ function SignupForm() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => setEmailTouched(true)}
                 required
-                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none"
+                className={`w-full px-4 py-3 rounded-lg border-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none transition-colors ${
+                  emailValidation && emailTouched
+                    ? emailValidation.isValid
+                      ? emailValidation.warning
+                        ? 'border-yellow-500 focus:border-yellow-600'
+                        : 'border-green-500 focus:border-green-600'
+                      : 'border-red-500 focus:border-red-600'
+                    : 'border-slate-300 dark:border-slate-700 focus:border-orange-500'
+                }`}
                 placeholder="seu@email.com"
               />
+              {emailValidation && emailTouched && (
+                <div className="mt-2">
+                  {!emailValidation.isValid && emailValidation.error && (
+                    <p className="text-sm font-semibold text-red-600 dark:text-red-400 flex items-center gap-2">
+                      <span>❌</span>
+                      <span>{emailValidation.error}</span>
+                    </p>
+                  )}
+                  {emailValidation.isValid && emailValidation.warning && (
+                    <p className="text-sm font-semibold text-yellow-600 dark:text-yellow-400 flex items-center gap-2">
+                      <span>⚠️</span>
+                      <span>{emailValidation.warning}</span>
+                    </p>
+                  )}
+                  {emailValidation.isValid && !emailValidation.warning && (
+                    <p className="text-sm font-semibold text-green-600 dark:text-green-400 flex items-center gap-2">
+                      <span>✅</span>
+                      <span>Email válido!</span>
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             <div>
@@ -260,19 +328,66 @@ function SignupForm() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onBlur={() => setPasswordTouched(true)}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none"
+                className={`w-full px-4 py-3 rounded-lg border-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none transition-colors ${
+                  passwordValidation && passwordTouched
+                    ? passwordValidation.isValid
+                      ? passwordValidation.strength === 'strong'
+                        ? 'border-green-500 focus:border-green-600'
+                        : passwordValidation.strength === 'medium'
+                        ? 'border-yellow-500 focus:border-yellow-600'
+                        : 'border-orange-500 focus:border-orange-600'
+                      : 'border-red-500 focus:border-red-600'
+                    : 'border-slate-300 dark:border-slate-700 focus:border-orange-500'
+                }`}
                 placeholder="••••••••"
               />
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Mínimo 6 caracteres
-              </p>
+              {passwordValidation && passwordTouched ? (
+                <div className="mt-2">
+                  {!passwordValidation.isValid && passwordValidation.error && (
+                    <p className="text-sm font-semibold text-red-600 dark:text-red-400 flex items-center gap-2">
+                      <span>❌</span>
+                      <span>{passwordValidation.error}</span>
+                    </p>
+                  )}
+                  {passwordValidation.isValid && passwordValidation.strength && (
+                    <div className="space-y-1">
+                      <p className={`text-sm font-semibold flex items-center gap-2 ${
+                        passwordValidation.strength === 'strong'
+                          ? 'text-green-600 dark:text-green-400'
+                          : passwordValidation.strength === 'medium'
+                          ? 'text-yellow-600 dark:text-yellow-400'
+                          : 'text-orange-600 dark:text-orange-400'
+                      }`}>
+                        <span>
+                          {passwordValidation.strength === 'strong' ? '🔒' :
+                           passwordValidation.strength === 'medium' ? '🔓' : '⚠️'}
+                        </span>
+                        <span>
+                          Senha {passwordValidation.strength === 'strong' ? 'forte' :
+                                passwordValidation.strength === 'medium' ? 'média' : 'fraca'}
+                        </span>
+                      </p>
+                      {passwordValidation.strength !== 'strong' && (
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          Dica: Use letras maiúsculas, minúsculas, números e caracteres especiais
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Mínimo 6 caracteres
+                </p>
+              )}
             </div>
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || (emailTouched && emailValidation ? !emailValidation.isValid : false)}
               className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 disabled:from-slate-400 disabled:to-slate-500 text-white font-black py-3 px-6 rounded-lg transition-all shadow-lg disabled:cursor-not-allowed"
             >
               {loading ? 'Criando conta...' : 'Criar Conta Grátis'}
