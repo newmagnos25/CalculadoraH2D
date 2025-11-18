@@ -10,10 +10,13 @@ import { getCustomFilaments, getCustomAddons, getAllPrinters, saveLastCalculatio
 import { useAntiPiracy } from '@/lib/hooks/useAntiPiracy';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import FilamentManager from './FilamentManager';
 import AddonManager from './AddonManager';
 import PrinterManager from './PrinterManager';
 import PDFActions from './PDFActions';
+import TemplatesManager from './TemplatesManager';
+import { ProductTemplate } from '@/lib/templates';
 
 interface FilamentUsage {
   id: string;
@@ -88,6 +91,9 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
   // Resultado
   const [result, setResult] = useState<CalculationResult | null>(null);
+
+  // Templates modal
+  const [showTemplatesModal, setShowTemplatesModal] = useState(false);
 
   // Carregar dados customizados e último cálculo
   useEffect(() => {
@@ -170,13 +176,13 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     try {
       // Verificar créditos disponíveis
       if (!subscription || !subscription.allowed) {
-        alert('❌ Você atingiu o limite de orçamentos do seu plano!');
+        toast.error('Você atingiu o limite de orçamentos do seu plano!');
         return;
       }
 
       // Validação básica
       if (filamentUsages.length === 0) {
-        alert('⚠️ Adicione pelo menos um filamento antes de calcular!');
+        toast.error('Adicione pelo menos um filamento antes de calcular!');
         return;
       }
 
@@ -283,7 +289,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     saveLastCalculation({ input, result: calculatedResult });
   } catch (error) {
     console.error('❌ Erro ao calcular preço:', error);
-    alert('❌ Erro ao calcular o preço. Verifique os dados e tente novamente.');
+    toast.error('Erro ao calcular o preço. Verifique os dados e tente novamente.');
   }
 };
 
@@ -320,6 +326,25 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     );
   };
 
+  // Load template data into calculator
+  const handleLoadTemplate = (template: ProductTemplate) => {
+    try {
+      setPrinterId(template.printerId);
+      setFilamentUsages(template.filamentUsages.map((f, index) => ({
+        id: Date.now().toString() + index,
+        filamentId: f.filamentId,
+        weight: f.weight,
+      })));
+      setPrintTime(template.printTime.hours * 60 + template.printTime.minutes);
+      setSelectedAddons(template.selectedAddons);
+      setItemDescription(template.itemDescription);
+      setDimensions(`${template.dimensions.length}x${template.dimensions.width}x${template.dimensions.height}`);
+    } catch (error) {
+      console.error('Error loading template:', error);
+      toast.error('Erro ao carregar template');
+    }
+  };
+
   const stateTariffs = getTariffsByState(selectedState);
   const totalWeight = parseFloat(filamentUsages.reduce((sum, f) => sum + f.weight, 0).toFixed(2));
 
@@ -329,18 +354,28 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
       <div className="space-y-6">
         {/* Card Principal */}
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 border-2 border-orange-200 dark:border-orange-900/50">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/30">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/30">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                  Nova Cotação
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Configure os parâmetros da impressão</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                Nova Cotação
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Configure os parâmetros da impressão</p>
-            </div>
+            <button
+              onClick={() => setShowTemplatesModal(true)}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold rounded-lg transition-all shadow-lg text-xs sm:text-sm"
+              title="Gerenciar templates de produtos"
+            >
+              <span className="hidden sm:inline">📋 Templates</span>
+              <span className="sm:hidden">📋</span>
+            </button>
           </div>
 
           {/* Impressora */}
@@ -976,6 +1011,35 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
           </div>
         )}
       </div>
+
+      {/* Templates Manager Modal */}
+      <TemplatesManager
+        isOpen={showTemplatesModal}
+        onClose={() => setShowTemplatesModal(false)}
+        onLoadTemplate={handleLoadTemplate}
+        currentCalculation={
+          printerId
+            ? {
+                printerId,
+                filamentUsages: filamentUsages.map(f => ({
+                  filamentId: f.filamentId,
+                  weight: f.weight,
+                })),
+                printTime: {
+                  hours: Math.floor(printTime / 60),
+                  minutes: printTime % 60,
+                },
+                selectedAddons,
+                itemDescription,
+                dimensions: {
+                  length: parseFloat(dimensions.split('x')[0] || '0'),
+                  width: parseFloat(dimensions.split('x')[1] || '0'),
+                  height: parseFloat(dimensions.split('x')[2] || '0'),
+                },
+              }
+            : undefined
+        }
+      />
     </div>
   );
 }

@@ -50,7 +50,7 @@ export default function LandingPage() {
           </div>
 
           <p className="text-slate-400 text-sm">
-            ✅ Sem cartão de crédito • 3 orçamentos grátis • Upgrade quando quiser
+            ✅ Sem cartão de crédito • 5 orçamentos grátis • Upgrade quando quiser
           </p>
         </div>
       </section>
@@ -97,7 +97,7 @@ export default function LandingPage() {
             Pronto para Profissionalizar seus Orçamentos?
           </h2>
           <p className="text-xl text-orange-100 mb-8">
-            Crie sua conta grátis e ganhe <strong>3 orçamentos</strong> para testar!
+            Crie sua conta grátis e ganhe <strong>5 orçamentos</strong> para testar!
           </p>
           <Link
             href="/auth/signup"

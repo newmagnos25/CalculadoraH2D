@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Calculator from '@/components/Calculator';
+import OnboardingTour from '@/components/OnboardingTour';
 import { createClient } from '@/lib/supabase/client';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 
@@ -137,6 +138,9 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-orange-50/30 dark:from-black dark:via-slate-950 dark:to-slate-900">
+      {/* Onboarding Tour for First-Time Users */}
+      <OnboardingTour />
+
       {/* Header Premium - Preto com Laranja/Dourado */}
       <div className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-orange-500 shadow-2xl">
         <div className="container mx-auto px-4 py-8">

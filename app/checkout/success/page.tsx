@@ -62,7 +62,7 @@ function CheckoutSuccessContent() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                <span>Configure os dados da sua empresa nas Configurações</span>
+                <span>Configure os dados da sua empresa nas <Link href="/settings" className="text-orange-500 hover:text-orange-600 font-semibold underline">Configurações</Link></span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
