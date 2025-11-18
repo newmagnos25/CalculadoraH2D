@@ -98,16 +98,23 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
   // Templates modal
   const [showTemplatesModal, setShowTemplatesModal] = useState(false);
 
+  // Flag para evitar salvar durante restauração inicial
+  const [isRestoring, setIsRestoring] = useState(true);
+
   // Carregar dados customizados e último cálculo
   useEffect(() => {
     loadCustomData();
     restoreLastCalculation();
+    // Após restaurar, habilitar auto-save
+    setTimeout(() => setIsRestoring(false), 100);
   }, []);
 
   // Salvar estado automaticamente quando campos importantes mudarem
   useEffect(() => {
-    saveCurrentState();
-  }, [printerId, filamentUsages, printTime, selectedState, energyTariffId, selectedAddons, itemDescription, quantity, dimensions]);
+    if (!isRestoring) {
+      saveCurrentState();
+    }
+  }, [printerId, filamentUsages, printTime, selectedState, energyTariffId, selectedAddons, itemDescription, quantity, dimensions, isRestoring]);
 
   // Auto-save custos e margem quando mudarem
   useEffect(() => {
