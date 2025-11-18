@@ -2,169 +2,152 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request: NextRequest) {
-  console.log('🚀 Webhook recebido');
+  console.log('🚀 [START] Webhook received');
 
   try {
-    // 1. VALIDAR VARIÁVEIS DE AMBIENTE
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const mercadoPagoToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
 
-    console.log('🔍 Variáveis:', {
-      hasSupabaseUrl: !!supabaseUrl,
-      hasSupabaseServiceKey: !!supabaseServiceKey,
-      hasMercadoPagoToken: !!mercadoPagoToken,
-      tokenPrefix: mercadoPagoToken?.substring(0, 15) + '...',
-    });
-
     if (!supabaseUrl || !supabaseServiceKey || !mercadoPagoToken) {
-      console.error('❌ Variáveis de ambiente faltando');
-      return NextResponse.json({ error: 'Configuração incompleta' }, { status: 500 });
+      console.error('❌ Missing env vars');
+      return NextResponse.json({ error: 'Config incomplete' }, { status: 500 });
     }
 
-    // 2. LER DADOS DO WEBHOOK (suporta body JSON e query params)
     const { searchParams } = new URL(request.url);
     let paymentId: string | null = null;
     let webhookType: string | null = null;
 
-    // Tentar ler do query params primeiro (formato IPN antigo)
     const topicParam = searchParams.get('topic') || searchParams.get('type');
     const idParam = searchParams.get('id');
 
     if (topicParam && idParam) {
-      // Formato: ?topic=payment&id=123456
       webhookType = topicParam;
       paymentId = idParam;
-      console.log('📦 Webhook via query params - Tipo:', webhookType, '| ID:', paymentId);
     } else {
-      // Tentar ler do body JSON (formato novo)
       try {
         const body = await request.json();
         webhookType = body.type || body.topic;
         paymentId = body.data?.id || body.id;
-        console.log('📦 Webhook via JSON body - Tipo:', webhookType, '| ID:', paymentId);
       } catch (e) {
-        console.log('⚠️ Não conseguiu ler JSON do body, usando query params');
+        console.log('⚠️ Body parse failed');
       }
     }
 
-    // 3. RESPONDER IMEDIATAMENTE (CRÍTICO!)
-    // Mercado Pago precisa de resposta em < 5 segundos
     if (webhookType !== 'payment') {
-      console.log('ℹ️ Webhook não é de pagamento, ignorando:', webhookType);
+      console.log('ℹ️ Non-payment webhook:', webhookType);
       return NextResponse.json({ success: true });
     }
 
     if (!paymentId) {
-      console.error('❌ ID do pagamento não encontrado');
-      return NextResponse.json({ error: 'ID não encontrado' }, { status: 400 });
+      console.error('❌ Payment ID missing');
+      return NextResponse.json({ error: 'ID missing' }, { status: 400 });
     }
 
-    // 4. PROCESSAR DE FORMA ASSÍNCRONA (não bloqueia a resposta)
+    // CRITICAL: Don't await - fire and forget to avoid timeout
     processPayment(paymentId, supabaseUrl, supabaseServiceKey, mercadoPagoToken)
-      .catch(err => {
-        console.error('❌ Erro no processamento:', err);
-        console.error('❌ Stack trace:', err.stack);
-      });
+      .catch(err => console.error('❌ [ASYNC ERROR]:', err));
 
-    // 5. RETORNAR SUCESSO IMEDIATAMENTE
     return NextResponse.json({ success: true });
 
   } catch (error) {
-    console.error('❌ Erro no webhook:', error);
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 });
+    console.error('❌ [WEBHOOK ERROR]:', error);
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }
 
-// Função assíncrona para processar o pagamento
 async function processPayment(
   paymentId: string,
   supabaseUrl: string,
   supabaseServiceKey: string,
   mercadoPagoToken: string
 ) {
-  console.log('🔄 Processando pagamento:', paymentId);
-  console.log('🔑 Token presente:', mercadoPagoToken ? 'SIM' : 'NÃO');
+  console.log('🔄 [1] Processing payment:', paymentId);
 
   try {
-    // Buscar detalhes do pagamento
-    console.log('📡 Fazendo requisição para Mercado Pago...');
-    const paymentUrl = `https://api.mercadopago.com/v1/payments/${paymentId}`;
-    console.log('🔗 URL:', paymentUrl);
+    // Step 1: Fetch with timeout
+    console.log('📡 [2] Fetching from MP...');
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-    const paymentResponse = await fetch(paymentUrl, {
-      headers: { 
-        'Authorization': `Bearer ${mercadoPagoToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    console.log('📥 Resposta do Mercado Pago - Status:', paymentResponse.status);
-    console.log('📥 Resposta do Mercado Pago - StatusText:', paymentResponse.statusText);
-
-    if (!paymentResponse.ok) {
-      const errorText = await paymentResponse.text();
-      console.error('❌ Erro da API Mercado Pago:', errorText);
-      throw new Error(`Erro ao buscar pagamento: ${paymentResponse.status} - ${errorText}`);
+    let paymentResponse;
+    try {
+      paymentResponse = await fetch(
+        `https://api.mercadopago.com/v1/payments/${paymentId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${mercadoPagoToken}`,
+            'Content-Type': 'application/json',
+          },
+          signal: controller.signal,
+        }
+      );
+      clearTimeout(timeoutId);
+      console.log('✅ [3] Fetch OK:', paymentResponse.status);
+    } catch (fetchErr) {
+      clearTimeout(timeoutId);
+      console.error('❌ [3] Fetch failed:', fetchErr);
+      throw fetchErr;
     }
 
-    const payment = await paymentResponse.json();
-    console.log('💳 Status do pagamento:', payment.status);
-    console.log('💳 Pagamento completo:', JSON.stringify(payment, null, 2));
-
-    // Só processar se aprovado
-    if (payment.status !== 'approved') {
-      console.log('⏳ Pagamento não aprovado ainda:', payment.status);
+    if (!paymentResponse.ok) {
+      console.error('❌ [3] Non-OK status:', paymentResponse.status);
       return;
     }
 
-    // Extrair metadados
+    // Step 2: Parse JSON with explicit error handling
+    console.log('📄 [4] Parsing JSON...');
+    let payment;
+    try {
+      const text = await paymentResponse.text();
+      console.log('📄 [4a] Raw response length:', text.length);
+      payment = JSON.parse(text);
+      console.log('✅ [5] Parsed. Status:', payment.status);
+    } catch (parseErr) {
+      console.error('❌ [4] Parse failed:', parseErr);
+      throw parseErr;
+    }
+
+    // Step 3: Check approval
+    if (payment.status !== 'approved') {
+      console.log('⏳ [5] Not approved:', payment.status);
+      return;
+    }
+
+    // Step 4: Extract metadata
+    console.log('📋 [6] Extracting metadata...');
     const tier = payment.metadata?.tier;
     const billingCycle = payment.metadata?.billing_cycle || payment.metadata?.billingCycle;
     const userId = payment.metadata?.user_id || payment.metadata?.userId;
 
-    console.log('📋 Metadados extraídos:', { 
-      tier, 
-      billingCycle, 
-      userId,
-      metadataCompleto: payment.metadata 
-    });
+    console.log('📋 [6] Metadata:', { tier, billingCycle, userId });
 
     if (!tier || !userId) {
-      console.error('❌ Metadados incompletos:', {
-        tier: tier || 'FALTANDO',
-        userId: userId || 'FALTANDO',
-        metadata: payment.metadata,
-      });
-      throw new Error('Metadados incompletos no pagamento');
+      console.error('❌ [6] Incomplete metadata');
+      return;
     }
 
-    // Criar cliente Supabase
-    console.log('🔐 Criando cliente Supabase...');
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Calcular data de expiração
-    console.log('📅 Calculando período de assinatura...');
+    // Step 5: Calculate dates
+    console.log('📅 [7] Calculating dates...');
     const now = new Date();
     let periodEnd: Date;
 
     if (tier === 'test') {
-      periodEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // +7 dias
+      periodEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
     } else if (billingCycle === 'lifetime') {
-      periodEnd = new Date(now.getFullYear() + 100, now.getMonth(), now.getDate()); // +100 anos
+      periodEnd = new Date(now.getFullYear() + 100, now.getMonth(), now.getDate());
     } else if (billingCycle === 'yearly') {
-      periodEnd = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate()); // +1 ano
+      periodEnd = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
     } else {
-      periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate()); // +1 mês
+      periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
     }
 
-    console.log('📅 Período calculado:', {
-      start: now.toISOString(),
-      end: periodEnd.toISOString(),
+    // Step 6: Save to Supabase
+    console.log('💾 [8] Saving to Supabase...');
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { autoRefreshToken: false, persistSession: false }
     });
 
-    // Atualizar assinatura (COM TIMEOUT DE 10 SEGUNDOS)
-    console.log('💾 Salvando assinatura no banco de dados...');
     const subscriptionData = {
       user_id: userId,
       tier,
@@ -175,57 +158,28 @@ async function processPayment(
       mercadopago_payment_id: payment.id.toString(),
     };
 
-    console.log('📝 Dados a serem salvos:', subscriptionData);
+    console.log('📝 [8] Data:', subscriptionData);
 
-    // Criar promise de timeout
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('⏱️ Timeout ao salvar no Supabase (10s)')), 10000)
-    );
-
-    // Criar promise do upsert
-    const upsertPromise = supabase
+    const { data, error } = await supabase
       .from('subscriptions')
-      .upsert(subscriptionData, {
-        onConflict: 'user_id',
-      })
+      .upsert(subscriptionData, { onConflict: 'user_id' })
       .select();
 
-    // Executar com timeout
-    const { data: savedData, error: subError } = await Promise.race([
-      upsertPromise,
-      timeoutPromise
-    ]);
-
-    if (subError) {
-      console.error('❌ Erro do Supabase:', {
-        code: subError.code,
-        message: subError.message,
-        details: subError.details,
-        hint: subError.hint,
-      });
-      throw new Error(`Erro ao salvar assinatura: ${subError.message}`);
+    if (error) {
+      console.error('❌ [8] Supabase error:', error);
+      throw error;
     }
 
-    console.log('✅✅✅ ASSINATURA ATIVADA COM SUCESSO! ✅✅✅');
-    console.log('🎉 User ID:', userId);
-    console.log('🎉 Plano:', tier);
-    console.log('🎉 Billing Cycle:', billingCycle);
-    console.log('🎉 Expira em:', periodEnd.toISOString());
-    console.log('🎉 Payment ID:', payment.id);
-    console.log('💾 Dados salvos:', savedData);
+    console.log('✅✅✅ [SUCCESS] Subscription saved');
+    console.log('🎉 User:', userId, '| Tier:', tier);
 
   } catch (error) {
-    console.error('❌ Erro no processamento:', error);
-    console.error('❌ Tipo do erro:', typeof error);
-    console.error('❌ Stack:', error instanceof Error ? error.stack : 'Sem stack');
-    throw error;
+    console.error('❌❌❌ [FATAL]:', error);
+    console.error('Type:', error?.constructor?.name);
+    console.error('Message:', error instanceof Error ? error.message : String(error));
   }
 }
 
-// GET para teste
 export async function GET() {
-  return NextResponse.json({ 
-    status: 'Webhook ativo',
-    timestamp: new Date().toISOString() 
-  });
+  return NextResponse.json({ status: 'Active', timestamp: new Date().toISOString() });
 }
