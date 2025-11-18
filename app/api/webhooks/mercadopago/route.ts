@@ -15,18 +15,41 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Configuração incompleta' }, { status: 500 });
     }
 
-    // 2. LER BODY DO WEBHOOK
-    const body = await request.json();
-    console.log('📦 Webhook tipo:', body.type, '| ID:', body.data?.id);
+    // 2. LER DADOS DO WEBHOOK (suporta body JSON e query params)
+    const { searchParams } = new URL(request.url);
+    let paymentId: string | null = null;
+    let webhookType: string | null = null;
+
+    // Tentar ler do query params primeiro (formato IPN antigo)
+    const topicParam = searchParams.get('topic') || searchParams.get('type');
+    const idParam = searchParams.get('id');
+
+    if (topicParam && idParam) {
+      // Formato: ?topic=payment&id=123456
+      webhookType = topicParam;
+      paymentId = idParam;
+      console.log('📦 Webhook via query params - Tipo:', webhookType, '| ID:', paymentId);
+    } else {
+      // Tentar ler do body JSON (formato novo)
+      try {
+        const body = await request.json();
+        webhookType = body.type || body.topic;
+        paymentId = body.data?.id || body.id;
+        console.log('📦 Webhook via JSON body - Tipo:', webhookType, '| ID:', paymentId);
+      } catch (e) {
+        console.log('⚠️ Não conseguiu ler JSON do body, usando query params');
+      }
+    }
 
     // 3. RESPONDER IMEDIATAMENTE (CRÍTICO!)
     // Mercado Pago precisa de resposta em < 5 segundos
-    if (body.type !== 'payment') {
+    if (webhookType !== 'payment') {
+      console.log('ℹ️ Webhook não é de pagamento, ignorando:', webhookType);
       return NextResponse.json({ success: true });
     }
 
-    const paymentId = body.data.id;
     if (!paymentId) {
+      console.error('❌ ID do pagamento não encontrado');
       return NextResponse.json({ error: 'ID não encontrado' }, { status: 400 });
     }
 
