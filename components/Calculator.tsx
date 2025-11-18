@@ -6,7 +6,7 @@ import { energyTariffs, getStates, getTariffsByState } from '@/data/energy-tarif
 import { addons, addonCategories } from '@/data/addons';
 import { calculatePrintCost, formatCurrency, formatPercentage, smartRoundPrice } from '@/lib/calculator';
 import { CalculationInput, CalculationResult } from '@/lib/types';
-import { getCustomFilaments, getCustomAddons, getAllPrinters, saveLastCalculation, getLastCalculation } from '@/lib/storage';
+import { getCustomFilaments, getCustomAddons, getAllPrinters, getDefaultPrinters, saveLastCalculation, getLastCalculation } from '@/lib/storage';
 import { useAntiPiracy } from '@/lib/hooks/useAntiPiracy';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import Link from 'next/link';
@@ -39,7 +39,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
   const { subscription, loading: subLoading, refresh: refreshSubscription } = useSubscription();
 
   // Filamentos, adereços e impressoras (padrão + customizados)
-  const [allPrinters, setAllPrinters] = useState(getAllPrinters());
+  const [allPrinters, setAllPrinters] = useState(getDefaultPrinters());
   const [allFilaments, setAllFilaments] = useState(filaments);
   const [allAddons, setAllAddons] = useState(addons);
 
@@ -105,14 +105,15 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
   // Carregar dados customizados e último cálculo
   useEffect(() => {
     const initializeCalculator = async () => {
-      loadCustomData();
+      await loadCustomData();
       restoreLastCalculation();
 
       // Carregar impressora padrão do perfil do usuário
       const defaultPrinter = await loadDefaultPrinter();
       if (defaultPrinter) {
-        // Verificar se a impressora existe na lista
-        const printerExists = allPrinters.some(p => p.id === defaultPrinter);
+        // Verificar se a impressora existe na lista (buscar direto, não do state)
+        const allPrintersData = await getAllPrinters();
+        const printerExists = allPrintersData.some(p => p.id === defaultPrinter);
         if (printerExists) {
           setPrinterId(defaultPrinter);
           console.log('📥 Impressora padrão carregada:', defaultPrinter);
@@ -187,12 +188,13 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     }
   }, [printTime]);
 
-  const loadCustomData = () => {
+  const loadCustomData = async () => {
     const customFilaments = getCustomFilaments();
     const customAddons = getCustomAddons();
     setAllFilaments([...filaments, ...customFilaments]);
     setAllAddons([...addons, ...customAddons]);
-    setAllPrinters(getAllPrinters()); // Já combina printers default + custom
+    const allPrintersData = await getAllPrinters(); // Já combina printers default + custom
+    setAllPrinters(allPrintersData);
   };
 
   const restoreLastCalculation = () => {
@@ -228,7 +230,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     saveLastCalculation(state);
   };
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     try {
       // Verificar créditos disponíveis
       if (!subscription || !subscription.allowed) {
@@ -271,7 +273,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
       })),
     };
 
-    const calculatedResult = calculatePrintCost(input);
+    const calculatedResult = await calculatePrintCost(input);
 
     // Ajustar custo de filamento para usar o calculado manualmente (com arredondamento)
     const roundedTotalFilamentCost = Math.round(totalFilamentCost * 100) / 100;
