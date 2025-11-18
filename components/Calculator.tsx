@@ -10,6 +10,7 @@ import { getCustomFilaments, getCustomAddons, getAllPrinters, saveLastCalculatio
 import { useAntiPiracy } from '@/lib/hooks/useAntiPiracy';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import FilamentManager from './FilamentManager';
 import AddonManager from './AddonManager';
 import PrinterManager from './PrinterManager';
@@ -170,13 +171,13 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     try {
       // Verificar créditos disponíveis
       if (!subscription || !subscription.allowed) {
-        alert('❌ Você atingiu o limite de orçamentos do seu plano!');
+        toast.error('Você atingiu o limite de orçamentos do seu plano!');
         return;
       }
 
       // Validação básica
       if (filamentUsages.length === 0) {
-        alert('⚠️ Adicione pelo menos um filamento antes de calcular!');
+        toast.error('Adicione pelo menos um filamento antes de calcular!');
         return;
       }
 
@@ -283,7 +284,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     saveLastCalculation({ input, result: calculatedResult });
   } catch (error) {
     console.error('❌ Erro ao calcular preço:', error);
-    alert('❌ Erro ao calcular o preço. Verifique os dados e tente novamente.');
+    toast.error('Erro ao calcular o preço. Verifique os dados e tente novamente.');
   }
 };
 
