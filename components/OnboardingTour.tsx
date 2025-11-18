@@ -92,12 +92,23 @@ export default function OnboardingTour() {
   useEffect(() => {
     // Check if user has seen onboarding
     const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+    const savedStep = localStorage.getItem('onboardingCurrentStep');
+    const onboardingPaused = localStorage.getItem('onboardingPaused');
 
     if (!hasSeenOnboarding) {
-      // Show onboarding after a short delay
-      setTimeout(() => {
+      // Se tem progresso salvo, retomar de onde parou
+      if (savedStep && onboardingPaused === 'true') {
+        const stepNumber = parseInt(savedStep, 10);
+        setCurrentStep(stepNumber);
         setIsOpen(true);
-      }, 1000);
+        // Remover flag de pausado
+        localStorage.removeItem('onboardingPaused');
+      } else {
+        // Show onboarding after a short delay
+        setTimeout(() => {
+          setIsOpen(true);
+        }, 1000);
+      }
     }
   }, []);
 
@@ -124,7 +135,10 @@ export default function OnboardingTour() {
 
   const handleNext = () => {
     if (currentStep < ONBOARDING_STEPS.length - 1) {
-      setCurrentStep(currentStep + 1);
+      const nextStep = currentStep + 1;
+      setCurrentStep(nextStep);
+      // Salvar progresso
+      localStorage.setItem('onboardingCurrentStep', nextStep.toString());
     } else {
       handleComplete();
     }
@@ -132,7 +146,10 @@ export default function OnboardingTour() {
 
   const handlePrevious = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      const prevStep = currentStep - 1;
+      setCurrentStep(prevStep);
+      // Salvar progresso
+      localStorage.setItem('onboardingCurrentStep', prevStep.toString());
     }
   };
 
@@ -140,10 +157,49 @@ export default function OnboardingTour() {
     handleComplete();
   };
 
-  const handleComplete = () => {
-    localStorage.setItem('hasSeenOnboarding', 'true');
+  const handlePause = () => {
+    // Salvar progresso e pausar (não completar)
+    localStorage.setItem('onboardingCurrentStep', currentStep.toString());
+    localStorage.setItem('onboardingPaused', 'true');
     setIsOpen(false);
   };
+
+  const handleComplete = () => {
+    localStorage.setItem('hasSeenOnboarding', 'true');
+    localStorage.removeItem('onboardingCurrentStep');
+    localStorage.removeItem('onboardingPaused');
+    setIsOpen(false);
+  };
+
+  // Verificar se tem tutorial pausado para mostrar botão de retomar
+  const hasPausedTutorial = !isOpen &&
+    localStorage.getItem('onboardingPaused') === 'true' &&
+    !localStorage.getItem('hasSeenOnboarding');
+
+  const handleResume = () => {
+    const savedStep = localStorage.getItem('onboardingCurrentStep');
+    if (savedStep) {
+      setCurrentStep(parseInt(savedStep, 10));
+    }
+    localStorage.removeItem('onboardingPaused');
+    setIsOpen(true);
+  };
+
+  // Botão flutuante para retomar tutorial
+  if (hasPausedTutorial) {
+    return (
+      <button
+        onClick={handleResume}
+        className="fixed bottom-6 right-6 z-50 px-6 py-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl shadow-2xl transition-all animate-bounce hover:animate-none flex items-center gap-3"
+      >
+        <span className="text-2xl">📚</span>
+        <div className="text-left">
+          <div className="text-sm font-black">Tutorial Pausado</div>
+          <div className="text-xs opacity-90">Clique para continuar</div>
+        </div>
+      </button>
+    );
+  }
 
   if (!isOpen) return null;
 
@@ -232,7 +288,7 @@ export default function OnboardingTour() {
                 {step.action.link ? (
                   <Link
                     href={step.action.link}
-                    onClick={handleComplete}
+                    onClick={handlePause}
                     className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg text-lg"
                   >
                     ⚙️ {step.action.text}
@@ -243,36 +299,47 @@ export default function OnboardingTour() {
                   </button>
                 )}
                 <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-                  Volte aqui depois de configurar para continuar o tutorial
+                  💡 O tutorial será pausado. Quando voltar, continuará de onde parou!
                 </p>
               </div>
             )}
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3">
-            {!isFirstStep && (
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-3">
+              {!isFirstStep && (
+                <button
+                  onClick={handlePrevious}
+                  className="px-6 py-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white font-bold rounded-xl transition-all"
+                >
+                  ← Anterior
+                </button>
+              )}
+
               <button
-                onClick={handlePrevious}
-                className="px-6 py-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white font-bold rounded-xl transition-all"
+                onClick={handleNext}
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl transition-all shadow-lg"
               >
-                ← Anterior
+                {isLastStep ? '🎉 Começar a Usar!' : 'Próximo →'}
               </button>
-            )}
+            </div>
 
-            <button
-              onClick={handleSkip}
-              className="flex-1 px-6 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold rounded-xl transition-all"
-            >
-              Pular Tutorial
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={handlePause}
+                className="flex-1 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-semibold rounded-lg transition-all text-sm"
+              >
+                ⏸️ Pausar (Continua depois)
+              </button>
 
-            <button
-              onClick={handleNext}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl transition-all shadow-lg"
-            >
-              {isLastStep ? '🎉 Começar a Usar!' : 'Próximo →'}
-            </button>
+              <button
+                onClick={handleSkip}
+                className="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 font-semibold rounded-lg transition-all text-sm"
+              >
+                ❌ Pular e Não Mostrar Mais
+              </button>
+            </div>
           </div>
 
           {/* Progress Dots (visual adicional) */}
