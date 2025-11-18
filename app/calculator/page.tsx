@@ -174,12 +174,6 @@ export default function Home() {
                 <span className="hidden sm:inline">Configurações</span>
                 <span className="sm:hidden">Config</span>
               </Link>
-              <div className="text-right hidden md:block">
-                <div className="text-orange-300 text-xs uppercase tracking-widest font-semibold">Powered by</div>
-                <div className="text-2xl font-black bg-gradient-to-r from-orange-500 to-amber-400 bg-clip-text text-transparent drop-shadow-md">
-                  BKreativeLab
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -301,10 +295,10 @@ export default function Home() {
             </div>
             <div className="text-center pt-8 border-t border-orange-900/50">
               <p className="text-sm text-slate-300 mb-2">
-                © 2025 <strong className="text-transparent bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text font-black">BKreativeLab</strong> - Calculadora Profissional para Impressão 3D
+                © 2025 <strong className="text-transparent bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text font-black">Precifica3D PRO</strong> - Calculadora Profissional para Impressão 3D
               </p>
               <p className="text-xs text-orange-300/60">
-                Desenvolvido com tecnologia Next.js e TailwindCSS
+                Todos os direitos reservados
               </p>
             </div>
           </div>

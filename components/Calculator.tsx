@@ -84,10 +84,16 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
   // Resultado
   const [result, setResult] = useState<CalculationResult | null>(null);
 
-  // Carregar dados customizados
+  // Carregar dados customizados e último cálculo
   useEffect(() => {
     loadCustomData();
+    restoreLastCalculation();
   }, []);
+
+  // Salvar estado automaticamente quando campos importantes mudarem
+  useEffect(() => {
+    saveCurrentState();
+  }, [printerId, filamentUsages, printTime, selectedState, energyTariffId, selectedAddons, itemDescription, quantity, dimensions]);
 
   // Auto-save custos e margem quando mudarem
   useEffect(() => {
@@ -120,6 +126,39 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     setAllFilaments([...filaments, ...customFilaments]);
     setAllAddons([...addons, ...customAddons]);
     setAllPrinters(getAllPrinters()); // Já combina printers default + custom
+  };
+
+  const restoreLastCalculation = () => {
+    const lastCalc = getLastCalculation();
+    if (lastCalc) {
+      if (lastCalc.printerId) setPrinterId(lastCalc.printerId);
+      if (lastCalc.filamentUsages) setFilamentUsages(lastCalc.filamentUsages);
+      if (lastCalc.printTime) setPrintTime(lastCalc.printTime);
+      if (lastCalc.selectedState) setSelectedState(lastCalc.selectedState);
+      if (lastCalc.energyTariffId) setEnergyTariffId(lastCalc.energyTariffId);
+      if (lastCalc.selectedAddons) setSelectedAddons(lastCalc.selectedAddons);
+      if (lastCalc.itemDescription) setItemDescription(lastCalc.itemDescription);
+      if (lastCalc.quantity) setQuantity(lastCalc.quantity);
+      if (lastCalc.dimensions) setDimensions(lastCalc.dimensions);
+      if (lastCalc.productImage) setProductImage(lastCalc.productImage);
+    }
+  };
+
+  const saveCurrentState = () => {
+    if (typeof window === 'undefined') return;
+    const state = {
+      printerId,
+      filamentUsages,
+      printTime,
+      selectedState,
+      energyTariffId,
+      selectedAddons,
+      itemDescription,
+      quantity,
+      dimensions,
+      productImage
+    };
+    saveLastCalculation(state);
   };
 
   const handleCalculate = () => {

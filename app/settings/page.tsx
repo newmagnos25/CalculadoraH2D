@@ -40,12 +40,6 @@ export default function SettingsPage() {
                 <p className="text-blue-200 text-xs sm:text-sm">Gerencie suas configurações</p>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-blue-300 text-xs uppercase tracking-widest font-semibold">Powered by</div>
-              <div className="text-xl font-black bg-gradient-to-r from-blue-500 to-indigo-400 bg-clip-text text-transparent drop-shadow-md">
-                BKreativeLab
-              </div>
-            </div>
           </div>
         </div>
       </div>

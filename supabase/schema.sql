@@ -226,7 +226,7 @@ begin
   -- Definir limites por tier
   case v_tier
     when 'free' then v_max_quotes := 3;
-    when 'test' then v_max_quotes := 10; -- plano teste: 10 orçamentos durante 7 dias
+    when 'test' then v_max_quotes := 50; -- plano teste: 50 orçamentos durante 7 dias
     when 'starter' then v_max_quotes := 50;
     when 'professional' then v_max_quotes := null; -- ilimitado
     when 'enterprise' then v_max_quotes := null; -- ilimitado

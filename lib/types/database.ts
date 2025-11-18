@@ -113,8 +113,8 @@ export const TIER_CONFIGS: Record<SubscriptionTier, TierConfig> = {
     tier: 'test',
     price_monthly: 2.99,
     price_yearly: 2.99, // pagamento único por 7 dias
-    max_quotes: 10, // limite durante o teste
-    max_clients: 5,
+    max_quotes: 50, // limite durante o teste (aumentado para permitir uso real)
+    max_clients: 10,
     max_companies: 1,
     features: {
       pdf_generation: true,
