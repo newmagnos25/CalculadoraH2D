@@ -310,7 +310,7 @@ export default function PricingPage() {
       <div className="bg-gradient-to-r from-black via-slate-900 to-black border-t-4 border-orange-500 py-8 mt-20">
         <div className="container mx-auto px-4 text-center">
           <p className="text-slate-400">
-            © 2025 BKreativeLab - Precifica3D PRO - Todos os direitos reservados
+            © 2025 Precifica3D PRO - Todos os direitos reservados
           </p>
         </div>
       </div>

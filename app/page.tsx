@@ -117,11 +117,8 @@ export default function LandingPage() {
             </div>
             <span className="text-xl font-black text-white">Precifica3D PRO</span>
           </div>
-          <p className="text-slate-400 text-sm mb-4">
+          <p className="text-slate-400 text-sm">
             A ferramenta profissional para calcular orçamentos de impressão 3D
-          </p>
-          <p className="text-slate-600 text-xs">
-            Powered by <span className="text-orange-500 font-bold">BKreativeLab</span>
           </p>
         </div>
       </footer>

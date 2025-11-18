@@ -8,6 +8,8 @@ import { calculatePrintCost, formatCurrency, formatPercentage, smartRoundPrice }
 import { CalculationInput, CalculationResult } from '@/lib/types';
 import { getCustomFilaments, getCustomAddons, getAllPrinters, saveLastCalculation, getLastCalculation } from '@/lib/storage';
 import { useAntiPiracy } from '@/lib/hooks/useAntiPiracy';
+import { useSubscription } from '@/lib/hooks/useSubscription';
+import Link from 'next/link';
 import FilamentManager from './FilamentManager';
 import AddonManager from './AddonManager';
 import PrinterManager from './PrinterManager';
@@ -27,6 +29,9 @@ interface CalculatorProps {
 export default function Calculator({ isAuthenticated = false }: CalculatorProps) {
   // Proteção anti-pirataria
   useAntiPiracy();
+
+  // Verificação de assinatura e limites
+  const { subscription, loading: subLoading, refresh: refreshSubscription } = useSubscription();
 
   // Filamentos, adereços e impressoras (padrão + customizados)
   const [allPrinters, setAllPrinters] = useState(getAllPrinters());
@@ -84,10 +89,16 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
   // Resultado
   const [result, setResult] = useState<CalculationResult | null>(null);
 
-  // Carregar dados customizados
+  // Carregar dados customizados e último cálculo
   useEffect(() => {
     loadCustomData();
+    restoreLastCalculation();
   }, []);
+
+  // Salvar estado automaticamente quando campos importantes mudarem
+  useEffect(() => {
+    saveCurrentState();
+  }, [printerId, filamentUsages, printTime, selectedState, energyTariffId, selectedAddons, itemDescription, quantity, dimensions]);
 
   // Auto-save custos e margem quando mudarem
   useEffect(() => {
@@ -122,8 +133,47 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     setAllPrinters(getAllPrinters()); // Já combina printers default + custom
   };
 
+  const restoreLastCalculation = () => {
+    const lastCalc = getLastCalculation();
+    if (lastCalc) {
+      if (lastCalc.printerId) setPrinterId(lastCalc.printerId);
+      if (lastCalc.filamentUsages) setFilamentUsages(lastCalc.filamentUsages);
+      if (lastCalc.printTime) setPrintTime(lastCalc.printTime);
+      if (lastCalc.selectedState) setSelectedState(lastCalc.selectedState);
+      if (lastCalc.energyTariffId) setEnergyTariffId(lastCalc.energyTariffId);
+      if (lastCalc.selectedAddons) setSelectedAddons(lastCalc.selectedAddons);
+      if (lastCalc.itemDescription) setItemDescription(lastCalc.itemDescription);
+      if (lastCalc.quantity) setQuantity(lastCalc.quantity);
+      if (lastCalc.dimensions) setDimensions(lastCalc.dimensions);
+      if (lastCalc.productImage) setProductImage(lastCalc.productImage);
+    }
+  };
+
+  const saveCurrentState = () => {
+    if (typeof window === 'undefined') return;
+    const state = {
+      printerId,
+      filamentUsages,
+      printTime,
+      selectedState,
+      energyTariffId,
+      selectedAddons,
+      itemDescription,
+      quantity,
+      dimensions,
+      productImage
+    };
+    saveLastCalculation(state);
+  };
+
   const handleCalculate = () => {
     try {
+      // Verificar créditos disponíveis
+      if (!subscription || !subscription.allowed) {
+        alert('❌ Você atingiu o limite de orçamentos do seu plano!');
+        return;
+      }
+
       // Validação básica
       if (filamentUsages.length === 0) {
         alert('⚠️ Adicione pelo menos um filamento antes de calcular!');
@@ -727,15 +777,44 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
         </div>
 
         {/* Botão Calcular */}
-        <button
-          onClick={handleCalculate}
-          className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 text-white font-black py-3 sm:py-4 px-4 sm:px-6 rounded-xl shadow-2xl shadow-orange-500/50 hover:shadow-orange-600/60 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 border-2 border-amber-300 text-sm sm:text-base"
-        >
-          <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-          </svg>
-          Calcular Preço
-        </button>
+        {subscription && !subscription.allowed ? (
+          <div className="space-y-3">
+            <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-xl p-4 text-center">
+              <p className="text-red-800 dark:text-red-200 font-bold mb-2">
+                ❌ Limite de Orçamentos Atingido!
+              </p>
+              <p className="text-red-700 dark:text-red-300 text-sm mb-3">
+                Você usou {subscription.current}/{subscription.max} orçamentos do plano {subscription.tier.toUpperCase()}.
+              </p>
+              <Link
+                href="/pricing"
+                className="inline-block bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-lg"
+              >
+                🚀 Fazer Upgrade Agora
+              </Link>
+            </div>
+            <button
+              disabled
+              className="w-full bg-slate-400 dark:bg-slate-700 text-slate-200 dark:text-slate-500 font-black py-3 sm:py-4 px-4 sm:px-6 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 border-2 border-slate-300 dark:border-slate-600 text-sm sm:text-base opacity-50"
+            >
+              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              Bloqueado - Upgrade Necessário
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleCalculate}
+            disabled={subLoading}
+            className="w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 disabled:from-slate-400 disabled:via-slate-400 disabled:to-slate-400 text-white font-black py-3 sm:py-4 px-4 sm:px-6 rounded-xl shadow-2xl shadow-orange-500/50 hover:shadow-orange-600/60 transition-all transform hover:scale-[1.02] disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center gap-2 border-2 border-amber-300 text-sm sm:text-base"
+          >
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            {subLoading ? 'Verificando...' : subscription && !subscription.is_unlimited ? `Calcular (${subscription.remaining || 0} restantes)` : 'Calcular Preço'}
+          </button>
+        )}
       </div>
 
       {/* Resultados */}
