@@ -10,6 +10,13 @@ export async function POST(request: NextRequest) {
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const mercadoPagoToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
 
+    console.log('🔍 Variáveis:', {
+      hasSupabaseUrl: !!supabaseUrl,
+      hasSupabaseServiceKey: !!supabaseServiceKey,
+      hasMercadoPagoToken: !!mercadoPagoToken,
+      tokenPrefix: mercadoPagoToken?.substring(0, 15) + '...',
+    });
+
     if (!supabaseUrl || !supabaseServiceKey || !mercadoPagoToken) {
       console.error('❌ Variáveis de ambiente faltando');
       return NextResponse.json({ error: 'Configuração incompleta' }, { status: 500 });
@@ -55,7 +62,10 @@ export async function POST(request: NextRequest) {
 
     // 4. PROCESSAR DE FORMA ASSÍNCRONA (não bloqueia a resposta)
     processPayment(paymentId, supabaseUrl, supabaseServiceKey, mercadoPagoToken)
-      .catch(err => console.error('❌ Erro no processamento:', err));
+      .catch(err => {
+        console.error('❌ Erro no processamento:', err);
+        console.error('❌ Stack trace:', err.stack);
+      });
 
     // 5. RETORNAR SUCESSO IMEDIATAMENTE
     return NextResponse.json({ success: true });
@@ -74,22 +84,33 @@ async function processPayment(
   mercadoPagoToken: string
 ) {
   console.log('🔄 Processando pagamento:', paymentId);
+  console.log('🔑 Token presente:', mercadoPagoToken ? 'SIM' : 'NÃO');
 
   try {
     // Buscar detalhes do pagamento
-    const paymentResponse = await fetch(
-      `https://api.mercadopago.com/v1/payments/${paymentId}`,
-      {
-        headers: { 'Authorization': `Bearer ${mercadoPagoToken}` },
-      }
-    );
+    console.log('📡 Fazendo requisição para Mercado Pago...');
+    const paymentUrl = `https://api.mercadopago.com/v1/payments/${paymentId}`;
+    console.log('🔗 URL:', paymentUrl);
+
+    const paymentResponse = await fetch(paymentUrl, {
+      headers: { 
+        'Authorization': `Bearer ${mercadoPagoToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log('📥 Resposta do Mercado Pago - Status:', paymentResponse.status);
+    console.log('📥 Resposta do Mercado Pago - StatusText:', paymentResponse.statusText);
 
     if (!paymentResponse.ok) {
-      throw new Error(`Erro ao buscar pagamento: ${paymentResponse.status}`);
+      const errorText = await paymentResponse.text();
+      console.error('❌ Erro da API Mercado Pago:', errorText);
+      throw new Error(`Erro ao buscar pagamento: ${paymentResponse.status} - ${errorText}`);
     }
 
     const payment = await paymentResponse.json();
     console.log('💳 Status do pagamento:', payment.status);
+    console.log('💳 Pagamento completo:', JSON.stringify(payment, null, 2));
 
     // Só processar se aprovado
     if (payment.status !== 'approved') {
@@ -99,22 +120,40 @@ async function processPayment(
 
     // Extrair metadados
     const tier = payment.metadata?.tier;
-    const billingCycle = payment.metadata?.billing_cycle;
-    const userId = payment.metadata?.user_id;
+    const billingCycle = payment.metadata?.billing_cycle || payment.metadata?.billingCycle;
+    const userId = payment.metadata?.user_id || payment.metadata?.userId;
 
-    console.log('📋 Metadados:', { tier, billingCycle, userId });
+    console.log('📋 Metadados extraídos:', { 
+      tier, 
+      billingCycle, 
+      userId,
+      metadataCompleto: payment.metadata 
+    });
 
     if (!tier || !userId) {
+      console.error('❌ Metadados incompletos:', {
+        tier: tier || 'FALTANDO',
+        userId: userId || 'FALTANDO',
+        metadata: payment.metadata,
+      });
       throw new Error('Metadados incompletos no pagamento');
     }
 
     // Criar cliente Supabase
+    console.log('🔐 Criando cliente Supabase...');
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Verificar se usuário existe
+    console.log('👤 Verificando usuário:', userId);
     const { data: existingUser, error: userError } = await supabase.auth.admin.getUserById(userId);
 
-    if (userError || !existingUser) {
+    if (userError) {
+      console.error('❌ Erro ao buscar usuário:', userError);
+      throw new Error(`Erro ao buscar usuário: ${userError.message}`);
+    }
+
+    if (!existingUser) {
+      console.error('❌ Usuário não encontrado no Supabase');
       throw new Error(`Usuário não encontrado: ${userId}`);
     }
 
@@ -134,25 +173,38 @@ async function processPayment(
       periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate()); // +1 mês
     }
 
+    console.log('📅 Período calculado:', {
+      start: now.toISOString(),
+      end: periodEnd.toISOString(),
+    });
+
     // Atualizar assinatura
-    const { error: subError } = await supabase
+    console.log('💾 Atualizando assinatura no banco...');
+    const subscriptionData = {
+      user_id: userId,
+      tier,
+      status: 'active',
+      billing_cycle: billingCycle,
+      current_period_start: now.toISOString(),
+      current_period_end: periodEnd.toISOString(),
+      mercadopago_payment_id: payment.id.toString(),
+    };
+
+    console.log('📝 Dados a serem salvos:', subscriptionData);
+
+    const { data: savedData, error: subError } = await supabase
       .from('subscriptions')
-      .upsert({
-        user_id: userId,
-        tier,
-        status: 'active',
-        billing_cycle: billingCycle,
-        current_period_start: now.toISOString(),
-        current_period_end: periodEnd.toISOString(),
-        mercadopago_payment_id: payment.id.toString(),
-      }, {
+      .upsert(subscriptionData, {
         onConflict: 'user_id',
-      });
+      })
+      .select();
 
     if (subError) {
+      console.error('❌ Erro ao salvar no banco:', subError);
       throw new Error(`Erro ao atualizar assinatura: ${subError.message}`);
     }
 
+    console.log('✅ Dados salvos com sucesso:', savedData);
     console.log('✅ Assinatura ativada:', {
       userId,
       tier,
@@ -162,6 +214,8 @@ async function processPayment(
 
   } catch (error) {
     console.error('❌ Erro no processamento:', error);
+    console.error('❌ Tipo do erro:', typeof error);
+    console.error('❌ Stack:', error instanceof Error ? error.stack : 'Sem stack');
     throw error;
   }
 }
