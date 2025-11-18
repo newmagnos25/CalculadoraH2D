@@ -7,6 +7,7 @@ import { getCompanySettings, getClients, getNextInvoiceNumber, incrementInvoiceC
 import { generateAndDownloadQuote, generateAndDownloadContract, getCurrentDate, getDefaultValidityDate } from '@/lib/pdf-utils';
 import { createClient } from '@/lib/supabase/client';
 import { useSubscription } from '@/lib/hooks/useSubscription';
+import { showMotivationalPopup } from '@/lib/motivational-popups';
 import ClientManager from './ClientManager';
 import { StatusSelector } from './StatusBadge';
 import AttachmentManager from './AttachmentManager';
@@ -25,9 +26,10 @@ interface PDFActionsProps {
     weight: number;
     printTime: number;
   };
+  quoteId?: string | null; // Se tiver ID, PDF é grátis (já calculado)
 }
 
-export default function PDFActions({ calculation, printDetails }: PDFActionsProps) {
+export default function PDFActions({ calculation, printDetails, quoteId }: PDFActionsProps) {
   const router = useRouter();
   const { subscription, loading: loadingSubscription, refresh: refreshSubscription } = useSubscription();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -50,16 +52,21 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
   };
 
   const handleGenerateQuote = async () => {
-    // Verificar limite primeiro
-    if (!subscription) {
-      showMessage('error', 'Carregando informações da assinatura...');
-      return;
-    }
+    // Se já tem quoteId (já calculou), PDF é GRÁTIS - só verificar empresa
+    const isPDFFree = !!quoteId;
 
-    if (!subscription.allowed) {
-      // Redirecionar para upgrade
-      router.push('/upgrade');
-      return;
+    // Verificar limite apenas se não for PDF grátis
+    if (!isPDFFree) {
+      if (!subscription) {
+        showMessage('error', 'Carregando informações da assinatura...');
+        return;
+      }
+
+      if (!subscription.allowed) {
+        // Redirecionar para upgrade
+        router.push('/upgrade');
+        return;
+      }
     }
 
     const company = getCompanySettings();
@@ -90,26 +97,40 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
       });
 
       if (success) {
-        // Salvar no Supabase
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        // Só salvar no banco e gastar crédito se não for PDF grátis
+        if (!isPDFFree) {
+          const supabase = createClient();
+          const { data: { user } } = await supabase.auth.getUser();
 
-        if (user) {
-          await supabase.from('quotes').insert({
-            user_id: user.id,
-            quote_data: {
-              calculation,
-              printDetails,
-              quoteNumber,
-              date,
-              client: client ? { name: client.name, email: client.email } : null,
-            },
-          });
+          if (user) {
+            await supabase.from('quotes').insert({
+              user_id: user.id,
+              quote_data: {
+                calculation,
+                printDetails,
+                quoteNumber,
+                date,
+                client: client ? { name: client.name, email: client.email } : null,
+                type: 'pdf_only', // PDF gerado sem cálculo prévio
+              },
+            });
+          }
+
+          await refreshSubscription(); // Atualizar contador
+
+          // Mostrar popup motivacional após consumir crédito
+          if (subscription && !subscription.is_unlimited) {
+            const newRemaining = (subscription.remaining || 0) - 1;
+            showMotivationalPopup(newRemaining, subscription.max || 0);
+          }
         }
 
         incrementInvoiceCounter();
-        refreshSubscription(); // Atualizar contador
-        showMessage('success', `Orçamento ${quoteNumber} gerado com sucesso!`);
+
+        const successMessage = isPDFFree
+          ? `✅ PDF ${quoteNumber} gerado GRÁTIS (orçamento já calculado)!`
+          : `✅ PDF ${quoteNumber} gerado! 1 crédito consumido.`;
+        showMessage('success', successMessage);
       } else {
         showMessage('error', 'Erro ao gerar orçamento. Tente novamente.');
       }
@@ -200,8 +221,14 @@ export default function PDFActions({ calculation, printDetails }: PDFActionsProp
         }
 
         incrementInvoiceCounter();
-        refreshSubscription(); // Atualizar contador
+        await refreshSubscription(); // Atualizar contador
         showMessage('success', `Contrato ${contractNumber} gerado com sucesso!`);
+
+        // Mostrar popup motivacional após consumir crédito
+        if (subscription && !subscription.is_unlimited) {
+          const newRemaining = (subscription.remaining || 0) - 1;
+          showMotivationalPopup(newRemaining, subscription.max || 0);
+        }
       } else {
         showMessage('error', 'Erro ao gerar contrato. Tente novamente.');
       }

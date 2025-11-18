@@ -9,6 +9,8 @@ import { CalculationInput, CalculationResult } from '@/lib/types';
 import { getCustomFilaments, getCustomAddons, getAllPrinters, getDefaultPrinters, saveLastCalculation, getLastCalculation } from '@/lib/storage';
 import { useAntiPiracy } from '@/lib/hooks/useAntiPiracy';
 import { useSubscription } from '@/lib/hooks/useSubscription';
+import { createClient } from '@/lib/supabase/client';
+import { showMotivationalPopup } from '@/lib/motivational-popups';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import FilamentManager from './FilamentManager';
@@ -17,7 +19,6 @@ import PrinterManager from './PrinterManager';
 import PDFActions from './PDFActions';
 import TemplatesManager from './TemplatesManager';
 import { ProductTemplate } from '@/lib/templates';
-import { showMotivationalPopup } from '@/lib/motivational-popups';
 import { loadDefaultPrinter, saveDefaultPrinter } from '@/lib/user-preferences';
 
 interface FilamentUsage {
@@ -95,6 +96,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
   // Resultado
   const [result, setResult] = useState<CalculationResult | null>(null);
+  const [currentQuoteId, setCurrentQuoteId] = useState<string | null>(null); // ID do quote salvo (PDF grátis)
 
   // Templates modal
   const [showTemplatesModal, setShowTemplatesModal] = useState(false);
@@ -133,6 +135,13 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
       saveCurrentState();
     }
   }, [printerId, filamentUsages, printTime, selectedState, energyTariffId, selectedAddons, itemDescription, quantity, dimensions, isRestoring]);
+
+  // Resetar quoteId quando dados mudarem (forçar novo cálculo = novo crédito)
+  useEffect(() => {
+    if (!isRestoring && currentQuoteId) {
+      setCurrentQuoteId(null); // Dados mudaram, precisa recalcular
+    }
+  }, [printerId, filamentUsages, printTime, energyTariffId, laborCost, depreciation, fixedCosts, profitMargin, selectedAddons, isRestoring]);
 
   // Auto-save custos e margem quando mudarem
   useEffect(() => {
@@ -234,7 +243,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     try {
       // Verificar créditos disponíveis
       if (!subscription || !subscription.allowed) {
-        toast.error('Você atingiu o limite de orçamentos do seu plano!');
+        toast.error('Você atingiu o limite de orçamentos do seu plano! Faça upgrade para continuar.');
         return;
       }
 
@@ -295,6 +304,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
     // Aplicar arredondamento inteligente no preço final
     const rawFinalPrice = calculatedResult.costs.total + profitValue;
+    calculatedResult.rawFinalPrice = rawFinalPrice; // Guardar valor original
     calculatedResult.finalPrice = smartRoundPrice(rawFinalPrice);
 
     // Recalcular breakdown
@@ -346,9 +356,48 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     setResult(calculatedResult);
     saveLastCalculation({ input, result: calculatedResult });
 
-    // Mostrar popup motivacional baseado em progresso
+    // Salvar quote no banco e consumir crédito
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: quoteData } = await supabase.from('quotes').insert({
+        user_id: user.id,
+        quote_data: {
+          calculation: calculatedResult,
+          printDetails: {
+            itemDescription,
+            quantity,
+            dimensions,
+            productImage,
+            printer: allPrinters.find(p => p.id === printerId)?.name || '',
+            filaments: filamentUsages.map(usage => {
+              const fil = allFilaments.find(f => f.id === usage.filamentId);
+              return fil ? `${fil.brand} ${fil.type}` : '';
+            }).join(', '),
+            weight: filamentUsages.reduce((sum, u) => sum + u.weight, 0),
+            printTime,
+          },
+          type: 'calculation',
+        },
+      }).select('id').single();
+
+      if (quoteData) {
+        setCurrentQuoteId(quoteData.id);
+      }
+    }
+
+    await refreshSubscription(); // Atualizar contador de créditos
+
+    toast.success('✅ Orçamento calculado! 1 crédito gasto. PDF GRÁTIS, Contrato +1 crédito.', {
+      duration: 5000,
+      icon: '💰',
+    });
+
+    // Mostrar popup motivacional após consumir crédito
     if (subscription && !subscription.is_unlimited) {
-      showMotivationalPopup(subscription.remaining || 0, subscription.max || 0);
+      const newRemaining = (subscription.remaining || 0) - 1;
+      showMotivationalPopup(newRemaining, subscription.max || 0);
     }
   } catch (error) {
     console.error('❌ Erro ao calcular preço:', error);
@@ -1002,9 +1051,16 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
                 {isAuthenticated ? formatCurrency(result.finalPrice) : formatCurrency(result.costs.total)}
               </div>
               {isAuthenticated && (
-                <div className="mt-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
-                  Inclui margem de {result.profitMargin}% de lucro
-                </div>
+                <>
+                  <div className="mt-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
+                    Inclui margem de {result.profitMargin}% de lucro
+                  </div>
+                  {result.rawFinalPrice && Math.abs(result.finalPrice - result.rawFinalPrice) > 0.01 && (
+                    <div className="mt-1 text-xs text-blue-600 dark:text-blue-400 font-medium">
+                      ℹ️ Arredondado de {formatCurrency(result.rawFinalPrice)} para facilitar cobrança
+                    </div>
+                  )}
+                </>
               )}
               {!isAuthenticated && (
                 <div className="mt-2 text-xs text-orange-600 dark:text-orange-400 font-medium">
@@ -1068,6 +1124,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
             {/* PDF Actions */}
             <PDFActions
               calculation={result}
+              quoteId={currentQuoteId}
               printDetails={{
                 itemDescription: itemDescription || 'Impressão 3D',
                 quantity: quantity,

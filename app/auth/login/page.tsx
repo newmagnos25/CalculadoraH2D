@@ -4,6 +4,7 @@ import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { validateEmail, EmailValidationResult } from '@/lib/validation';
 
 function LoginForm() {
   const router = useRouter();
@@ -15,6 +16,18 @@ function LoginForm() {
   const [messageType, setMessageType] = useState<'error' | 'warning' | 'success'>('error');
   const [resendingEmail, setResendingEmail] = useState(false);
   const [resettingPassword, setResettingPassword] = useState(false);
+  const [emailValidation, setEmailValidation] = useState<EmailValidationResult | null>(null);
+  const [emailTouched, setEmailTouched] = useState(false);
+
+  // Validação de email em tempo real
+  useEffect(() => {
+    if (email && emailTouched) {
+      const validation = validateEmail(email);
+      setEmailValidation(validation);
+    } else {
+      setEmailValidation(null);
+    }
+  }, [email, emailTouched]);
 
   // Capturar erro da URL (vindo do callback)
   useEffect(() => {
@@ -209,10 +222,41 @@ function LoginForm() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => setEmailTouched(true)}
                 required
-                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none"
+                className={`w-full px-4 py-3 rounded-lg border-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none transition-colors ${
+                  emailValidation && emailTouched
+                    ? emailValidation.isValid
+                      ? emailValidation.warning
+                        ? 'border-yellow-500 focus:border-yellow-600'
+                        : 'border-green-500 focus:border-green-600'
+                      : 'border-red-500 focus:border-red-600'
+                    : 'border-slate-300 dark:border-slate-700 focus:border-orange-500'
+                }`}
                 placeholder="seu@email.com"
               />
+              {emailValidation && emailTouched && (
+                <div className="mt-2">
+                  {!emailValidation.isValid && emailValidation.error && (
+                    <p className="text-sm font-semibold text-red-600 dark:text-red-400 flex items-center gap-2">
+                      <span>❌</span>
+                      <span>{emailValidation.error}</span>
+                    </p>
+                  )}
+                  {emailValidation.isValid && emailValidation.warning && (
+                    <p className="text-sm font-semibold text-yellow-600 dark:text-yellow-400 flex items-center gap-2">
+                      <span>⚠️</span>
+                      <span>{emailValidation.warning}</span>
+                    </p>
+                  )}
+                  {emailValidation.isValid && !emailValidation.warning && (
+                    <p className="text-sm font-semibold text-green-600 dark:text-green-400 flex items-center gap-2">
+                      <span>✅</span>
+                      <span>Email válido!</span>
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             <div>

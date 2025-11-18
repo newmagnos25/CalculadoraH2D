@@ -346,8 +346,13 @@ export const PDFContract: React.FC<PDFContractProps> = ({
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text>Contrato gerado via Precifica3D PRO by BKreativeLab</Text>
           <Text>Este documento possui validade jurídica quando assinado por ambas as partes</Text>
+          <Text style={{ marginTop: 4, fontSize: 7, color: '#6B7280' }}>
+            Sistema desenvolvido por BKreativeLab | WhatsApp: (41) 99734-0818
+          </Text>
+          <Text style={{ marginTop: 1, fontSize: 6, color: '#9CA3AF' }}>
+            Precifica3D PRO - Gestão Profissional de Orçamentos e Contratos para Impressão 3D
+          </Text>
         </View>
       </Page>
     </Document>
