@@ -12,6 +12,8 @@ interface PopupState {
   lastMilestone: number;
   hasSeenWelcome: boolean;
   purchaseDate?: string;
+  lastWarningRemaining?: number; // Último valor de "remaining" que mostrou aviso
+  lastWarningTimestamp?: number; // Timestamp do último aviso
 }
 
 /**
@@ -160,23 +162,41 @@ export function showMotivationalPopup(remaining: number, max: number) {
     return;
   }
 
-  // ÚLTIMOS 5 ORÇAMENTOS - Avisos frequentes
+  // ÚLTIMOS 5 ORÇAMENTOS - Avisos controlados (evitar repetição excessiva)
   if (remaining <= 5 && remaining > 0) {
-    const msg = FINAL_WARNING_MESSAGES[Math.floor(Math.random() * FINAL_WARNING_MESSAGES.length)];
-    toast(
-      `${msg.emoji} ${msg.title}\n\n${msg.message.replace('{remaining}', remaining.toString())}`,
-      {
-        duration: 7000,
-        icon: msg.emoji,
-        style: {
-          background: '#f59e0b',
-          color: '#fff',
-          fontWeight: 'bold',
-          fontSize: '15px',
-          padding: '18px',
-        },
-      }
-    );
+    const now = Date.now();
+    const COOLDOWN_MS = 30 * 60 * 1000; // 30 minutos
+
+    // Mostrar apenas se:
+    // 1. É um valor diferente do último aviso (passou de 5 para 4, por exemplo)
+    // 2. OU passou mais de 30min desde o último aviso
+    const shouldShow =
+      !state.lastWarningRemaining ||
+      state.lastWarningRemaining !== remaining ||
+      !state.lastWarningTimestamp ||
+      (now - state.lastWarningTimestamp) > COOLDOWN_MS;
+
+    if (shouldShow) {
+      state.lastWarningRemaining = remaining;
+      state.lastWarningTimestamp = now;
+      savePopupState(state);
+
+      const msg = FINAL_WARNING_MESSAGES[Math.floor(Math.random() * FINAL_WARNING_MESSAGES.length)];
+      toast(
+        `${msg.emoji} ${msg.title}\n\n${msg.message.replace('{remaining}', remaining.toString())}`,
+        {
+          duration: 7000,
+          icon: msg.emoji,
+          style: {
+            background: '#f59e0b',
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: '15px',
+            padding: '18px',
+          },
+        }
+      );
+    }
     return;
   }
 
