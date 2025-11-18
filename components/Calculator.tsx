@@ -18,6 +18,7 @@ import PDFActions from './PDFActions';
 import TemplatesManager from './TemplatesManager';
 import { ProductTemplate } from '@/lib/templates';
 import { showMotivationalPopup } from '@/lib/motivational-popups';
+import { loadDefaultPrinter, saveDefaultPrinter } from '@/lib/user-preferences';
 
 interface FilamentUsage {
   id: string;
@@ -103,10 +104,26 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
   // Carregar dados customizados e último cálculo
   useEffect(() => {
-    loadCustomData();
-    restoreLastCalculation();
-    // Após restaurar, habilitar auto-save
-    setTimeout(() => setIsRestoring(false), 100);
+    const initializeCalculator = async () => {
+      loadCustomData();
+      restoreLastCalculation();
+
+      // Carregar impressora padrão do perfil do usuário
+      const defaultPrinter = await loadDefaultPrinter();
+      if (defaultPrinter) {
+        // Verificar se a impressora existe na lista
+        const printerExists = allPrinters.some(p => p.id === defaultPrinter);
+        if (printerExists) {
+          setPrinterId(defaultPrinter);
+          console.log('📥 Impressora padrão carregada:', defaultPrinter);
+        }
+      }
+
+      // Após restaurar, habilitar auto-save
+      setTimeout(() => setIsRestoring(false), 100);
+    };
+
+    initializeCalculator();
   }, []);
 
   // Salvar estado automaticamente quando campos importantes mudarem
@@ -140,6 +157,17 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
       localStorage.setItem('profitMargin', profitMargin.toString());
     }
   }, [profitMargin]);
+
+  // Salvar impressora padrão quando mudar (após restauração inicial)
+  useEffect(() => {
+    if (!isRestoring && printerId) {
+      saveDefaultPrinter(printerId).then(success => {
+        if (success) {
+          console.log('💾 Impressora padrão salva:', printerId);
+        }
+      });
+    }
+  }, [printerId, isRestoring]);
 
   // Sincronizar printTime com horas e minutos
   useEffect(() => {
