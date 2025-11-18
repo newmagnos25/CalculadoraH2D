@@ -189,7 +189,7 @@ export default function Home() {
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800 border-b-2 border-blue-200 dark:border-blue-900/50 shadow-lg">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-wrap justify-center gap-4">
-            <div className="group px-5 py-3 bg-white dark:bg-slate-800 border-2 border-blue-200 dark:border-blue-700 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all cursor-pointer">
+            <div className="px-5 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-xl shadow-md">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center shadow-lg">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,29 +200,29 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="group px-5 py-3 bg-white dark:bg-slate-800 border-2 border-blue-200 dark:border-blue-700 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all cursor-pointer">
+            <div className="px-5 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border-2 border-indigo-300 dark:border-indigo-700 rounded-xl shadow-md">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center shadow-lg">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
                   </svg>
                 </div>
-                <span className="text-sm font-bold text-blue-900 dark:text-blue-100">Filamentos Customizáveis</span>
+                <span className="text-sm font-bold text-indigo-900 dark:text-indigo-100">Filamentos Customizáveis</span>
               </div>
             </div>
 
-            <div className="group px-5 py-3 bg-white dark:bg-slate-800 border-2 border-blue-200 dark:border-blue-700 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all cursor-pointer">
+            <div className="px-5 py-3 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/30 dark:to-blue-900/30 border-2 border-cyan-300 dark:border-cyan-700 rounded-xl shadow-md">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center shadow-lg">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                   </svg>
                 </div>
-                <span className="text-sm font-bold text-blue-900 dark:text-blue-100">Adereços Personalizados</span>
+                <span className="text-sm font-bold text-cyan-900 dark:text-cyan-100">Adereços Personalizados</span>
               </div>
             </div>
 
-            <div className="group px-5 py-3 bg-white dark:bg-slate-800 border-2 border-blue-200 dark:border-blue-700 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-all cursor-pointer">
+            <div className="px-5 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-xl shadow-md">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,20 +241,21 @@ export default function Home() {
 
         {/* Footer Premium - Preto com Laranja/Dourado */}
         <footer className="mt-16 pt-12 pb-8 bg-gradient-to-r from-black via-slate-900 to-black border-t-4 border-orange-500 rounded-t-2xl">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h3 className="font-bold text-white mb-3 flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">Precifica3D</span>
-              </h3>
-              <p className="text-sm text-slate-300">
-                Sistema profissional de precificação para impressão 3D com suporte completo para impressoras Bambu Lab.
-              </p>
-            </div>
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+              <div>
+                <h3 className="font-bold text-white mb-3 flex items-center gap-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                  <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">Precifica3D</span>
+                </h3>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  Sistema profissional de precificação para impressão 3D com suporte completo para impressoras Bambu Lab.
+                </p>
+              </div>
             <div>
               <h3 className="font-bold text-orange-400 mb-3 uppercase tracking-wider text-sm">Funcionalidades</h3>
               <ul className="text-sm text-slate-300 space-y-2">
@@ -297,14 +298,15 @@ export default function Home() {
                 </li>
               </ul>
             </div>
-          </div>
-          <div className="text-center pt-8 border-t border-orange-900/50">
-            <p className="text-sm text-slate-300 mb-2">
-              © 2025 <strong className="text-transparent bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text font-black">BKreativeLab</strong> - Calculadora Profissional para Impressão 3D
-            </p>
-            <p className="text-xs text-orange-300/60">
-              Desenvolvido com tecnologia Next.js e TailwindCSS
-            </p>
+            </div>
+            <div className="text-center pt-8 border-t border-orange-900/50">
+              <p className="text-sm text-slate-300 mb-2">
+                © 2025 <strong className="text-transparent bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text font-black">BKreativeLab</strong> - Calculadora Profissional para Impressão 3D
+              </p>
+              <p className="text-xs text-orange-300/60">
+                Desenvolvido com tecnologia Next.js e TailwindCSS
+              </p>
+            </div>
           </div>
         </footer>
       </div>
