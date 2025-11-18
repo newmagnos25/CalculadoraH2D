@@ -44,10 +44,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'ID missing' }, { status: 400 });
     }
 
-    // CRITICAL: Don't await - fire and forget to avoid timeout
-    processPayment(paymentId, supabaseUrl, supabaseServiceKey, mercadoPagoToken)
-      .catch(err => console.error('❌ [ASYNC ERROR]:', err));
+    console.log('📦 Payment ID:', paymentId);
 
+    // CRITICAL: AWAIT with timeout to prevent function termination
+    console.log('⏱️ Starting payment processing with 25s timeout...');
+
+    const processingPromise = processPayment(
+      paymentId,
+      supabaseUrl,
+      supabaseServiceKey,
+      mercadoPagoToken
+    );
+
+    const timeoutPromise = new Promise((resolve) => {
+      setTimeout(() => {
+        console.log('⏱️ 25s timeout reached, returning to MP anyway');
+        resolve({ timeout: true });
+      }, 25000); // 25s - safe margin before Vercel's 30s limit
+    });
+
+    await Promise.race([processingPromise, timeoutPromise]);
+
+    console.log('✅ Returning 200 to Mercado Pago');
     return NextResponse.json({ success: true });
 
   } catch (error) {
