@@ -304,7 +304,7 @@ function LoginForm() {
 
         <div className="mt-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl p-4 text-center">
           <p className="text-white font-bold">
-            🎉 Crie sua conta e ganhe <strong>3 orçamentos grátis</strong> para testar!
+            🎉 Crie sua conta e ganhe <strong>15 orçamentos grátis</strong> para testar!
           </p>
         </div>
       </div>

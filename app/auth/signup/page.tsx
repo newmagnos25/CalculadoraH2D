@@ -411,7 +411,7 @@ function SignupForm() {
           <ul className="space-y-2 text-white text-sm">
             <li className="flex items-center gap-2">
               <span>✅</span>
-              <span><strong>3 orçamentos por mês</strong></span>
+              <span><strong>15 orçamentos por mês</strong></span>
             </li>
             <li className="flex items-center gap-2">
               <span>✅</span>
