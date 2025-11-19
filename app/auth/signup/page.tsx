@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { validateEmail, validatePassword, EmailValidationResult, PasswordValidationResult } from '@/lib/validation';
+import { translateSupabaseError } from '@/lib/supabase-errors';
 
 function SignupForm() {
   const router = useRouter();
@@ -14,7 +15,7 @@ function SignupForm() {
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [messageType, setMessageType] = useState<'error' | 'warning' | 'success'>('error');
+  const [messageType, setMessageType] = useState<'error' | 'warning' | 'success' | 'info'>('error');
   const [resendingEmail, setResendingEmail] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const [emailValidation, setEmailValidation] = useState<EmailValidationResult | null>(null);
@@ -76,16 +77,18 @@ function SignupForm() {
       });
 
       if (error) {
-        setMessage(`Erro ao reenviar: ${error.message}`);
-        setMessageType('error');
+        const friendlyError = translateSupabaseError(error);
+        setMessage(friendlyError.message);
+        setMessageType(friendlyError.type);
       } else {
         setMessage('✅ Email reenviado! Verifique sua caixa de entrada e spam.');
         setMessageType('success');
         setCooldownSeconds(60); // Cooldown de 60 segundos
       }
     } catch (err: any) {
-      setMessage('Erro ao reenviar email. Tente novamente em instantes.');
-      setMessageType('error');
+      const friendlyError = translateSupabaseError(err);
+      setMessage(friendlyError.message);
+      setMessageType(friendlyError.type);
     } finally {
       setResendingEmail(false);
     }
@@ -148,17 +151,10 @@ function SignupForm() {
       if (error) {
         console.error('Erro ao criar conta:', error);
 
-        // Tratar erro de email duplicado
-        if (error.message.includes('already registered') || error.message.includes('already exists')) {
-          setMessage('Este email já está cadastrado. Faça login ou use outro email.');
-          setMessageType('error');
-        } else if (error.message.includes('invalid email')) {
-          setMessage('Email inválido. Verifique e tente novamente.');
-          setMessageType('error');
-        } else {
-          setMessage(error.message || 'Erro ao criar conta. Tente novamente.');
-          setMessageType('error');
-        }
+        // Traduzir erro do Supabase para mensagem amigável
+        const friendlyError = translateSupabaseError(error);
+        setMessage(friendlyError.message);
+        setMessageType(friendlyError.type);
 
         setLoading(false);
         return;
@@ -223,6 +219,8 @@ function SignupForm() {
                 ? 'bg-green-50 dark:bg-green-900/20 border-green-500'
                 : messageType === 'warning'
                 ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
+                : messageType === 'info'
+                ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500'
                 : 'bg-red-50 dark:bg-red-900/20 border-red-500'
             }`}>
               <p className={`text-sm font-semibold ${
@@ -230,9 +228,11 @@ function SignupForm() {
                   ? 'text-green-800 dark:text-green-200'
                   : messageType === 'warning'
                   ? 'text-yellow-800 dark:text-yellow-200'
+                  : messageType === 'info'
+                  ? 'text-blue-800 dark:text-blue-200'
                   : 'text-red-800 dark:text-red-200'
               }`}>
-                {messageType === 'success' ? '✅' : messageType === 'warning' ? '⚠️' : '❌'} {message}
+                {messageType === 'success' ? '✅' : messageType === 'warning' ? '⚠️' : messageType === 'info' ? 'ℹ️' : '❌'} {message}
               </p>
 
               {/* Botão de reenviar email - só aparece se for warning (precisa confirmar) */}
@@ -411,7 +411,7 @@ function SignupForm() {
           <ul className="space-y-2 text-white text-sm">
             <li className="flex items-center gap-2">
               <span>✅</span>
-              <span><strong>3 orçamentos por mês</strong></span>
+              <span><strong>5 orçamentos por mês</strong> (renova todo mês)</span>
             </li>
             <li className="flex items-center gap-2">
               <span>✅</span>

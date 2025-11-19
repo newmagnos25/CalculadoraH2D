@@ -50,7 +50,7 @@ export default function LandingPage() {
           </div>
 
           <p className="text-slate-400 text-sm">
-            ✅ Sem cartão de crédito • 5 orçamentos grátis • Upgrade quando quiser
+            ✅ Sem cartão de crédito • 5 orçamentos/mês grátis • Renova automaticamente
           </p>
         </div>
       </section>

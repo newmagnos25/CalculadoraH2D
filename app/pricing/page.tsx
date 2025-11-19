@@ -32,24 +32,93 @@ export default function PricingPage() {
 
       {/* Pricing Cards */}
       <div className="container mx-auto px-4 py-16">
-        {/* Trial Banner */}
-        <div className="max-w-4xl mx-auto mb-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-8 text-center shadow-2xl">
+        {/* Free Banner */}
+        <div className="max-w-4xl mx-auto mb-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-8 text-center shadow-2xl">
           <h2 className="text-3xl font-black text-white mb-3">
-            🎉 Teste Agora por Apenas R$ 2,99
+            🎉 Comece GRÁTIS - Sem Cartão de Crédito
           </h2>
           <p className="text-xl text-white/90 mb-4">
-            7 dias de acesso completo ao plano Professional. Sem compromisso!
+            5 orçamentos por mês que renovam automaticamente. Sempre grátis!
           </p>
           <Link
-            href="/checkout/test"
-            className="inline-block px-8 py-3 bg-white text-green-600 font-black rounded-lg hover:bg-gray-100 transition-all shadow-lg text-lg"
+            href="/auth/signup"
+            className="inline-block px-8 py-3 bg-white text-green-600 font-black rounded-lg hover:bg-gray-100 transition-all shadow-lg text-lg mr-4"
           >
-            Começar Teste por R$ 2,99
+            Criar Conta Grátis
           </Link>
         </div>
 
+        {/* Trial Banner */}
+        <div className="max-w-4xl mx-auto mb-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-center shadow-2xl border-2 border-blue-300">
+          <h3 className="text-2xl font-black text-white mb-2">
+            💡 Quer testar recursos profissionais?
+          </h3>
+          <p className="text-lg text-white/90 mb-3">
+            Teste o plano Professional por 7 dias pagando apenas R$ 2,99
+          </p>
+          <Link
+            href="/checkout/test"
+            className="inline-block px-6 py-2 bg-white text-blue-600 font-bold rounded-lg hover:bg-gray-100 transition-all shadow-lg"
+          >
+            Testar por R$ 2,99
+          </Link>
+          <p className="text-xs text-white/70 mt-2">
+            Pagamento único • Sem renovação automática • Cancele quando quiser
+          </p>
+        </div>
+
         {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-7xl mx-auto">
+          {/* FREE Plan */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border-2 border-green-200 dark:border-green-900 p-8 flex flex-col">
+            <div className="mb-6">
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
+                FREE
+              </h3>
+              <div className="text-4xl font-black text-green-600 dark:text-green-400 mb-2">
+                R$ 0
+                <span className="text-lg font-normal text-slate-600 dark:text-slate-400">/mês</span>
+              </div>
+              <p className="text-sm text-green-600 dark:text-green-400 font-semibold">
+                Sempre grátis
+              </p>
+            </div>
+
+            <ul className="space-y-3 mb-8 flex-1">
+              <li className="flex items-start gap-2 text-sm">
+                <span className="text-green-500 mt-0.5">✓</span>
+                <span className="text-slate-700 dark:text-slate-300 font-semibold">5 orçamentos/mês</span>
+              </li>
+              <li className="flex items-start gap-2 text-sm">
+                <span className="text-green-500 mt-0.5">✓</span>
+                <span className="text-slate-700 dark:text-slate-300">Renova todo mês</span>
+              </li>
+              <li className="flex items-start gap-2 text-sm">
+                <span className="text-green-500 mt-0.5">✓</span>
+                <span className="text-slate-700 dark:text-slate-300">Geração de PDFs</span>
+              </li>
+              <li className="flex items-start gap-2 text-sm">
+                <span className="text-green-500 mt-0.5">✓</span>
+                <span className="text-slate-700 dark:text-slate-300">Sem cartão de crédito</span>
+              </li>
+              <li className="flex items-start gap-2 text-sm text-slate-400 dark:text-slate-600">
+                <span className="mt-0.5">✗</span>
+                <span>Sem gestão de clientes</span>
+              </li>
+              <li className="flex items-start gap-2 text-sm text-slate-400 dark:text-slate-600">
+                <span className="mt-0.5">✗</span>
+                <span>Sem histórico</span>
+              </li>
+            </ul>
+
+            <Link
+              href="/auth/signup"
+              className="block w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-center transition-all"
+            >
+              Começar Grátis
+            </Link>
+          </div>
+
           {/* Starter Plan */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border-2 border-blue-200 dark:border-blue-900 p-8 flex flex-col">
             <div className="mb-6">
@@ -154,7 +223,7 @@ export default function PricingPage() {
               href="/checkout/professional"
               className="block w-full bg-white hover:bg-slate-100 text-orange-600 font-black py-3 px-6 rounded-lg text-center transition-all shadow-lg"
             >
-              Testar 7 Dias Grátis
+              Começar Agora
             </Link>
           </div>
 
@@ -278,10 +347,12 @@ export default function PricingPage() {
 
             <div className="bg-white dark:bg-slate-900 rounded-xl p-6 border-2 border-orange-200 dark:border-orange-900">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
-                O teste grátis precisa de cartão de crédito?
+                Qual a diferença entre o plano FREE e o teste de R$ 2,99?
               </h3>
               <p className="text-slate-600 dark:text-slate-400">
-                Não! Você pode testar o plano Professional por 7 dias sem precisar cadastrar cartão de crédito.
+                O plano <strong>FREE</strong> é 100% gratuito para sempre, com 5 orçamentos/mês que renovam automaticamente. Não precisa cartão de crédito.
+                <br/><br/>
+                O <strong>teste de R$ 2,99</strong> dá acesso completo ao plano Professional por 7 dias, incluindo orçamentos ilimitados, gestão de clientes e analytics. É ideal para quem quer experimentar todos os recursos profissionais antes de assinar.
               </p>
             </div>
 
