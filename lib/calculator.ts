@@ -3,29 +3,23 @@ import { getPrinterById, getFilamentById, getAddonById } from './storage';
 import { energyTariffs } from '@/data/energy-tariffs';
 
 /**
- * Arredonda valor para múltiplo de 5 ou 10 de forma inteligente
+ * Arredonda valor SEMPRE PARA CIMA (ceiling)
  *
  * Exemplos:
- * - 23.26 → 25.00
- * - 72.11 → 70.00
- * - 78.21 → 80.00
- * - 47.80 → 50.00
- * - 12.30 → 10.00
+ * - 127.25 → 128.00
+ * - 52.12 → 53.00
+ * - 99.01 → 100.00
+ * - 23.99 → 24.00
+ * - 4.50 → 5.00
  *
  * Lógica:
- * - Valores terminados em .x1 a .x4 → arredonda para baixo (múltiplo de 5)
- * - Valores terminados em .x5 a .x9 → arredonda para cima (múltiplo de 5)
+ * - Sempre arredonda para o INTEIRO ACIMA
+ * - Garante que o preço sempre "fecha" um valor redondo
+ * - Cliente paga um pouco mais, mas valor fica mais profissional
  */
 export function smartRoundPrice(value: number): number {
-  // Se for menor que 5, retornar o valor arredondado para 2 casas
-  if (value < 5) {
-    return Math.round(value * 100) / 100;
-  }
-
-  // Arredondar para o múltiplo de 5 mais próximo
-  const rounded = Math.round(value / 5) * 5;
-
-  return rounded;
+  // Arredondar SEMPRE para cima para o inteiro mais próximo
+  return Math.ceil(value);
 }
 
 /**
@@ -108,7 +102,7 @@ export async function calculatePrintCost(input: CalculationInput): Promise<Calcu
 
   // 10. Calcular margem de lucro
   const profitMargin = input.profitMargin || 0;
-  const profitValue = Math.round((totalCost * profitMargin) / 100 * 100) / 100;
+  const profitValue = Math.round((totalCost * profitMargin / 100) * 100) / 100;
 
   // 11. Preço final COM arredondamento inteligente
   const rawFinalPrice = totalCost + profitValue;
