@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { validateEmail, EmailValidationResult } from '@/lib/validation';
+import { translateSupabaseError, FriendlyError } from '@/lib/supabase-errors';
 
 function LoginForm() {
   const router = useRouter();
@@ -13,7 +14,7 @@ function LoginForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [messageType, setMessageType] = useState<'error' | 'warning' | 'success'>('error');
+  const [messageType, setMessageType] = useState<'error' | 'warning' | 'success' | 'info'>('error');
   const [resendingEmail, setResendingEmail] = useState(false);
   const [resettingPassword, setResettingPassword] = useState(false);
   const [emailValidation, setEmailValidation] = useState<EmailValidationResult | null>(null);
@@ -67,15 +68,17 @@ function LoginForm() {
       });
 
       if (error) {
-        setMessage(error.message);
-        setMessageType('error');
+        const friendlyError = translateSupabaseError(error);
+        setMessage(friendlyError.message);
+        setMessageType(friendlyError.type);
       } else {
         setMessage('Email de confirmação reenviado! Verifique sua caixa de entrada.');
         setMessageType('warning');
       }
     } catch (err: any) {
-      setMessage('Erro ao reenviar email. Tente novamente.');
-      setMessageType('error');
+      const friendlyError = translateSupabaseError(err);
+      setMessage(friendlyError.message);
+      setMessageType(friendlyError.type);
     } finally {
       setResendingEmail(false);
     }
@@ -100,15 +103,17 @@ function LoginForm() {
       });
 
       if (error) {
-        setMessage(error.message);
-        setMessageType('error');
+        const friendlyError = translateSupabaseError(error);
+        setMessage(friendlyError.message);
+        setMessageType(friendlyError.type);
       } else {
         setMessage('Email de recuperação enviado! Verifique sua caixa de entrada.');
         setMessageType('warning');
       }
     } catch (err: any) {
-      setMessage('Erro ao enviar email de recuperação. Tente novamente.');
-      setMessageType('error');
+      const friendlyError = translateSupabaseError(err);
+      setMessage(friendlyError.message);
+      setMessageType(friendlyError.type);
     } finally {
       setResettingPassword(false);
     }
@@ -130,14 +135,10 @@ function LoginForm() {
       if (error) {
         console.error('Erro ao fazer login:', error);
 
-        // Se o erro for de email não confirmado
-        if (error.message.includes('Email not confirmed')) {
-          setMessage('Email não confirmado. Clique no botão abaixo para reenviar o email de confirmação.');
-          setMessageType('warning');
-        } else {
-          setMessage(error.message);
-          setMessageType('error');
-        }
+        // Traduzir erro do Supabase para mensagem amigável
+        const friendlyError = translateSupabaseError(error);
+        setMessage(friendlyError.message);
+        setMessageType(friendlyError.type);
 
         setLoading(false);
         return;
@@ -188,6 +189,8 @@ function LoginForm() {
                 ? 'bg-green-50 dark:bg-green-900/20 border-green-500'
                 : messageType === 'warning'
                 ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
+                : messageType === 'info'
+                ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500'
                 : 'bg-red-50 dark:bg-red-900/20 border-red-500'
             }`}>
               <p className={`text-sm font-semibold ${
@@ -195,9 +198,11 @@ function LoginForm() {
                   ? 'text-green-800 dark:text-green-200'
                   : messageType === 'warning'
                   ? 'text-yellow-800 dark:text-yellow-200'
+                  : messageType === 'info'
+                  ? 'text-blue-800 dark:text-blue-200'
                   : 'text-red-800 dark:text-red-200'
               }`}>
-                {messageType === 'success' ? '✅' : messageType === 'warning' ? '⚠️' : '❌'} {message}
+                {messageType === 'success' ? '✅' : messageType === 'warning' ? '⚠️' : messageType === 'info' ? 'ℹ️' : '❌'} {message}
               </p>
 
               {messageType !== 'success' && (message.includes('confirmação') || message.includes('expirado')) && (

@@ -4,6 +4,7 @@ import { useState, Suspense, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { translateSupabaseError } from '@/lib/supabase-errors';
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -11,7 +12,7 @@ function ResetPasswordForm() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [messageType, setMessageType] = useState<'error' | 'warning' | 'success'>('error');
+  const [messageType, setMessageType] = useState<'error' | 'warning' | 'success' | 'info'>('error');
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,8 +42,9 @@ function ResetPasswordForm() {
 
       if (error) {
         console.error('Erro ao redefinir senha:', error);
-        setMessage(error.message);
-        setMessageType('error');
+        const friendlyError = translateSupabaseError(error);
+        setMessage(friendlyError.message);
+        setMessageType(friendlyError.type);
         setLoading(false);
         return;
       }
@@ -56,8 +58,9 @@ function ResetPasswordForm() {
       }, 2000);
     } catch (err: any) {
       console.error('Erro inesperado:', err);
-      setMessage('Erro ao redefinir senha. Tente novamente.');
-      setMessageType('error');
+      const friendlyError = translateSupabaseError(err);
+      setMessage(friendlyError.message);
+      setMessageType(friendlyError.type);
       setLoading(false);
     }
   };
@@ -85,6 +88,8 @@ function ResetPasswordForm() {
                 ? 'bg-green-50 dark:bg-green-900/20 border-green-500'
                 : messageType === 'warning'
                 ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
+                : messageType === 'info'
+                ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500'
                 : 'bg-red-50 dark:bg-red-900/20 border-red-500'
             }`}>
               <p className={`text-sm font-semibold ${
@@ -92,9 +97,11 @@ function ResetPasswordForm() {
                   ? 'text-green-800 dark:text-green-200'
                   : messageType === 'warning'
                   ? 'text-yellow-800 dark:text-yellow-200'
+                  : messageType === 'info'
+                  ? 'text-blue-800 dark:text-blue-200'
                   : 'text-red-800 dark:text-red-200'
               }`}>
-                {messageType === 'success' ? '✅' : messageType === 'warning' ? '⚠️' : '❌'} {message}
+                {messageType === 'success' ? '✅' : messageType === 'warning' ? '⚠️' : messageType === 'info' ? 'ℹ️' : '❌'} {message}
               </p>
             </div>
           )}
