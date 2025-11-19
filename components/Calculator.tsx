@@ -299,7 +299,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
     calculatedResult.costs.total = Math.round(roundedTotal * 100) / 100;
 
-    const profitValue = Math.round((calculatedResult.costs.total * profitMargin) / 100 * 100) / 100;
+    const profitValue = Math.round((calculatedResult.costs.total * profitMargin / 100) * 100) / 100;
     calculatedResult.profitValue = profitValue;
 
     // Aplicar arredondamento inteligente no preço final

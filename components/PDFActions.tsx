@@ -35,7 +35,7 @@ export default function PDFActions({ calculation, printDetails, quoteId }: PDFAc
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string>('');
   const [showClientManager, setShowClientManager] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string, showSettingsButton?: boolean } | null>(null);
   const [projectStatus, setProjectStatus] = useState<ProjectStatus>('quote');
   const [attachments, setAttachments] = useState<FileAttachment[]>([]);
 
@@ -46,8 +46,8 @@ export default function PDFActions({ calculation, printDetails, quoteId }: PDFAc
     }
   };
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
-    setMessage({ type, text });
+  const showMessage = (type: 'success' | 'error', text: string, showSettingsButton?: boolean) => {
+    setMessage({ type, text, showSettingsButton });
     setTimeout(() => setMessage(null), 5000);
   };
 
@@ -71,7 +71,7 @@ export default function PDFActions({ calculation, printDetails, quoteId }: PDFAc
 
     const company = getCompanySettings();
     if (!company || !company.name) {
-      showMessage('error', 'Configure os dados da empresa primeiro em Configurações');
+      showMessage('error', 'Configure os dados da empresa primeiro para gerar documentos', true);
       return;
     }
 
@@ -157,7 +157,7 @@ export default function PDFActions({ calculation, printDetails, quoteId }: PDFAc
 
     const company = getCompanySettings();
     if (!company || !company.name) {
-      showMessage('error', 'Configure os dados da empresa primeiro em Configurações');
+      showMessage('error', 'Configure os dados da empresa primeiro para gerar documentos', true);
       return;
     }
 
@@ -249,17 +249,31 @@ export default function PDFActions({ calculation, printDetails, quoteId }: PDFAc
             ? 'bg-green-50 dark:bg-green-900/20 border-green-500 text-green-800 dark:text-green-200'
             : 'bg-red-50 dark:bg-red-900/20 border-red-500 text-red-800 dark:text-red-200'
         }`}>
-          <div className="flex items-center gap-2">
-            {message.type === 'success' ? (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 flex-1">
+              {message.type === 'success' ? (
+                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              )}
+              <span className="font-semibold text-sm">{message.text}</span>
+            </div>
+            {message.showSettingsButton && (
+              <button
+                onClick={() => router.push('/settings')}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white font-bold rounded-lg text-sm transition-all whitespace-nowrap flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Configurar Agora
+              </button>
             )}
-            <span className="font-semibold text-sm">{message.text}</span>
           </div>
         </div>
       )}
