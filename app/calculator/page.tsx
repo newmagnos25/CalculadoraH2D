@@ -167,6 +167,17 @@ export default function Home() {
             </Link>
             <div className="flex items-center gap-2 sm:gap-4">
               <Link
+                href="/consignment"
+                className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl text-white font-black text-xs sm:text-sm transition-all shadow-lg border-2 border-purple-300 hover:scale-105 hover:shadow-xl"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <span className="hidden xs:inline">📦</span>
+                <span className="hidden sm:inline">Consignado</span>
+                <span className="sm:hidden">Consig</span>
+              </Link>
+              <Link
                 href="/settings"
                 className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-3 bg-white hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-orange-600 dark:text-orange-400 font-black text-xs sm:text-sm transition-all shadow-lg border-2 border-orange-400 dark:border-orange-500 hover:scale-105 hover:shadow-xl hover:border-orange-500 dark:hover:border-orange-400"
               >

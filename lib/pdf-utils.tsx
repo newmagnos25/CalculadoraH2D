@@ -3,6 +3,7 @@ import { pdf } from '@react-pdf/renderer';
 import { CompanySettings, ClientData, CalculationResult, ProjectStatus } from './types';
 import PDFQuote from '@/components/PDFQuote';
 import PDFContract from '@/components/PDFContract';
+import PDFConsignment, { ConsignmentItem } from '@/components/PDFConsignment';
 
 export interface GenerateQuotePDFParams {
   company: CompanySettings;
@@ -34,6 +35,20 @@ export interface GenerateContractPDFParams {
   totalValue: number;
   description: string;
   deliveryDays?: number;
+}
+
+export interface GenerateConsignmentPDFParams {
+  company: CompanySettings;
+  client: ClientData;
+  consignmentNumber: string;
+  date: string;
+  items: ConsignmentItem[];
+  conditions: {
+    returnDeadlineDays: number;
+    commissionPercent?: number;
+    paymentTerms: string;
+    notes?: string;
+  };
 }
 
 /**
@@ -100,6 +115,40 @@ export async function generateContractBlob(params: GenerateContractPDFParams): P
     return blob;
   } catch (error) {
     console.error('Erro ao gerar blob do contrato:', error);
+    return null;
+  }
+}
+
+/**
+ * Gera e faz download do PDF de consignado
+ */
+export async function generateAndDownloadConsignment(params: GenerateConsignmentPDFParams) {
+  try {
+    const blob = await pdf(<PDFConsignment {...params} />).toBlob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Consignacao_${params.consignmentNumber}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    return true;
+  } catch (error) {
+    console.error('Erro ao gerar PDF de consignado:', error);
+    return false;
+  }
+}
+
+/**
+ * Gera Blob do PDF de consignado (sem fazer download)
+ */
+export async function generateConsignmentBlob(params: GenerateConsignmentPDFParams): Promise<Blob | null> {
+  try {
+    const blob = await pdf(<PDFConsignment {...params} />).toBlob();
+    return blob;
+  } catch (error) {
+    console.error('Erro ao gerar blob do consignado:', error);
     return null;
   }
 }
