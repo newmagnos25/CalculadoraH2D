@@ -36,9 +36,9 @@ export function smartRoundPrice(value: number): number {
  * - Margem de lucro
  */
 export async function calculatePrintCost(input: CalculationInput): Promise<CalculationResult> {
-  // 1. Buscar dados (inclui default + customizados do localStorage)
+  // 1. Buscar dados (inclui default + customizados do localStorage/Supabase)
   const printer = await getPrinterById(input.printerId);
-  const filament = getFilamentById(input.filamentId);
+  const filament = await getFilamentById(input.filamentId);
   const tariff = energyTariffs.find(t => t.distributor === input.energyTariffId);
 
   if (!printer) throw new Error('Impressora não encontrada');
@@ -69,7 +69,7 @@ export async function calculatePrintCost(input: CalculationInput): Promise<Calcu
   let addonsCost = 0;
   if (input.addons && input.addons.length > 0) {
     for (const addonInput of input.addons) {
-      const addon = getAddonById(addonInput.addonId);
+      const addon = await getAddonById(addonInput.addonId);
       if (addon) {
         addonsCost += addon.pricePerUnit * addonInput.quantity;
       }

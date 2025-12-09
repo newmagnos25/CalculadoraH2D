@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import AutoMigration from "@/components/AutoMigration";
 import { Toaster } from 'react-hot-toast';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 
@@ -18,6 +19,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className="antialiased">
         <GoogleAnalytics />
+        <AutoMigration />
         {children}
         <Toaster
           position="top-right"
