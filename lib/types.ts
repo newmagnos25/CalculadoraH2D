@@ -152,7 +152,7 @@ export type ProjectStatus =
 export interface FileAttachment {
   id: string;
   name: string;
-  type: 'model' | 'image' | 'document'; // model = STL/GCODE/3MF, image = photos, document = outros
+  type: 'model' | 'image' | 'video' | 'document'; // model = STL/GCODE/3MF, image = photos, video = videos, document = outros
   mimeType: string;
   size: number; // bytes
   data: string; // base64 encoded

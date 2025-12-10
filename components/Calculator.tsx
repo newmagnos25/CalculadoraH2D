@@ -549,34 +549,6 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
               </div>
             </div>
 
-            {/* Imagem do Produto */}
-            <div className="mt-3">
-              <label className="block text-xs font-semibold mb-1 text-blue-800 dark:text-blue-300">
-                🖼️ Foto do Produto (URL da imagem)
-              </label>
-              <input
-                type="url"
-                value={productImage}
-                onChange={e => setProductImage(e.target.value)}
-                placeholder="https://exemplo.com/imagem-produto.jpg"
-                className="w-full px-3 py-2 border-2 border-blue-200 dark:border-blue-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all text-sm"
-              />
-              <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                💡 Cole o link direto da imagem (Ex: Imgur, Google Drive público, etc)
-              </p>
-              {productImage && (
-                <div className="mt-2">
-                  <img
-                    src={productImage}
-                    alt="Preview"
-                    className="max-w-full h-32 object-contain rounded-lg border-2 border-blue-300 dark:border-blue-600"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Filamentos/Cores */}
