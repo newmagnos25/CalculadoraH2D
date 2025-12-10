@@ -11,34 +11,43 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<'account' | 'company' | 'clients' | 'printers'>('account');
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-blue-50/30 dark:from-black dark:via-slate-950 dark:to-slate-900">
+    <main className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-orange-50/30 dark:from-black dark:via-slate-950 dark:to-slate-900">
       {/* Header Premium */}
-      <div className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-blue-500 shadow-2xl">
-        <div className="container mx-auto px-4 py-6">
+      <div className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-orange-500 shadow-2xl">
+        <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center gap-3 sm:gap-4">
+            <Link href="/calculator" className="flex items-center gap-4 hover:opacity-80 transition-opacity cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center border-2 border-amber-300 shadow-lg shadow-orange-500/50">
+                <svg className="w-10 h-10 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white">
+                    Precifica3D
+                  </h1>
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full text-xs font-black border-2 border-amber-300 text-white shadow-lg">
+                    PRO
+                  </span>
+                </div>
+                <p className="text-orange-200 text-xs sm:text-sm md:text-base font-medium">
+                  ⚙️ Configurações
+                </p>
+              </div>
+            </Link>
+            <div className="flex items-center gap-2 sm:gap-4">
               <Link
                 href="/calculator"
-                className="group flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-white hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl border-2 border-blue-400 dark:border-blue-500 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-3 bg-white hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-orange-600 dark:text-orange-400 font-black text-xs sm:text-sm transition-all shadow-lg border-2 border-orange-400 dark:border-orange-500 hover:scale-105 hover:shadow-xl hover:border-orange-500 dark:hover:border-orange-400"
               >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center border-2 border-indigo-300 shadow-lg shadow-blue-500/50 group-hover:scale-110 transition-transform">
-                  <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs sm:text-sm font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider">← Voltar</span>
-                  </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 hidden sm:block">Calculadora</p>
-                </div>
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span className="hidden xs:inline">←</span>
+                <span className="hidden sm:inline">Calculadora</span>
+                <span className="sm:hidden">Calc</span>
               </Link>
-              <div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white">
-                  Configurações
-                </h1>
-                <p className="text-blue-200 text-xs sm:text-sm">Gerencie suas configurações</p>
-              </div>
             </div>
           </div>
         </div>

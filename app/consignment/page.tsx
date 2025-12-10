@@ -263,7 +263,7 @@ export default function ConsignmentPage() {
         )}
 
         {/* Client Selection */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl p-6 mb-6 border-2 border-orange-200 dark:border-orange-900">
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl p-6 mb-6 border-2 border-slate-200 dark:border-slate-800">
           <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -276,7 +276,7 @@ export default function ConsignmentPage() {
         </div>
 
         {/* Items */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl p-6 mb-6 border-2 border-orange-200 dark:border-orange-900">
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl p-6 mb-6 border-2 border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
@@ -299,9 +299,9 @@ export default function ConsignmentPage() {
 
           <div className="space-y-4">
             {items.map((item, index) => (
-              <div key={item.id} className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-xl p-4 hover:border-orange-400 dark:hover:border-orange-600 transition-all shadow-md">
+              <div key={item.id} className="bg-gradient-to-r from-slate-50 to-blue-50/50 dark:from-slate-900/50 dark:to-slate-800/50 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-4 hover:border-blue-300 dark:hover:border-blue-600 transition-all shadow-md">
                 <div className="flex items-start justify-between mb-3">
-                  <h3 className="font-bold text-orange-900 dark:text-orange-100">Item {index + 1}</h3>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100">Item {index + 1}</h3>
                   {items.length > 1 && (
                     <button
                       onClick={() => removeItem(item.id)}
@@ -316,36 +316,36 @@ export default function ConsignmentPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-orange-900 dark:text-orange-100 mb-2">Descrição</label>
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Descrição</label>
                     <input
                       type="text"
                       value={item.description}
                       onChange={(e) => updateItem(item.id, 'description', e.target.value)}
                       placeholder="Ex: Miniatura de dragão impresso em PLA"
-                      className="w-full px-3 py-2 border-2 border-orange-200 dark:border-orange-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+                      className="w-full px-3 py-2 border-2 border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-orange-900 dark:text-orange-100 mb-2">Quantidade</label>
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Quantidade</label>
                     <input
                       type="number"
                       min="1"
                       value={item.quantity}
                       onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
-                      className="w-full px-3 py-2 border-2 border-orange-200 dark:border-orange-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+                      className="w-full px-3 py-2 border-2 border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-orange-900 dark:text-orange-100 mb-2">Preço Unit. (R$)</label>
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Preço Unit. (R$)</label>
                     <input
                       type="number"
                       min="0"
                       step="0.01"
                       value={item.unitPrice}
                       onChange={(e) => updateItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 border-2 border-orange-200 dark:border-orange-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+                      className="w-full px-3 py-2 border-2 border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
                     />
                   </div>
                 </div>
@@ -360,7 +360,7 @@ export default function ConsignmentPage() {
             ))}
           </div>
 
-          <div className="mt-6 pt-6 border-t-2 border-orange-200 dark:border-orange-800">
+          <div className="mt-6 pt-6 border-t-2 border-slate-200 dark:border-slate-700">
             <div className="flex justify-between items-center">
               <span className="text-xl font-bold text-slate-900 dark:text-white">Valor Total da Consignação:</span>
               <span className="text-3xl font-bold text-orange-600 dark:text-orange-400">R$ {calculateTotal().toFixed(2)}</span>
@@ -369,7 +369,7 @@ export default function ConsignmentPage() {
         </div>
 
         {/* Conditions */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl p-6 mb-6 border-2 border-orange-200 dark:border-orange-900">
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl p-6 mb-6 border-2 border-slate-200 dark:border-slate-800">
           <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -381,18 +381,18 @@ export default function ConsignmentPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-semibold text-orange-900 dark:text-orange-100 mb-2">Prazo para Devolução (dias)</label>
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Prazo para Devolução (dias)</label>
               <input
                 type="number"
                 min="1"
                 value={returnDeadlineDays}
                 onChange={(e) => setReturnDeadlineDays(parseInt(e.target.value) || 30)}
-                className="w-full px-3 py-2 border-2 border-orange-200 dark:border-orange-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+                className="w-full px-3 py-2 border-2 border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-orange-900 dark:text-orange-100 mb-2">Comissão do Cliente (%)</label>
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Comissão do Cliente (%)</label>
               <input
                 type="number"
                 min="0"
@@ -401,29 +401,29 @@ export default function ConsignmentPage() {
                 value={commissionPercent}
                 onChange={(e) => setCommissionPercent(parseFloat(e.target.value) || 0)}
                 placeholder="Deixe 0 se não houver comissão"
-                className="w-full px-3 py-2 border-2 border-orange-200 dark:border-orange-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+                className="w-full px-3 py-2 border-2 border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
               />
             </div>
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-orange-900 dark:text-orange-100 mb-2">Condições de Pagamento</label>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Condições de Pagamento</label>
             <textarea
               value={paymentTerms}
               onChange={(e) => setPaymentTerms(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border-2 border-orange-200 dark:border-orange-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+              className="w-full px-3 py-2 border-2 border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-orange-900 dark:text-orange-100 mb-2">Observações Adicionais (Opcional)</label>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Observações Adicionais (Opcional)</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
               placeholder="Adicione informações extras sobre a consignação..."
-              className="w-full px-3 py-2 border-2 border-orange-200 dark:border-orange-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+              className="w-full px-3 py-2 border-2 border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
             />
           </div>
         </div>
