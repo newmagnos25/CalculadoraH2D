@@ -145,8 +145,11 @@ export default function ClientManager({ selectedClientId, onClientSelect, showAs
                     value={formData.cpfCnpj}
                     onChange={e => setFormData({ ...formData, cpfCnpj: e.target.value })}
                     className="w-full px-2 py-1.5 text-sm border-2 border-blue-200 dark:border-blue-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500"
-                    placeholder="000.000.000-00"
+                    placeholder="Digite CPF ou CNPJ"
                   />
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    ✓ CPF (11 dígitos) ou CNPJ (14 dígitos) - a máscara muda automaticamente
+                  </p>
                 </div>
 
                 <div>
@@ -507,8 +510,11 @@ export default function ClientManager({ selectedClientId, onClientSelect, showAs
               value={formData.cpfCnpj}
               onChange={e => setFormData({ ...formData, cpfCnpj: e.target.value })}
               className="w-full px-2 py-1.5 text-sm border-2 border-blue-200 dark:border-blue-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500"
-              placeholder="000.000.000-00"
+              placeholder="Digite CPF ou CNPJ"
             />
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+              ✓ CPF (11 dígitos) ou CNPJ (14 dígitos) - a máscara muda automaticamente
+            </p>
           </div>
 
           <div>
