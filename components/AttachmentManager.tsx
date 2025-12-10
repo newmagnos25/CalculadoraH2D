@@ -25,6 +25,7 @@ export default function AttachmentManager({
   const acceptedFileTypes = {
     model: ['.stl', '.gcode', '.3mf', '.obj'],
     image: ['.jpg', '.jpeg', '.png', '.webp', '.gif'],
+    video: ['.mp4', '.mov', '.avi', '.webm', '.mkv'],
     document: ['.pdf', '.txt', '.doc', '.docx'],
   };
 
@@ -36,6 +37,7 @@ export default function AttachmentManager({
     const ext = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
     if (acceptedFileTypes.model.includes(ext)) return 'model';
     if (acceptedFileTypes.image.includes(ext)) return 'image';
+    if (acceptedFileTypes.video.includes(ext)) return 'video';
     return 'document';
   };
 
@@ -142,6 +144,12 @@ export default function AttachmentManager({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         );
+      case 'video':
+        return (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+        );
       case 'document':
         return (
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,6 +163,7 @@ export default function AttachmentManager({
     switch (type) {
       case 'model': return 'Modelo 3D';
       case 'image': return 'Imagem';
+      case 'video': return 'Vídeo';
       case 'document': return 'Documento';
     }
   };
@@ -163,6 +172,7 @@ export default function AttachmentManager({
     switch (type) {
       case 'model': return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-300';
       case 'image': return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-300';
+      case 'video': return 'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border-pink-300';
       case 'document': return 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-300';
     }
   };
@@ -190,7 +200,7 @@ export default function AttachmentManager({
             />
           </label>
           <span className="text-xs text-slate-500 dark:text-slate-400">
-            Máx. {maxSizeMB}MB • STL, GCODE, 3MF, Imagens, PDFs
+            Máx. {maxSizeMB}MB • Modelos 3D, Imagens, Vídeos, PDFs
           </span>
         </div>
       </div>
@@ -214,54 +224,85 @@ export default function AttachmentManager({
             Arquivos Anexados ({attachments.length})
           </h4>
           <div className="space-y-2">
-            {attachments.map((attachment) => (
-              <div
-                key={attachment.id}
-                className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-lg hover:border-orange-300 dark:hover:border-orange-700 transition-colors"
-              >
-                {/* Icon */}
-                <div className={`flex-shrink-0 p-2 rounded-lg ${getTypeBadgeColor(attachment.type)}`}>
-                  {getFileIcon(attachment.type)}
-                </div>
+            {attachments.map((attachment) => {
+              const dataUrl = `data:${attachment.mimeType};base64,${attachment.data}`;
+              const showPreview = attachment.type === 'image' || attachment.type === 'video';
 
-                {/* File Info */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-                    {attachment.name}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className={`text-xs px-2 py-0.5 rounded-full border ${getTypeBadgeColor(attachment.type)}`}>
-                      {getTypeLabel(attachment.type)}
-                    </span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                      {formatFileSize(attachment.size)}
-                    </span>
+              return (
+                <div
+                  key={attachment.id}
+                  className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-lg hover:border-orange-300 dark:hover:border-orange-700 transition-colors overflow-hidden"
+                >
+                  <div className="flex items-center gap-3 p-3">
+                    {/* Icon */}
+                    <div className={`flex-shrink-0 p-2 rounded-lg ${getTypeBadgeColor(attachment.type)}`}>
+                      {getFileIcon(attachment.type)}
+                    </div>
+
+                    {/* File Info */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                        {attachment.name}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`text-xs px-2 py-0.5 rounded-full border ${getTypeBadgeColor(attachment.type)}`}>
+                          {getTypeLabel(attachment.type)}
+                        </span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          {formatFileSize(attachment.size)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleDownload(attachment)}
+                        className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                        title="Baixar arquivo"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(attachment.id)}
+                        className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                        title="Remover arquivo"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleDownload(attachment)}
-                    className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
-                    title="Baixar arquivo"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(attachment.id)}
-                    className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                    title="Remover arquivo"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
+                  {/* Preview Section */}
+                  {showPreview && (
+                    <div className="px-3 pb-3">
+                      <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-2 border border-slate-200 dark:border-slate-700">
+                        {attachment.type === 'image' && (
+                          <img
+                            src={dataUrl}
+                            alt={attachment.name}
+                            className="max-w-full h-auto max-h-64 mx-auto rounded"
+                          />
+                        )}
+                        {attachment.type === 'video' && (
+                          <video
+                            src={dataUrl}
+                            controls
+                            className="max-w-full h-auto max-h-64 mx-auto rounded"
+                          >
+                            Seu navegador não suporta vídeos.
+                          </video>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -275,7 +316,7 @@ export default function AttachmentManager({
             Nenhum arquivo anexado
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
-            Adicione modelos 3D, fotos ou documentos do projeto
+            Adicione modelos 3D, imagens, vídeos ou documentos do projeto
           </p>
         </div>
       )}

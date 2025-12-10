@@ -10,8 +10,13 @@ export default function AccountSettings() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [fullName, setFullName] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingEmail, setSavingEmail] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
   const [canceling, setCanceling] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const { subscription, refresh } = useSubscription();
@@ -73,6 +78,66 @@ export default function AccountSettings() {
     }, 1500);
   };
 
+  const handleChangeEmail = async () => {
+    if (!newEmail || !newEmail.includes('@')) {
+      setMessage({ type: 'error', text: 'Por favor, insira um e-mail válido' });
+      return;
+    }
+
+    setSavingEmail(true);
+    setMessage(null);
+
+    const supabase = createClient();
+
+    // Atualizar email do usuário
+    const { error } = await supabase.auth.updateUser({
+      email: newEmail
+    });
+
+    if (error) {
+      setMessage({ type: 'error', text: 'Erro ao alterar e-mail: ' + error.message });
+      setSavingEmail(false);
+      return;
+    }
+
+    setMessage({ type: 'success', text: '✅ E-mail atualizado! Verifique sua caixa de entrada para confirmar o novo e-mail.' });
+    setNewEmail('');
+    setSavingEmail(false);
+  };
+
+  const handleChangePassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      setMessage({ type: 'error', text: 'A senha deve ter pelo menos 6 caracteres' });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setMessage({ type: 'error', text: 'As senhas não coincidem' });
+      return;
+    }
+
+    setSavingPassword(true);
+    setMessage(null);
+
+    const supabase = createClient();
+
+    // Atualizar senha
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    if (error) {
+      setMessage({ type: 'error', text: 'Erro ao alterar senha: ' + error.message });
+      setSavingPassword(false);
+      return;
+    }
+
+    setMessage({ type: 'success', text: '✅ Senha alterada com sucesso!' });
+    setNewPassword('');
+    setConfirmPassword('');
+    setSavingPassword(false);
+  };
+
   const handleCancelSubscription = async () => {
     if (!confirm('Tem certeza que deseja cancelar sua assinatura? Você perderá acesso aos recursos premium.')) {
       return;
@@ -83,12 +148,11 @@ export default function AccountSettings() {
 
     const supabase = createClient();
 
-    // Cancelar via RPC function (vamos criar depois)
+    // Cancelar assinatura (apenas atualiza o status)
     const { error } = await supabase
       .from('subscriptions')
       .update({
-        status: 'canceled',
-        canceled_at: new Date().toISOString()
+        status: 'canceled'
       })
       .eq('user_id', user?.id);
 
@@ -164,7 +228,7 @@ export default function AccountSettings() {
 
             <div>
               <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
-                E-mail
+                E-mail Atual
               </label>
               <input
                 type="email"
@@ -172,9 +236,6 @@ export default function AccountSettings() {
                 disabled
                 className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 cursor-not-allowed"
               />
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                ℹ️ O e-mail não pode ser alterado
-              </p>
             </div>
 
             <button
@@ -182,7 +243,83 @@ export default function AccountSettings() {
               disabled={saving}
               className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 disabled:from-slate-500 disabled:to-slate-600 text-white font-black py-3 px-6 rounded-lg transition-all shadow-lg disabled:cursor-not-allowed"
             >
-              {saving ? 'Salvando...' : '💾 Salvar Alterações'}
+              {saving ? 'Salvando...' : '💾 Salvar Nome'}
+            </button>
+          </div>
+        </div>
+
+        {/* Change Email */}
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border-2 border-blue-200 dark:border-blue-900 p-6">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6">
+            📧 Alterar E-mail
+          </h2>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                Novo E-mail
+              </label>
+              <input
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none"
+                placeholder="novo@email.com"
+              />
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                ℹ️ Você receberá um e-mail de confirmação no novo endereço
+              </p>
+            </div>
+
+            <button
+              onClick={handleChangeEmail}
+              disabled={savingEmail}
+              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 disabled:from-slate-500 disabled:to-slate-600 text-white font-black py-3 px-6 rounded-lg transition-all shadow-lg disabled:cursor-not-allowed"
+            >
+              {savingEmail ? 'Alterando...' : '📧 Alterar E-mail'}
+            </button>
+          </div>
+        </div>
+
+        {/* Change Password */}
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border-2 border-purple-200 dark:border-purple-900 p-6">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6">
+            🔒 Alterar Senha
+          </h2>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                Nova Senha
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none"
+                placeholder="Mínimo 6 caracteres"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                Confirmar Nova Senha
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none"
+                placeholder="Digite novamente"
+              />
+            </div>
+
+            <button
+              onClick={handleChangePassword}
+              disabled={savingPassword}
+              className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-slate-500 disabled:to-slate-600 text-white font-black py-3 px-6 rounded-lg transition-all shadow-lg disabled:cursor-not-allowed"
+            >
+              {savingPassword ? 'Alterando...' : '🔒 Alterar Senha'}
             </button>
           </div>
         </div>
