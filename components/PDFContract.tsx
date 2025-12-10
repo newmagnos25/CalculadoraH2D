@@ -182,14 +182,6 @@ const createStyles = (brandColor: string = '#F97316') => StyleSheet.create({
     textAlign: 'center',
     marginBottom: 3,
   },
-  sectionTitle: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: brandColor,
-    marginBottom: 6,
-    borderBottom: '1 solid #FED7AA',
-    paddingBottom: 2,
-  },
 });
 
 interface PDFContractProps {
