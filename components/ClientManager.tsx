@@ -142,6 +142,7 @@ export default function ClientManager({ selectedClientId, onClientSelect, showAs
                   </label>
                   <MaskedInput
                     mask={getCpfCnpjMask(formData.cpfCnpj || '')}
+                    getMask={getCpfCnpjMask}
                     value={formData.cpfCnpj}
                     onChange={e => setFormData({ ...formData, cpfCnpj: e.target.value })}
                     className="w-full px-2 py-1.5 text-sm border-2 border-blue-200 dark:border-blue-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500"
@@ -507,6 +508,7 @@ export default function ClientManager({ selectedClientId, onClientSelect, showAs
             </label>
             <MaskedInput
               mask={getCpfCnpjMask(formData.cpfCnpj || '')}
+              getMask={getCpfCnpjMask}
               value={formData.cpfCnpj}
               onChange={e => setFormData({ ...formData, cpfCnpj: e.target.value })}
               className="w-full px-2 py-1.5 text-sm border-2 border-blue-200 dark:border-blue-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500"

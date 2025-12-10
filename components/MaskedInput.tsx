@@ -10,6 +10,7 @@ interface MaskedInputProps {
   required?: boolean;
   className?: string;
   type?: string;
+  getMask?: (value: string) => string; // Dynamic mask function (optional)
 }
 
 /**
@@ -24,8 +25,9 @@ export default function MaskedInput({
   required = false,
   className = '',
   type = 'text',
+  getMask,
 }: MaskedInputProps) {
-  const applyMask = (inputValue: string) => {
+  const applyMask = (inputValue: string, maskPattern: string) => {
     // Remove tudo que não é número
     const numbers = inputValue.replace(/\D/g, '');
 
@@ -33,12 +35,12 @@ export default function MaskedInput({
     let masked = '';
     let numIndex = 0;
 
-    for (let i = 0; i < mask.length && numIndex < numbers.length; i++) {
-      if (mask[i] === '9') {
+    for (let i = 0; i < maskPattern.length && numIndex < numbers.length; i++) {
+      if (maskPattern[i] === '9') {
         masked += numbers[numIndex];
         numIndex++;
       } else {
-        masked += mask[i];
+        masked += maskPattern[i];
       }
     }
 
@@ -46,7 +48,9 @@ export default function MaskedInput({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const maskedValue = applyMask(e.target.value);
+    // Use dynamic mask if provided, otherwise use static mask
+    const currentMask = getMask ? getMask(e.target.value) : mask;
+    const maskedValue = applyMask(e.target.value, currentMask);
 
     // Cria um novo evento com o valor mascarado
     const newEvent = {

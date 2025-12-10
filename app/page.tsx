@@ -31,7 +31,7 @@ export default function LandingPage() {
             em Segundos
           </h1>
           <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
-            Ferramenta profissional para calcular custos de impressão 3D, gerar orçamentos PDF e gerenciar seus clientes.
+            Ferramenta profissional completa para calcular custos, gerar orçamentos e termos de consignação, gerenciar clientes, impressoras e muito mais.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
@@ -55,36 +55,76 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <div className="bg-slate-900 border-2 border-orange-500 rounded-2xl p-8 hover:scale-105 transition-all">
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center mb-6">
-              <span className="text-4xl">⚡</span>
+      {/* Features Section Title */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+            Tudo que Você Precisa em <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">Uma Ferramenta</span>
+          </h2>
+          <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+            Sistema completo de gestão para profissionais e empresas de impressão 3D
+          </p>
+        </div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-orange-500 rounded-2xl p-6 hover:scale-105 transition-all hover:shadow-2xl hover:shadow-orange-500/20">
+            <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center mb-4">
+              <span className="text-3xl">⚡</span>
             </div>
-            <h3 className="text-2xl font-black text-white mb-4">Rápido e Preciso</h3>
-            <p className="text-slate-400">
-              Calcule custos de filamento, energia, tempo de impressão e margem de lucro instantaneamente.
+            <h3 className="text-xl font-black text-white mb-3">Cálculo Inteligente</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Calcule custos de filamento, energia, tempo de impressão, margem de lucro e preço final em segundos com precisão profissional.
             </p>
           </div>
 
-          <div className="bg-slate-900 border-2 border-blue-500 rounded-2xl p-8 hover:scale-105 transition-all">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6">
-              <span className="text-4xl">📄</span>
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-blue-500 rounded-2xl p-6 hover:scale-105 transition-all hover:shadow-2xl hover:shadow-blue-500/20">
+            <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4">
+              <span className="text-3xl">📄</span>
             </div>
-            <h3 className="text-2xl font-black text-white mb-4">PDFs Profissionais</h3>
-            <p className="text-slate-400">
-              Gere orçamentos em PDF com sua marca, dados do cliente e valores detalhados.
+            <h3 className="text-xl font-black text-white mb-3">Orçamentos em PDF</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Gere orçamentos profissionais com sua logo, cores da marca, dados do cliente e valores detalhados em PDF pronto para enviar.
             </p>
           </div>
 
-          <div className="bg-slate-900 border-2 border-purple-500 rounded-2xl p-8 hover:scale-105 transition-all">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6">
-              <span className="text-4xl">👥</span>
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-purple-500 rounded-2xl p-6 hover:scale-105 transition-all hover:shadow-2xl hover:shadow-purple-500/20">
+            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4">
+              <span className="text-3xl">📦</span>
             </div>
-            <h3 className="text-2xl font-black text-white mb-4">Gestão de Clientes</h3>
-            <p className="text-slate-400">
-              Salve dados dos clientes, histórico de orçamentos e acompanhe suas vendas.
+            <h3 className="text-xl font-black text-white mb-3">Termos de Consignação</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Crie termos de consignação profissionais com condições personalizadas, prazos, comissões e proteção jurídica completa.
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-green-500 rounded-2xl p-6 hover:scale-105 transition-all hover:shadow-2xl hover:shadow-green-500/20">
+            <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-4">
+              <span className="text-3xl">👥</span>
+            </div>
+            <h3 className="text-xl font-black text-white mb-3">Gestão de Clientes</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Cadastre clientes ilimitados com CPF/CNPJ, endereço completo, histórico de orçamentos e toda documentação em um só lugar.
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-pink-500 rounded-2xl p-6 hover:scale-105 transition-all hover:shadow-2xl hover:shadow-pink-500/20">
+            <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center mb-4">
+              <span className="text-3xl">🖨️</span>
+            </div>
+            <h3 className="text-xl font-black text-white mb-3">Múltiplas Impressoras</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Gerencie várias impressoras com custos individuais de energia, tempo e materiais para precificação exata por equipamento.
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-cyan-500 rounded-2xl p-6 hover:scale-105 transition-all hover:shadow-2xl hover:shadow-cyan-500/20">
+            <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center mb-4">
+              <span className="text-3xl">🎨</span>
+            </div>
+            <h3 className="text-xl font-black text-white mb-3">Personalização Total</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Configure logo, cores da marca, dados da empresa, termos e condições para documentos com a identidade visual do seu negócio.
             </p>
           </div>
         </div>

@@ -53,7 +53,7 @@ const createStyles = (brandColor: string = '#F97316') => StyleSheet.create({
     marginBottom: 10,
   },
   section: {
-    marginBottom: 10,
+    marginBottom: 8,
   },
   sectionTitle: {
     fontSize: 10,
@@ -147,12 +147,12 @@ const createStyles = (brandColor: string = '#F97316') => StyleSheet.create({
     flex: 1,
   },
   signatureSection: {
-    marginTop: 20,
+    marginTop: 15,
     marginBottom: 10,
   },
   signatureBox: {
-    marginTop: 30,
-    paddingTop: 10,
+    marginTop: 20,
+    paddingTop: 8,
   },
   signatureLine: {
     borderTop: '1 solid #1F2937',
@@ -425,21 +425,23 @@ export const PDFConsignment: React.FC<PDFConsignmentProps> = ({
           </View>
         )}
 
-        {/* Acordo */}
-        <View style={styles.section}>
-          <Text style={styles.paragraph}>
-            Ambas as partes estão de acordo com os termos estabelecidos neste documento e o assinam em duas vias
-            de igual teor e forma.
+        {/* Acordo, Data e Assinaturas - Mantidos juntos */}
+        <View wrap={false}>
+          {/* Acordo */}
+          <View style={styles.section}>
+            <Text style={styles.paragraph}>
+              Ambas as partes estão de acordo com os termos estabelecidos neste documento e o assinam em duas vias
+              de igual teor e forma.
+            </Text>
+          </View>
+
+          {/* Data e Local */}
+          <Text style={[styles.paragraph, { marginTop: 12, textAlign: 'center' }]}>
+            {company.city}/{company.state}, {formatDate(date)}
           </Text>
-        </View>
 
-        {/* Data e Local */}
-        <Text style={[styles.paragraph, { marginTop: 15, textAlign: 'center' }]}>
-          {company.city}/{company.state}, {formatDate(date)}
-        </Text>
-
-        {/* Assinaturas */}
-        <View style={styles.signatureSection}>
+          {/* Assinaturas */}
+          <View style={styles.signatureSection}>
           <View style={styles.signatureBox}>
             <View style={styles.signatureLine}>
               <Text style={styles.signatureLabel}>CONSIGNANTE (Proprietário)</Text>
@@ -459,6 +461,7 @@ export const PDFConsignment: React.FC<PDFConsignmentProps> = ({
               )}
             </View>
           </View>
+        </View>
         </View>
 
         {/* Footer */}
