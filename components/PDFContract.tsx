@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
-import { CompanySettings, ClientData } from '@/lib/types';
+import { CompanySettings, ClientData, FileAttachment } from '@/lib/types';
 import { formatCurrency } from '@/lib/calculator';
 
 // Função para criar estilos dinâmicos baseados na cor da marca
@@ -141,6 +141,55 @@ const createStyles = (brandColor: string = '#F97316') => StyleSheet.create({
     borderTop: '1 solid #E5E7EB',
     paddingTop: 6,
   },
+  attachmentsSection: {
+    marginTop: 10,
+    marginBottom: 10,
+    breakInside: 'avoid',
+  },
+  attachmentsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  attachmentItem: {
+    width: '48%',
+    backgroundColor: '#F9FAFB',
+    border: '1 solid #E5E7EB',
+    borderRadius: 4,
+    padding: 6,
+    marginBottom: 6,
+  },
+  attachmentImage: {
+    width: '100%',
+    height: 100,
+    objectFit: 'cover',
+    borderRadius: 4,
+    marginBottom: 4,
+  },
+  attachmentLabel: {
+    fontSize: 7,
+    color: '#6B7280',
+    marginTop: 3,
+    textAlign: 'center',
+  },
+  attachmentTypeBadge: {
+    fontSize: 6,
+    color: '#FFFFFF',
+    backgroundColor: brandColor,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 3,
+    textAlign: 'center',
+    marginBottom: 3,
+  },
+  sectionTitle: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: brandColor,
+    marginBottom: 6,
+    borderBottom: '1 solid #FED7AA',
+    paddingBottom: 2,
+  },
 });
 
 interface PDFContractProps {
@@ -151,6 +200,7 @@ interface PDFContractProps {
   totalValue: number;
   description: string;
   deliveryDays?: number;
+  attachments?: FileAttachment[];
 }
 
 export const PDFContract: React.FC<PDFContractProps> = ({
@@ -161,6 +211,7 @@ export const PDFContract: React.FC<PDFContractProps> = ({
   totalValue,
   description,
   deliveryDays = 7,
+  attachments,
 }) => {
   // Criar estilos dinâmicos baseados na cor da marca da empresa
   const styles = createStyles(company.brandColor || '#F97316');
@@ -172,6 +223,22 @@ export const PDFContract: React.FC<PDFContractProps> = ({
       month: 'long',
       year: 'numeric'
     });
+  };
+
+  const getAttachmentTypeLabel = (type: FileAttachment['type']): string => {
+    const labels = {
+      model: 'Modelo 3D',
+      image: 'Imagem',
+      video: 'Vídeo',
+      document: 'Documento',
+    };
+    return labels[type];
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   return (
@@ -343,6 +410,62 @@ export const PDFContract: React.FC<PDFContractProps> = ({
             </View>
           </View>
         </View>
+
+        {/* Anexos do Projeto */}
+        {attachments && attachments.length > 0 && (
+          <View style={styles.attachmentsSection}>
+            <Text style={styles.sectionTitle}>📎 ANEXOS DO PROJETO</Text>
+            <View style={styles.attachmentsGrid}>
+              {attachments.map((attachment, index) => {
+                const dataUrl = `data:${attachment.mimeType};base64,${attachment.data}`;
+                const isImage = attachment.type === 'image';
+                const isVideo = attachment.type === 'video';
+
+                return (
+                  <View key={attachment.id || index} style={styles.attachmentItem}>
+                    <Text style={styles.attachmentTypeBadge}>
+                      {getAttachmentTypeLabel(attachment.type)}
+                    </Text>
+
+                    {/* Exibir imagem */}
+                    {isImage && (
+                      <Image
+                        src={dataUrl}
+                        style={styles.attachmentImage}
+                      />
+                    )}
+
+                    {/* Para vídeos, mostrar placeholder */}
+                    {isVideo && (
+                      <View style={[styles.attachmentImage, { backgroundColor: '#1F2937', justifyContent: 'center', alignItems: 'center' }]}>
+                        <Text style={{ color: '#FFFFFF', fontSize: 8, textAlign: 'center' }}>
+                          🎥 Vídeo{'\n'}{attachment.name}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* Para modelos 3D e documentos */}
+                    {!isImage && !isVideo && (
+                      <View style={[styles.attachmentImage, { backgroundColor: '#F3F4F6', justifyContent: 'center', alignItems: 'center' }]}>
+                        <Text style={{ color: '#6B7280', fontSize: 8, textAlign: 'center' }}>
+                          {attachment.type === 'model' ? '📦' : '📄'} {'\n'}
+                          {attachment.name}
+                        </Text>
+                      </View>
+                    )}
+
+                    <Text style={styles.attachmentLabel}>
+                      {attachment.name}
+                    </Text>
+                    <Text style={[styles.attachmentLabel, { fontSize: 6, marginTop: 1 }]}>
+                      {formatFileSize(attachment.size)}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        )}
 
         {/* Footer */}
         <View style={styles.footer}>
