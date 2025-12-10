@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { getCompanySettings, getClients, getNextInvoiceNumber, incrementInvoiceCounter } from '@/lib/storage';
 import { generateAndDownloadConsignment, getCurrentDate } from '@/lib/pdf-utils';
@@ -182,22 +183,55 @@ export default function ConsignmentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8 px-4">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={() => router.push('/calculator')}
-            className="mb-4 flex items-center gap-2 text-white/80 hover:text-white transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Voltar
-          </button>
-          <h1 className="text-4xl font-bold text-white mb-2">📦 Termo de Consignação</h1>
-          <p className="text-white/70">Gere termos de consignação profissionais para seus clientes</p>
+    <main className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-purple-50/30 dark:from-black dark:via-slate-950 dark:to-slate-900">
+      {/* Header Premium - Preto com Roxo/Rosa */}
+      <div className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-purple-500 shadow-2xl">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <Link href="/calculator" className="flex items-center gap-4 hover:opacity-80 transition-opacity cursor-pointer">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center border-2 border-pink-300 shadow-lg shadow-purple-500/50">
+                <svg className="w-10 h-10 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white">
+                    📦 Termo de Consignação
+                  </h1>
+                </div>
+                <p className="text-purple-200 text-xs sm:text-sm md:text-base font-medium">
+                  Gere termos profissionais para seus clientes
+                </p>
+              </div>
+            </Link>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link
+                href="/calculator"
+                className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-3 bg-white hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-purple-600 dark:text-purple-400 font-black text-xs sm:text-sm transition-all shadow-lg border-2 border-purple-400 dark:border-purple-500 hover:scale-105 hover:shadow-xl"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span className="hidden sm:inline">Voltar</span>
+              </Link>
+              <Link
+                href="/settings"
+                className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl text-white font-black text-xs sm:text-sm transition-all shadow-lg border-2 border-pink-300 hover:scale-105 hover:shadow-xl"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="hidden xs:inline">⚙️</span>
+                <span className="hidden sm:inline">Config</span>
+              </Link>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 py-8">{/* Content */}
 
         {/* Message Alert */}
         {message && (
@@ -222,28 +256,32 @@ export default function ConsignmentPage() {
         )}
 
         {/* Client Selection */}
-        <div className="bg-white rounded-lg shadow-xl p-6 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl p-6 mb-6 border-2 border-purple-200 dark:border-purple-900">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
             Cliente (Obrigatório)
           </h2>
           <ClientManager selectedClientId={selectedClientId} onClientSelect={handleSelectClient} />
         </div>
 
         {/* Items */}
-        <div className="bg-white rounded-lg shadow-xl p-6 mb-6">
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl p-6 mb-6 border-2 border-purple-200 dark:border-purple-900">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
               Itens Consignados
             </h2>
             <button
               onClick={addItem}
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-all flex items-center gap-2"
+              className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-lg transition-all flex items-center gap-2 shadow-lg hover:scale-105"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -254,13 +292,13 @@ export default function ConsignmentPage() {
 
           <div className="space-y-4">
             {items.map((item, index) => (
-              <div key={item.id} className="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+              <div key={item.id} className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-2 border-purple-300 dark:border-purple-700 rounded-xl p-4 hover:border-purple-400 dark:hover:border-purple-600 transition-all shadow-md">
                 <div className="flex items-start justify-between mb-3">
-                  <h3 className="font-bold text-gray-700">Item {index + 1}</h3>
+                  <h3 className="font-bold text-purple-900 dark:text-purple-100">Item {index + 1}</h3>
                   {items.length > 1 && (
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="text-red-500 hover:text-red-700 transition-colors"
+                      className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -271,43 +309,43 @@ export default function ConsignmentPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Descrição</label>
+                    <label className="block text-sm font-semibold text-purple-900 dark:text-purple-100 mb-2">Descrição</label>
                     <input
                       type="text"
                       value={item.description}
                       onChange={(e) => updateItem(item.id, 'description', e.target.value)}
                       placeholder="Ex: Miniatura de dragão impresso em PLA"
-                      className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                      className="w-full px-3 py-2 border-2 border-purple-200 dark:border-purple-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Quantidade</label>
+                    <label className="block text-sm font-semibold text-purple-900 dark:text-purple-100 mb-2">Quantidade</label>
                     <input
                       type="number"
                       min="1"
                       value={item.quantity}
                       onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
-                      className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                      className="w-full px-3 py-2 border-2 border-purple-200 dark:border-purple-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Preço Unit. (R$)</label>
+                    <label className="block text-sm font-semibold text-purple-900 dark:text-purple-100 mb-2">Preço Unit. (R$)</label>
                     <input
                       type="number"
                       min="0"
                       step="0.01"
                       value={item.unitPrice}
                       onChange={(e) => updateItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                      className="w-full px-3 py-2 border-2 border-purple-200 dark:border-purple-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
                     />
                   </div>
                 </div>
 
                 <div className="mt-3 text-right">
-                  <span className="text-sm text-gray-600">Total: </span>
-                  <span className="text-lg font-bold text-blue-600">
+                  <span className="text-sm text-slate-600 dark:text-slate-400">Total: </span>
+                  <span className="text-lg font-bold text-purple-600 dark:text-purple-400">
                     R$ {item.totalPrice.toFixed(2)}
                   </span>
                 </div>
@@ -315,37 +353,39 @@ export default function ConsignmentPage() {
             ))}
           </div>
 
-          <div className="mt-6 pt-6 border-t-2 border-gray-200">
+          <div className="mt-6 pt-6 border-t-2 border-purple-200 dark:border-purple-800">
             <div className="flex justify-between items-center">
-              <span className="text-xl font-bold text-gray-900">Valor Total da Consignação:</span>
-              <span className="text-3xl font-bold text-blue-600">R$ {calculateTotal().toFixed(2)}</span>
+              <span className="text-xl font-bold text-slate-900 dark:text-white">Valor Total da Consignação:</span>
+              <span className="text-3xl font-bold text-purple-600 dark:text-purple-400">R$ {calculateTotal().toFixed(2)}</span>
             </div>
           </div>
         </div>
 
         {/* Conditions */}
-        <div className="bg-white rounded-lg shadow-xl p-6 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl p-6 mb-6 border-2 border-purple-200 dark:border-purple-900">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
             Condições da Consignação
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Prazo para Devolução (dias)</label>
+              <label className="block text-sm font-semibold text-purple-900 dark:text-purple-100 mb-2">Prazo para Devolução (dias)</label>
               <input
                 type="number"
                 min="1"
                 value={returnDeadlineDays}
                 onChange={(e) => setReturnDeadlineDays(parseInt(e.target.value) || 30)}
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                className="w-full px-3 py-2 border-2 border-purple-200 dark:border-purple-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Comissão do Cliente (%)</label>
+              <label className="block text-sm font-semibold text-purple-900 dark:text-purple-100 mb-2">Comissão do Cliente (%)</label>
               <input
                 type="number"
                 min="0"
@@ -354,29 +394,29 @@ export default function ConsignmentPage() {
                 value={commissionPercent}
                 onChange={(e) => setCommissionPercent(parseFloat(e.target.value) || 0)}
                 placeholder="Deixe 0 se não houver comissão"
-                className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                className="w-full px-3 py-2 border-2 border-purple-200 dark:border-purple-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
               />
             </div>
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Condições de Pagamento</label>
+            <label className="block text-sm font-semibold text-purple-900 dark:text-purple-100 mb-2">Condições de Pagamento</label>
             <textarea
               value={paymentTerms}
               onChange={(e) => setPaymentTerms(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+              className="w-full px-3 py-2 border-2 border-purple-200 dark:border-purple-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Observações Adicionais (Opcional)</label>
+            <label className="block text-sm font-semibold text-purple-900 dark:text-purple-100 mb-2">Observações Adicionais (Opcional)</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
               placeholder="Adicione informações extras sobre a consignação..."
-              className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+              className="w-full px-3 py-2 border-2 border-purple-200 dark:border-purple-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
             />
           </div>
         </div>
@@ -432,10 +472,10 @@ export default function ConsignmentPage() {
           {isGenerating ? 'Gerando PDF...' : 'Gerar Termo de Consignação (PDF)'}
         </button>
 
-        <p className="mt-4 text-center text-white/60 text-sm">
+        <p className="mt-4 text-center text-slate-600 dark:text-slate-400 text-sm">
           💡 O termo de consignação será salvo automaticamente no seu histórico
         </p>
       </div>
-    </div>
+    </main>
   );
 }
