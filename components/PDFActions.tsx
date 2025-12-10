@@ -94,6 +94,7 @@ export default function PDFActions({ calculation, printDetails, quoteId }: PDFAc
         validUntil,
         projectStatus,
         printDetails,
+        attachments,
       });
 
       if (success) {
@@ -199,6 +200,7 @@ export default function PDFActions({ calculation, printDetails, quoteId }: PDFAc
         totalValue: calculation.finalPrice,
         description,
         deliveryDays: 7,
+        attachments,
       });
 
       if (success) {

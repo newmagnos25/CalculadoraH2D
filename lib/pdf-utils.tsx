@@ -1,6 +1,6 @@
 import React from 'react';
 import { pdf } from '@react-pdf/renderer';
-import { CompanySettings, ClientData, CalculationResult, ProjectStatus } from './types';
+import { CompanySettings, ClientData, CalculationResult, ProjectStatus, FileAttachment } from './types';
 import PDFQuote from '@/components/PDFQuote';
 import PDFContract from '@/components/PDFContract';
 import PDFConsignment, { ConsignmentItem } from '@/components/PDFConsignment';
@@ -25,6 +25,7 @@ export interface GenerateQuotePDFParams {
     weight: number;
     printTime: number;
   };
+  attachments?: FileAttachment[];
 }
 
 export interface GenerateContractPDFParams {
@@ -35,6 +36,7 @@ export interface GenerateContractPDFParams {
   totalValue: number;
   description: string;
   deliveryDays?: number;
+  attachments?: FileAttachment[];
 }
 
 export interface GenerateConsignmentPDFParams {
