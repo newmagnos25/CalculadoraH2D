@@ -403,49 +403,19 @@ export const PDFContract: React.FC<PDFContractProps> = ({
           </View>
         </View>
 
-        {/* Anexos do Projeto */}
+        {/* Fotos do Projeto */}
         {attachments && attachments.length > 0 && (
           <View style={styles.attachmentsSection} wrap={false}>
-            <Text style={styles.sectionTitle}>ANEXOS DO PROJETO</Text>
+            <Text style={styles.sectionTitle}>FOTOS DO PROJETO</Text>
             <View style={styles.attachmentsGrid}>
               {attachments.map((attachment, index) => {
                 const dataUrl = `data:${attachment.mimeType};base64,${attachment.data}`;
-                const isImage = attachment.type === 'image';
-                const isVideo = attachment.type === 'video';
-
                 return (
                   <View key={attachment.id || index} style={styles.attachmentItem}>
-                    <Text style={styles.attachmentTypeBadge}>
-                      {getAttachmentTypeLabel(attachment.type)}
-                    </Text>
-
-                    {/* Exibir imagem */}
-                    {isImage && (
-                      <Image
-                        src={dataUrl}
-                        style={styles.attachmentImage}
-                      />
-                    )}
-
-                    {/* Para vídeos, mostrar placeholder */}
-                    {isVideo && (
-                      <View style={[styles.attachmentImage, { backgroundColor: '#1F2937', justifyContent: 'center', alignItems: 'center' }]}>
-                        <Text style={{ color: '#FFFFFF', fontSize: 8, textAlign: 'center', fontWeight: 'bold' }}>
-                          VIDEO{'\n'}{attachment.name}
-                        </Text>
-                      </View>
-                    )}
-
-                    {/* Para modelos 3D e documentos */}
-                    {!isImage && !isVideo && (
-                      <View style={[styles.attachmentImage, { backgroundColor: '#F3F4F6', justifyContent: 'center', alignItems: 'center' }]}>
-                        <Text style={{ color: '#6B7280', fontSize: 8, textAlign: 'center', fontWeight: 'bold' }}>
-                          {attachment.type === 'model' ? 'MODELO 3D' : 'DOCUMENTO'}{'\n'}
-                          {attachment.name}
-                        </Text>
-                      </View>
-                    )}
-
+                    <Image
+                      src={dataUrl}
+                      style={styles.attachmentImage}
+                    />
                     <Text style={styles.attachmentLabel}>
                       {attachment.name}
                     </Text>

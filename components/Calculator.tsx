@@ -18,6 +18,7 @@ import AddonManager from './AddonManager';
 import PrinterManager from './PrinterManager';
 import PDFActions from './PDFActions';
 import TemplatesManager from './TemplatesManager';
+import STLUploader from './STLUploader';
 import { ProductTemplate } from '@/lib/templates';
 import { loadDefaultPrinter, saveDefaultPrinter } from '@/lib/user-preferences';
 
@@ -93,6 +94,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
   const [quantity, setQuantity] = useState(1);
   const [dimensions, setDimensions] = useState('');
   const [productImage, setProductImage] = useState('');
+  const [stlFileName, setStlFileName] = useState<string | null>(null);
 
   // Resultado
   const [result, setResult] = useState<CalculationResult | null>(null);
@@ -457,6 +459,37 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     }
   };
 
+  // Handle STL file analysis
+  const handleSTLAnalysis = (analysis: {
+    volume: number;
+    dimensions: { width: number; height: number; depth: number };
+    surfaceArea: number;
+    estimatedPrintTime: number;
+    estimatedWeight: number;
+    triangles: number;
+  }) => {
+    try {
+      // Atualizar peso do filamento (primeiro filamento da lista)
+      if (filamentUsages.length > 0) {
+        updateFilamentUsage(filamentUsages[0].id, { weight: analysis.estimatedWeight });
+      }
+
+      // Atualizar tempo de impressão
+      setPrintTime(analysis.estimatedPrintTime);
+
+      // Atualizar dimensões
+      const dims = `${analysis.dimensions.width.toFixed(1)}x${analysis.dimensions.height.toFixed(1)}x${analysis.dimensions.depth.toFixed(1)}mm`;
+      setDimensions(dims);
+
+      toast.success(`✅ Modelo STL analisado! Peso: ${analysis.estimatedWeight}g, Tempo: ${Math.floor(analysis.estimatedPrintTime / 60)}h${analysis.estimatedPrintTime % 60}min`, {
+        duration: 6000,
+      });
+    } catch (error) {
+      console.error('Error handling STL analysis:', error);
+      toast.error('Erro ao processar análise do STL');
+    }
+  };
+
   const stateTariffs = getTariffsByState(selectedState);
   const totalWeight = parseFloat(filamentUsages.reduce((sum, f) => sum + f.weight, 0).toFixed(2));
 
@@ -499,6 +532,15 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
                   setPrinterId(printer.id);
                 }
               }}
+            />
+          </div>
+
+          {/* Upload de Modelo STL */}
+          <div className="mb-4">
+            <STLUploader
+              onAnalysisComplete={handleSTLAnalysis}
+              onFileLoaded={(fileName) => setStlFileName(fileName)}
+              maxSizeMB={50}
             />
           </div>
 
