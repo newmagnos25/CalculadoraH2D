@@ -75,6 +75,12 @@ export default function STLUploader({
     controls.dampingFactor = 0.05;
     controlsRef.current = controls;
 
+    // Prevenir scroll da página quando estiver sobre o canvas
+    const preventScroll = (e: WheelEvent) => {
+      e.preventDefault();
+    };
+    renderer.domElement.addEventListener('wheel', preventScroll, { passive: false });
+
     // Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
@@ -116,6 +122,9 @@ export default function STLUploader({
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      if (rendererRef.current) {
+        rendererRef.current.domElement.removeEventListener('wheel', preventScroll);
+      }
       renderer.dispose();
       controls.dispose();
     };
@@ -136,7 +145,7 @@ export default function STLUploader({
       depth: Math.round(size.z * 10) / 10,
     };
 
-    // Calcular volume usando método de triangulação
+    // Calcular volume usando método de triangulação (signed volume)
     let volume = 0;
     const position = geometry.attributes.position;
 
@@ -157,11 +166,12 @@ export default function STLUploader({
         position.getZ(i + 2)
       );
 
-      // Volume de tetraedro formado com origem
-      volume += v1.dot(new THREE.Vector3().crossVectors(v2, v3)) / 6.0;
+      // Volume de tetraedro: (v1 · (v2 × v3)) / 6
+      const cross = new THREE.Vector3().crossVectors(v2, v3);
+      volume += v1.dot(cross) / 6.0;
     }
 
-    volume = Math.abs(volume);
+    volume = Math.abs(volume); // Volume em mm³
     const volumeCm3 = volume / 1000; // mm³ para cm³
 
     // Área de superfície
@@ -256,11 +266,11 @@ export default function STLUploader({
           }
         }
 
-        // Criar novo material com gradiente laranja
-        const material = new THREE.MeshPhongMaterial({
+        // Criar novo material com cor laranja sólida
+        const material = new THREE.MeshStandardMaterial({
           color: 0xff8c42,
-          specular: 0x111111,
-          shininess: 200,
+          roughness: 0.5,
+          metalness: 0.2,
           flatShading: false,
         });
 
@@ -281,13 +291,13 @@ export default function STLUploader({
         boundingBox.getSize(size);
         const maxDim = Math.max(size.x, size.y, size.z);
         const fov = cameraRef.current.fov * (Math.PI / 180);
-        let cameraDistance = Math.abs(maxDim / 2 / Math.tan(fov / 2));
-        cameraDistance *= 2; // Zoom out um pouco
+        let cameraDistance = Math.abs(maxDim / Math.sin(fov / 2));
+        cameraDistance *= 1.5; // Zoom out um pouco para ver o modelo inteiro
 
         cameraRef.current.position.set(
-          cameraDistance,
-          cameraDistance,
-          cameraDistance
+          cameraDistance * 0.7,
+          cameraDistance * 0.7,
+          cameraDistance * 0.7
         );
         cameraRef.current.lookAt(0, 0, 0);
 
@@ -295,6 +305,14 @@ export default function STLUploader({
           controlsRef.current.target.set(0, 0, 0);
           controlsRef.current.update();
         }
+
+        console.log('Modelo renderizado:', {
+          triangles: analysisResult.triangles,
+          dimensions: analysisResult.dimensions,
+          volume: analysisResult.volume,
+          boundingBox: { min: boundingBox.min, max: boundingBox.max },
+          size: { x: size.x, y: size.y, z: size.z },
+        });
       }
     } catch (err) {
       console.error('Erro ao processar STL:', err);
