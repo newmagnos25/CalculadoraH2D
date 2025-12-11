@@ -537,16 +537,16 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
 
         {/* Observações */}
         {(notes || company.legalNotes) && (
-          <View style={styles.notes}>
-            {notes && <Text style={{ marginBottom: 5 }}>📝 {notes}</Text>}
+          <View style={styles.notes} wrap={false}>
+            {notes && <Text style={{ marginBottom: 5 }}>Observações: {notes}</Text>}
             {company.legalNotes && <Text>{company.legalNotes}</Text>}
           </View>
         )}
 
         {/* Anexos do Projeto */}
         {attachments && attachments.length > 0 && (
-          <View style={styles.attachmentsSection}>
-            <Text style={styles.sectionTitle}>📎 ANEXOS DO PROJETO</Text>
+          <View style={styles.attachmentsSection} wrap={false}>
+            <Text style={styles.sectionTitle}>ANEXOS DO PROJETO</Text>
             <View style={styles.attachmentsGrid}>
               {attachments.map((attachment, index) => {
                 const dataUrl = `data:${attachment.mimeType};base64,${attachment.data}`;
@@ -570,8 +570,8 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
                     {/* Para vídeos, mostrar placeholder */}
                     {isVideo && (
                       <View style={[styles.attachmentImage, { backgroundColor: '#1F2937', justifyContent: 'center', alignItems: 'center' }]}>
-                        <Text style={{ color: '#FFFFFF', fontSize: 8, textAlign: 'center' }}>
-                          🎥 Vídeo{'\n'}{attachment.name}
+                        <Text style={{ color: '#FFFFFF', fontSize: 8, textAlign: 'center', fontWeight: 'bold' }}>
+                          VIDEO{'\n'}{attachment.name}
                         </Text>
                       </View>
                     )}
@@ -579,8 +579,8 @@ export const PDFQuote: React.FC<PDFQuoteProps> = ({
                     {/* Para modelos 3D e documentos */}
                     {!isImage && !isVideo && (
                       <View style={[styles.attachmentImage, { backgroundColor: '#F3F4F6', justifyContent: 'center', alignItems: 'center' }]}>
-                        <Text style={{ color: '#6B7280', fontSize: 8, textAlign: 'center' }}>
-                          {attachment.type === 'model' ? '📦' : '📄'} {'\n'}
+                        <Text style={{ color: '#6B7280', fontSize: 8, textAlign: 'center', fontWeight: 'bold' }}>
+                          {attachment.type === 'model' ? 'MODELO 3D' : 'DOCUMENTO'}{'\n'}
                           {attachment.name}
                         </Text>
                       </View>
