@@ -45,9 +45,11 @@ export default function STLUploader({
   useEffect(() => {
     if (!canvasRef.current) return;
 
+    console.log('🎨 Inicializando cena Three.js...');
+
     // Scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf8fafc);
+    scene.background = new THREE.Color(0xf1f5f9); // Cinza claro
     sceneRef.current = scene;
 
     // Camera
@@ -60,46 +62,78 @@ export default function STLUploader({
     camera.position.set(150, 150, 150);
     cameraRef.current = camera;
 
+    console.log('📷 Câmera criada:', camera.position);
+
     // Renderer
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
       antialias: true,
+      alpha: false,
     });
     renderer.setSize(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     rendererRef.current = renderer;
+
+    console.log('🖼️ Renderer criado:', canvasRef.current.clientWidth, 'x', canvasRef.current.clientHeight);
 
     // Controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
+    controls.enableZoom = true;
+    controls.enablePan = true;
     controlsRef.current = controls;
 
-    // Prevenir scroll da página quando estiver sobre o canvas
-    const preventScroll = (e: WheelEvent) => {
-      e.preventDefault();
-    };
-    renderer.domElement.addEventListener('wheel', preventScroll, { passive: false });
+    console.log('🎮 Controles criados');
 
-    // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    // Prevenir scroll da página quando estiver sobre o canvas
+    const preventWheelScroll = (e: WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const preventTouchScroll = (e: TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const canvas = renderer.domElement;
+    canvas.addEventListener('wheel', preventWheelScroll, { passive: false });
+    canvas.addEventListener('touchmove', preventTouchScroll, { passive: false });
+
+    console.log('🚫 Eventos de scroll bloqueados no canvas');
+
+    // Lights - Iluminação mais forte
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
     scene.add(ambientLight);
 
-    const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+    const directionalLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
     directionalLight1.position.set(100, 100, 100);
     scene.add(directionalLight1);
 
-    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
     directionalLight2.position.set(-100, -100, -100);
     scene.add(directionalLight2);
 
-    // Grid
-    const gridHelper = new THREE.GridHelper(200, 20, 0xcccccc, 0xeeeeee);
+    const directionalLight3 = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight3.position.set(0, 100, 0);
+    scene.add(directionalLight3);
+
+    console.log('💡 Luzes adicionadas à cena');
+
+    // Grid e eixos para referência visual
+    const gridHelper = new THREE.GridHelper(200, 20, 0xff8c42, 0xe5e7eb);
+    gridHelper.position.y = -50;
     scene.add(gridHelper);
 
-    // Axes Helper
     const axesHelper = new THREE.AxesHelper(100);
     scene.add(axesHelper);
+
+    console.log('📏 Grid e eixos adicionados');
+
+    // Render inicial
+    renderer.render(scene, camera);
+    console.log('🎬 Primeira renderização executada');
 
     // Animation loop
     const animate = () => {
@@ -123,10 +157,13 @@ export default function STLUploader({
     return () => {
       window.removeEventListener('resize', handleResize);
       if (rendererRef.current) {
-        rendererRef.current.domElement.removeEventListener('wheel', preventScroll);
+        const canvas = rendererRef.current.domElement;
+        canvas.removeEventListener('wheel', preventWheelScroll);
+        canvas.removeEventListener('touchmove', preventTouchScroll);
       }
       renderer.dispose();
       controls.dispose();
+      console.log('🧹 Cena Three.js limpa');
     };
   }, []);
 
@@ -253,10 +290,15 @@ export default function STLUploader({
       onAnalysisComplete(analysisResult);
       if (onFileLoaded) onFileLoaded(file.name);
 
+      console.log('📊 Análise completa:', analysisResult);
+
       // Renderizar modelo
-      if (sceneRef.current && cameraRef.current) {
+      if (sceneRef.current && cameraRef.current && rendererRef.current) {
+        console.log('🎨 Iniciando renderização do modelo 3D...');
+
         // Remover mesh anterior
         if (meshRef.current) {
+          console.log('🗑️ Removendo mesh anterior');
           sceneRef.current.remove(meshRef.current);
           meshRef.current.geometry.dispose();
           if (Array.isArray(meshRef.current.material)) {
@@ -266,15 +308,16 @@ export default function STLUploader({
           }
         }
 
-        // Criar novo material com cor laranja sólida
+        // Criar novo material com cor laranja vibrante
         const material = new THREE.MeshStandardMaterial({
-          color: 0xff8c42,
-          roughness: 0.5,
-          metalness: 0.2,
+          color: 0xff6b35,
+          roughness: 0.4,
+          metalness: 0.3,
           flatShading: false,
         });
 
         const mesh = new THREE.Mesh(geometry, material);
+        console.log('🔷 Mesh criado com', geometry.attributes.position.count / 3, 'triângulos');
 
         // Centralizar modelo
         geometry.computeBoundingBox();
@@ -283,8 +326,12 @@ export default function STLUploader({
         boundingBox.getCenter(center);
         mesh.position.sub(center);
 
+        console.log('📍 Modelo centralizado em:', center);
+
         sceneRef.current.add(mesh);
         meshRef.current = mesh;
+
+        console.log('✅ Mesh adicionado à cena');
 
         // Ajustar câmera para visualizar o modelo
         const size = new THREE.Vector3();
@@ -292,12 +339,12 @@ export default function STLUploader({
         const maxDim = Math.max(size.x, size.y, size.z);
         const fov = cameraRef.current.fov * (Math.PI / 180);
         let cameraDistance = Math.abs(maxDim / Math.sin(fov / 2));
-        cameraDistance *= 1.5; // Zoom out um pouco para ver o modelo inteiro
+        cameraDistance *= 2.0; // Aumentar zoom out
 
         cameraRef.current.position.set(
-          cameraDistance * 0.7,
-          cameraDistance * 0.7,
-          cameraDistance * 0.7
+          cameraDistance * 0.5,
+          cameraDistance * 0.5,
+          cameraDistance * 0.5
         );
         cameraRef.current.lookAt(0, 0, 0);
 
@@ -306,12 +353,23 @@ export default function STLUploader({
           controlsRef.current.update();
         }
 
-        console.log('Modelo renderizado:', {
+        // Forçar renderização
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+
+        console.log('🎯 Modelo renderizado!', {
           triangles: analysisResult.triangles,
           dimensions: analysisResult.dimensions,
           volume: analysisResult.volume,
           boundingBox: { min: boundingBox.min, max: boundingBox.max },
           size: { x: size.x, y: size.y, z: size.z },
+          cameraPosition: cameraRef.current.position,
+          cameraDistance,
+        });
+      } else {
+        console.error('❌ Elementos Three.js não disponíveis:', {
+          scene: !!sceneRef.current,
+          camera: !!cameraRef.current,
+          renderer: !!rendererRef.current,
         });
       }
     } catch (err) {
