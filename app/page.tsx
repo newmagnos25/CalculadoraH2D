@@ -63,27 +63,27 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-orange-500 rounded-xl p-6 text-center">
               <div className="text-4xl font-black bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent mb-2">
-                35+
+                30+
               </div>
-              <div className="text-sm text-slate-400 font-semibold">Cores de Filamentos</div>
+              <div className="text-sm text-slate-400 font-semibold">Cores de Visualização</div>
             </div>
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-blue-500 rounded-xl p-6 text-center">
               <div className="text-4xl font-black bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent mb-2">
-                46
+                70+
               </div>
-              <div className="text-sm text-slate-400 font-semibold">Filamentos Pré-Cadastrados</div>
+              <div className="text-sm text-slate-400 font-semibold">Filamentos Inclusos</div>
             </div>
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-purple-500 rounded-xl p-6 text-center">
               <div className="text-4xl font-black bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
                 3D
               </div>
-              <div className="text-sm text-slate-400 font-semibold">Visualização STL</div>
+              <div className="text-sm text-slate-400 font-semibold">Preview Interativo</div>
             </div>
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-green-500 rounded-xl p-6 text-center">
               <div className="text-4xl font-black bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent mb-2">
-                5s
+                PDF
               </div>
-              <div className="text-sm text-slate-400 font-semibold">Cálculo Automático</div>
+              <div className="text-sm text-slate-400 font-semibold">Orçamentos Profissionais</div>
             </div>
           </div>
         </div>
@@ -110,12 +110,12 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-2xl font-black text-white mb-3">Visualização 3D Profissional</h3>
                 <p className="text-slate-400 leading-relaxed mb-4">
-                  Faça upload do STL e visualize em 3D com 35+ cores organizadas em categorias. Rotacione, dê zoom e escolha gradientes bi-color. O sistema analisa automaticamente volume, peso e dimensões.
+                  Faça upload do STL e visualize em 3D com 30+ cores incluindo gradientes bi-color. Rotacione, dê zoom e veja exatamente como ficará. O sistema calcula automaticamente volume, peso e dimensões reais.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Preview 3D</span>
-                  <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">35+ Cores</span>
-                  <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Análise Automática</span>
+                  <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">30+ Cores</span>
+                  <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Cálculo Real</span>
                 </div>
               </div>
               <div className="bg-slate-950 rounded-xl p-4 border border-blue-500/30">
