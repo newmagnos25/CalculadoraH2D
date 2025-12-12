@@ -36,9 +36,20 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
     highlight: 'select[name="printer"]',
   },
   {
+    emoji: '📐',
+    title: 'Upload STL (NOVO! Recomendado)',
+    description: 'NOVIDADE: Arraste seu arquivo STL para análise automática! O sistema calcula volume, peso estimado, dimensões e tempo de impressão automaticamente. Visualize em 3D antes de fazer o orçamento!',
+    highlight: 'label:has(input[type="file"][accept=".stl"])',
+  },
+  {
     emoji: '🎨',
+    title: 'Visualize em 10 Cores',
+    description: 'Depois de fazer upload do STL, escolha entre 10 cores de filamentos para visualizar como ficará seu modelo! Rotacione e dê zoom com o mouse. Os valores já preenchem automaticamente abaixo.',
+  },
+  {
+    emoji: '🧵',
     title: 'Adicione os Filamentos',
-    description: 'Informe o peso em GRAMAS de cada filamento usado. Para projetos multi-cor, clique em "+ Adicionar Filamento" e escolha a cor de cada um.',
+    description: 'Informe o peso em GRAMAS de cada filamento usado (já preenchido se fez upload STL). Para projetos multi-cor, clique em "+ Adicionar Filamento" e escolha a cor de cada um.',
     highlight: '.filament-section',
   },
   {
@@ -81,7 +92,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     emoji: '🚀',
     title: 'Pronto para Começar!',
-    description: 'Agora você está pronto! Lembre-se: Configure a empresa primeiro, calcule o orçamento e gere PDFs ilimitados. Boa sorte! 💰',
+    description: 'Agora você está pronto! 💡 DICA: Use o upload STL para agilizar, configure a empresa primeiro, calcule o orçamento e gere PDFs ilimitados. Precisa de ajuda? Acesse /help ou /faq. Boa sorte! 💰',
   },
 ];
 
