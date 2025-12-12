@@ -22,6 +22,7 @@ import STLUploader from './STLUploader';
 import { ProductTemplate } from '@/lib/templates';
 import { loadDefaultPrinter, saveDefaultPrinter } from '@/lib/user-preferences';
 import Tooltip, { HelpIcon } from './Tooltip';
+import AdvancedPrintSettings, { DEFAULT_PRINT_SETTINGS, PrintSettings } from './AdvancedPrintSettings';
 
 interface FilamentUsage {
   id: string;
@@ -89,6 +90,9 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
   // Adereços selecionados
   const [selectedAddons, setSelectedAddons] = useState<{ id: string; quantity: number }[]>([]);
+
+  // Configurações avançadas de impressão
+  const [printSettings, setPrintSettings] = useState<PrintSettings>(DEFAULT_PRINT_SETTINGS);
 
   // Detalhes da peça
   const [itemDescription, setItemDescription] = useState('');
@@ -302,6 +306,18 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
     calculatedResult.costs.total = Math.round(roundedTotal * 100) / 100;
 
+    // Apply failure rate insurance to total cost
+    const failureCost = Math.round((calculatedResult.costs.total * (printSettings.failureRate / 100)) * 100) / 100;
+    if (failureCost > 0) {
+      calculatedResult.costs.total += failureCost;
+      // Add to breakdown if significant
+      calculatedResult.breakdown.push({
+        item: `Seguro de falhas (${printSettings.failureRate}%)`,
+        value: failureCost,
+        percentage: (failureCost / calculatedResult.costs.total) * 100,
+      });
+    }
+
     const profitValue = Math.round((calculatedResult.costs.total * profitMargin / 100) * 100) / 100;
     calculatedResult.profitValue = profitValue;
 
@@ -460,6 +476,26 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     }
   };
 
+  // Calculate time multiplier based on print settings
+  const getTimeMultiplier = (settings: PrintSettings): number => {
+    let multiplier = 1.0;
+
+    // Infill: 10% = 0.8x, 100% = 1.5x
+    multiplier *= 0.8 + (settings.infill / 100) * 0.7;
+
+    // Support adds 30%
+    if (settings.hasSupport) multiplier *= 1.3;
+
+    // Brim/Raft adds 8%
+    if (settings.hasBrimRaft) multiplier *= 1.08;
+
+    // Speed adjustments
+    if (settings.printSpeed === 'fast') multiplier *= 0.7;
+    if (settings.printSpeed === 'quality') multiplier *= 1.4;
+
+    return multiplier;
+  };
+
   // Handle STL file analysis
   const handleSTLAnalysis = (analysis: {
     volume: number;
@@ -470,19 +506,45 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
     triangles: number;
   }) => {
     try {
+      // Get selected filament density
+      const filament = allFilaments.find(f => f.id === filamentUsages[0]?.filamentId);
+      const density = filament?.density || 1.24; // Default to PLA
+
+      // Calculate weight with actual infill and density
+      const baseWeight = analysis.volume * density * (printSettings.infill / 100);
+
+      // Add support weight if enabled (approximately 15% of model volume)
+      let totalWeight = baseWeight;
+      if (printSettings.hasSupport) {
+        totalWeight += analysis.volume * density * 0.15;
+      }
+
+      // Add brim/raft weight if enabled (based on base area)
+      if (printSettings.hasBrimRaft) {
+        const bedArea = (analysis.dimensions.width * analysis.dimensions.depth) / 10000; // cm²
+        totalWeight += bedArea * 2; // ~2g per 100cm²
+      }
+
+      // Apply time multiplier from settings
+      const timeMultiplier = getTimeMultiplier(printSettings);
+      let adjustedTime = analysis.estimatedPrintTime * timeMultiplier;
+
+      // Add prep and post-processing time
+      adjustedTime += printSettings.prepTime + printSettings.postProcessTime;
+
       // Atualizar peso do filamento (primeiro filamento da lista)
       if (filamentUsages.length > 0) {
-        updateFilamentUsage(filamentUsages[0].id, { weight: analysis.estimatedWeight });
+        updateFilamentUsage(filamentUsages[0].id, { weight: Math.round(totalWeight) });
       }
 
       // Atualizar tempo de impressão
-      setPrintTime(analysis.estimatedPrintTime);
+      setPrintTime(Math.round(adjustedTime));
 
       // Atualizar dimensões
       const dims = `${analysis.dimensions.width.toFixed(1)}x${analysis.dimensions.height.toFixed(1)}x${analysis.dimensions.depth.toFixed(1)}mm`;
       setDimensions(dims);
 
-      toast.success(`✅ Modelo STL analisado! Peso: ${analysis.estimatedWeight}g, Tempo: ${Math.floor(analysis.estimatedPrintTime / 60)}h${analysis.estimatedPrintTime % 60}min`, {
+      toast.success(`✅ STL analisado! Peso: ${Math.round(totalWeight)}g, Tempo: ${Math.floor(adjustedTime / 60)}h${Math.round(adjustedTime % 60)}min (com ajustes)`, {
         duration: 6000,
       });
     } catch (error) {
@@ -857,6 +919,14 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* Configurações Avançadas de Impressão */}
+          <div className="mb-4">
+            <AdvancedPrintSettings
+              settings={printSettings}
+              onChange={setPrintSettings}
+            />
           </div>
 
           {/* Custos Adicionais - Compacto */}
