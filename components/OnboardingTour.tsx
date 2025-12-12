@@ -43,8 +43,8 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
   },
   {
     emoji: '🎨',
-    title: 'Visualize em 10 Cores',
-    description: 'Depois de fazer upload do STL, escolha entre 10 cores de filamentos para visualizar como ficará seu modelo! Rotacione e dê zoom com o mouse. Os valores já preenchem automaticamente abaixo.',
+    title: 'Visualize em 35+ Cores',
+    description: 'Depois de fazer upload do STL, escolha entre 35+ cores organizadas em categorias (Básicas, Metálicas, Fluorescentes, Pastéis, Especiais com gradientes bi-color)! Rotacione e dê zoom com o mouse. Os valores já preenchem automaticamente abaixo.',
   },
   {
     emoji: '🧵',
