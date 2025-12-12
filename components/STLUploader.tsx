@@ -24,6 +24,20 @@ interface STLUploaderProps {
   maxSizeMB?: number;
 }
 
+// Cores de filamentos populares
+const FILAMENT_COLORS = [
+  { name: 'Laranja', color: 0xff6b35, hex: '#ff6b35' },
+  { name: 'Vermelho', color: 0xe63946, hex: '#e63946' },
+  { name: 'Azul', color: 0x1d3557, hex: '#1d3557' },
+  { name: 'Verde', color: 0x06a77d, hex: '#06a77d' },
+  { name: 'Amarelo', color: 0xffd23f, hex: '#ffd23f' },
+  { name: 'Roxo', color: 0x7209b7, hex: '#7209b7' },
+  { name: 'Preto', color: 0x1a1a1a, hex: '#1a1a1a' },
+  { name: 'Branco', color: 0xf8f9fa, hex: '#f8f9fa' },
+  { name: 'Cinza', color: 0x6c757d, hex: '#6c757d' },
+  { name: 'Rosa', color: 0xff006e, hex: '#ff006e' },
+];
+
 export default function STLUploader({
   onAnalysisComplete,
   onFileLoaded,
@@ -33,6 +47,7 @@ export default function STLUploader({
   const [error, setError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<STLAnalysis | null>(null);
+  const [selectedColor, setSelectedColor] = useState(FILAMENT_COLORS[0]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -59,17 +74,18 @@ export default function STLUploader({
 
     // Scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf1f5f9); // Cinza claro
+    scene.background = new THREE.Color(0xf8fafc); // Fundo mais claro e limpo
     sceneRef.current = scene;
 
-    // Camera
+    // Camera - Posicionada para visualizar a mesa de impressão
     const camera = new THREE.PerspectiveCamera(
       45,
       canvasRef.current.clientWidth / canvasRef.current.clientHeight,
       0.1,
       10000
     );
-    camera.position.set(150, 150, 150);
+    camera.position.set(180, 140, 180); // Ângulo diagonal para melhor visão
+    camera.lookAt(0, 20, 0); // Olha para o centro da mesa, um pouco acima
     cameraRef.current = camera;
 
     console.log('📷 Câmera criada:', camera.position);
@@ -86,12 +102,17 @@ export default function STLUploader({
 
     console.log('🖼️ Renderer criado:', canvasRef.current.clientWidth, 'x', canvasRef.current.clientHeight);
 
-    // Controls
+    // Controls - Centralizado na mesa de impressão
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.enableZoom = true;
     controls.enablePan = true;
+    controls.target.set(0, 20, 0); // Foca no centro da mesa
+    controls.minDistance = 50; // Limite de zoom in
+    controls.maxDistance = 500; // Limite de zoom out
+    controls.maxPolarAngle = Math.PI / 2 + 0.3; // Impede de ir abaixo da mesa
+    controls.update();
     controlsRef.current = controls;
 
     console.log('🎮 Controles criados');
@@ -131,15 +152,24 @@ export default function STLUploader({
 
     console.log('💡 Luzes adicionadas à cena');
 
-    // Grid e eixos para referência visual
-    const gridHelper = new THREE.GridHelper(200, 20, 0xff8c42, 0xe5e7eb);
-    gridHelper.position.y = -50;
+    // Grid e eixos para referência visual - mesa de impressão
+    const gridSize = 220; // Simula uma mesa de impressão 220x220mm
+    const gridDivisions = 22; // 10mm por divisão
+    const gridHelper = new THREE.GridHelper(
+      gridSize,
+      gridDivisions,
+      0x3b82f6, // Azul para linhas principais
+      0xd1d5db  // Cinza claro para linhas secundárias
+    );
+    gridHelper.position.y = 0; // Grid alinhado com a base dos modelos
     scene.add(gridHelper);
 
-    const axesHelper = new THREE.AxesHelper(100);
+    // Eixos XYZ menores e mais discretos
+    const axesHelper = new THREE.AxesHelper(50);
+    axesHelper.position.y = 0.1; // Ligeiramente acima do grid
     scene.add(axesHelper);
 
-    console.log('📏 Grid e eixos adicionados');
+    console.log('📏 Grid de impressão e eixos adicionados');
 
     // Render inicial
     renderer.render(scene, camera);
@@ -318,48 +348,61 @@ export default function STLUploader({
           }
         }
 
-        // Criar novo material com cor laranja vibrante
+        // Criar novo material com cor selecionada
         const material = new THREE.MeshStandardMaterial({
-          color: 0xff6b35,
-          roughness: 0.4,
-          metalness: 0.3,
+          color: selectedColor.color,
+          roughness: 0.35,
+          metalness: 0.2,
           flatShading: false,
         });
 
         const mesh = new THREE.Mesh(geometry, material);
         console.log('🔷 Mesh criado com', geometry.attributes.position.count / 3, 'triângulos');
 
-        // Centralizar modelo
+        // Centralizar modelo e alinhar na base da mesa
         geometry.computeBoundingBox();
         const boundingBox = geometry.boundingBox!;
         const center = new THREE.Vector3();
         boundingBox.getCenter(center);
-        mesh.position.sub(center);
 
-        console.log('📍 Modelo centralizado em:', center);
+        // Centralizar em X e Z, mas colocar base em Y = 0 (em cima da mesa)
+        mesh.position.set(
+          -center.x,
+          -boundingBox.min.y, // Alinha a base do modelo no plano Y=0
+          -center.z
+        );
+
+        console.log('📍 Modelo alinhado na mesa:', {
+          center,
+          baseY: boundingBox.min.y,
+          position: mesh.position
+        });
 
         sceneRef.current.add(mesh);
         meshRef.current = mesh;
 
         console.log('✅ Mesh adicionado à cena');
 
-        // Ajustar câmera para visualizar o modelo
+        // Ajustar câmera para visualizar o modelo perfeitamente
         const size = new THREE.Vector3();
         boundingBox.getSize(size);
         const maxDim = Math.max(size.x, size.y, size.z);
         const fov = cameraRef.current.fov * (Math.PI / 180);
         let cameraDistance = Math.abs(maxDim / Math.sin(fov / 2));
-        cameraDistance *= 2.0; // Aumentar zoom out
+        cameraDistance *= 1.8; // Zoom adequado para ver o modelo completo
+
+        // O modelo agora está com base em Y=0, então o centro visual está em metade da altura
+        const modelCenterY = size.y / 2;
 
         cameraRef.current.position.set(
+          cameraDistance * 0.6,
           cameraDistance * 0.5,
-          cameraDistance * 0.5,
-          cameraDistance * 0.5
+          cameraDistance * 0.6
         );
-        cameraRef.current.lookAt(0, 0, 0);
+        cameraRef.current.lookAt(0, modelCenterY, 0);
 
         if (controlsRef.current) {
-          controlsRef.current.target.set(0, 0, 0);
+          controlsRef.current.target.set(0, modelCenterY, 0); // Foca no centro do modelo
           controlsRef.current.update();
         }
 
@@ -400,6 +443,24 @@ export default function STLUploader({
     } finally {
       setIsLoading(false);
       event.target.value = ''; // Permitir re-upload do mesmo arquivo
+    }
+  };
+
+  // Função para trocar cor do modelo
+  const handleColorChange = (colorOption: typeof FILAMENT_COLORS[0]) => {
+    setSelectedColor(colorOption);
+
+    // Atualizar cor do mesh atual se existir
+    if (meshRef.current) {
+      const material = meshRef.current.material as THREE.MeshStandardMaterial;
+      material.color.setHex(colorOption.color);
+
+      // Forçar re-render
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
+
+      console.log('🎨 Cor alterada para:', colorOption.name);
     }
   };
 
@@ -482,6 +543,53 @@ export default function STLUploader({
               </div>
             )}
           </div>
+
+          {/* Seletor de Cores - Aparece quando tem modelo carregado */}
+          {fileName && (
+            <div className="px-4 py-3 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 border-t-2 border-slate-200 dark:border-slate-600">
+              <div className="flex items-center gap-3 mb-2">
+                <svg className="w-4 h-4 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                </svg>
+                <h5 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+                  Cor do Filamento
+                </h5>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {FILAMENT_COLORS.map((colorOption) => (
+                  <button
+                    key={colorOption.name}
+                    onClick={() => handleColorChange(colorOption)}
+                    className={`group relative flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-xs transition-all ${
+                      selectedColor.name === colorOption.name
+                        ? 'bg-white dark:bg-slate-900 shadow-lg ring-2 ring-blue-500 scale-105'
+                        : 'bg-white/60 dark:bg-slate-900/60 hover:bg-white dark:hover:bg-slate-900 hover:shadow-md hover:scale-102'
+                    }`}
+                    title={`Visualizar em ${colorOption.name}`}
+                  >
+                    <div
+                      className="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600 shadow-inner"
+                      style={{ backgroundColor: colorOption.hex }}
+                    />
+                    <span className="text-slate-700 dark:text-slate-300">
+                      {colorOption.name}
+                    </span>
+                    {selectedColor.name === colorOption.name && (
+                      <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Clique para visualizar o modelo na cor desejada
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
