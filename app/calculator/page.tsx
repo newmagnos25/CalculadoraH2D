@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Calculator from '@/components/Calculator';
 import OnboardingTour from '@/components/OnboardingTour';
+import HeaderUser from '@/components/HeaderUser';
 import { createClient } from '@/lib/supabase/client';
 import { useSubscription } from '@/lib/hooks/useSubscription';
 
@@ -142,68 +143,24 @@ export default function Home() {
       <OnboardingTour />
 
       {/* Header Premium - Preto com Laranja/Dourado */}
-      <div className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-orange-500 shadow-2xl">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <Link href="/calculator" className="flex items-center gap-4 hover:opacity-80 transition-opacity cursor-pointer">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center border-2 border-amber-300 shadow-lg shadow-orange-500/50">
-                <svg className="w-10 h-10 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <header className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-orange-500 shadow-2xl sticky top-0 z-50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center border-2 border-amber-300 shadow-lg shadow-orange-500/50">
+                <svg className="w-7 h-7 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
               </div>
               <div>
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white">
-                    Precifica3D
-                  </h1>
-                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full text-xs font-black border-2 border-amber-300 text-white shadow-lg">
-                    PRO
-                  </span>
-                </div>
-                <p className="text-orange-200 text-xs sm:text-sm md:text-base font-medium">
-                  Precificação Profissional para Impressão 3D
-                </p>
+                <h1 className="text-xl font-black text-white">Precifica3D</h1>
+                <p className="text-orange-400 text-xs font-bold">PRO</p>
               </div>
             </Link>
-            <div className="flex items-center gap-2 sm:gap-4">
-              <Link
-                href="/consignment"
-                className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl text-white font-black text-xs sm:text-sm transition-all shadow-lg border-2 border-purple-300 hover:scale-105 hover:shadow-xl"
-              >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-                <span className="hidden xs:inline">📦</span>
-                <span className="hidden sm:inline">Consignado</span>
-                <span className="sm:hidden">Consig</span>
-              </Link>
-              <Link
-                href="/dashboard"
-                className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 rounded-xl text-white font-black text-xs sm:text-sm transition-all shadow-lg border-2 border-blue-300 hover:scale-105 hover:shadow-xl"
-              >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span className="hidden xs:inline">📊</span>
-                <span className="hidden sm:inline">Meus Orçamentos</span>
-                <span className="sm:hidden">Orç</span>
-              </Link>
-              <Link
-                href="/settings"
-                className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-3 bg-white hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl text-orange-600 dark:text-orange-400 font-black text-xs sm:text-sm transition-all shadow-lg border-2 border-orange-400 dark:border-orange-500 hover:scale-105 hover:shadow-xl hover:border-orange-500 dark:hover:border-orange-400"
-              >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span className="hidden xs:inline">⚙️</span>
-                <span className="hidden sm:inline">Configurações</span>
-                <span className="sm:hidden">Config</span>
-              </Link>
-            </div>
+            <HeaderUser />
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Barra de Features - Botões Interativos */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-900 dark:to-slate-800 border-b-2 border-blue-200 dark:border-blue-900/50 shadow-lg">

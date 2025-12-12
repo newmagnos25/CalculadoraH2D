@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import HeaderUser from '@/components/HeaderUser';
 import { TIER_CONFIGS } from '@/lib/types/database';
 
 export default function PricingPage() {
@@ -14,35 +15,24 @@ export default function PricingPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-black via-slate-950 to-slate-900">
       {/* Header */}
-      <div className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-orange-500 shadow-2xl">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col items-center gap-6">
-            <Link href="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity cursor-pointer">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center border-2 border-amber-300 shadow-lg shadow-orange-500/50">
-                <svg className="w-10 h-10 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <header className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-orange-500 shadow-2xl sticky top-0 z-50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center border-2 border-amber-300 shadow-lg shadow-orange-500/50">
+                <svg className="w-7 h-7 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
               </div>
               <div>
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white">
-                    Precifica3D
-                  </h1>
-                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full text-xs font-black border-2 border-amber-300 text-white shadow-lg">
-                    PRO
-                  </span>
-                </div>
-                <p className="text-orange-200 text-xs sm:text-sm md:text-base font-medium">
-                  💰 Escolha Seu Plano
-                </p>
+                <h1 className="text-xl font-black text-white">Precifica3D</h1>
+                <p className="text-orange-400 text-xs font-bold">PRO</p>
               </div>
             </Link>
-            <p className="text-xl text-orange-300 max-w-2xl text-center">
-              Profissionalize sua precificação de impressão 3D com as melhores ferramentas do mercado
-            </p>
+            <HeaderUser />
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Pricing Cards */}
       <div className="container mx-auto px-4 py-16">
