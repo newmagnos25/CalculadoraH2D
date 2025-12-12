@@ -24,19 +24,81 @@ interface STLUploaderProps {
   maxSizeMB?: number;
 }
 
-// Cores de filamentos populares
-const FILAMENT_COLORS = [
-  { name: 'Laranja', color: 0xff6b35, hex: '#ff6b35' },
-  { name: 'Vermelho', color: 0xe63946, hex: '#e63946' },
-  { name: 'Azul', color: 0x1d3557, hex: '#1d3557' },
-  { name: 'Verde', color: 0x06a77d, hex: '#06a77d' },
-  { name: 'Amarelo', color: 0xffd23f, hex: '#ffd23f' },
-  { name: 'Roxo', color: 0x7209b7, hex: '#7209b7' },
-  { name: 'Preto', color: 0x1a1a1a, hex: '#1a1a1a' },
-  { name: 'Branco', color: 0xf8f9fa, hex: '#f8f9fa' },
-  { name: 'Cinza', color: 0x6c757d, hex: '#6c757d' },
-  { name: 'Rosa', color: 0xff006e, hex: '#ff006e' },
+// Interface para cores de filamentos
+interface FilamentColor {
+  name: string;
+  color: number;
+  hex: string;
+  category: 'basicas' | 'metalicas' | 'fluorescentes' | 'pasteis' | 'especiais';
+  gradient?: string; // Para filamentos bi-color
+  isGradient?: boolean;
+}
+
+// Cores de filamentos expandidas - 35+ opções
+const FILAMENT_COLORS: FilamentColor[] = [
+  // Cores Básicas (11)
+  { name: 'Preto', color: 0x1a1a1a, hex: '#1a1a1a', category: 'basicas' },
+  { name: 'Branco', color: 0xf8f9fa, hex: '#f8f9fa', category: 'basicas' },
+  { name: 'Cinza', color: 0x6c757d, hex: '#6c757d', category: 'basicas' },
+  { name: 'Vermelho', color: 0xe63946, hex: '#e63946', category: 'basicas' },
+  { name: 'Laranja', color: 0xff6b35, hex: '#ff6b35', category: 'basicas' },
+  { name: 'Amarelo', color: 0xffd23f, hex: '#ffd23f', category: 'basicas' },
+  { name: 'Verde', color: 0x06a77d, hex: '#06a77d', category: 'basicas' },
+  { name: 'Azul', color: 0x1d3557, hex: '#1d3557', category: 'basicas' },
+  { name: 'Azul Céu', color: 0x3b82f6, hex: '#3b82f6', category: 'basicas' },
+  { name: 'Roxo', color: 0x7209b7, hex: '#7209b7', category: 'basicas' },
+  { name: 'Rosa', color: 0xff006e, hex: '#ff006e', category: 'basicas' },
+
+  // Cores Metálicas (7)
+  { name: 'Prata', color: 0xc0c0c0, hex: '#c0c0c0', category: 'metalicas' },
+  { name: 'Ouro', color: 0xffd700, hex: '#ffd700', category: 'metalicas' },
+  { name: 'Bronze', color: 0xcd7f32, hex: '#cd7f32', category: 'metalicas' },
+  { name: 'Cobre', color: 0xb87333, hex: '#b87333', category: 'metalicas' },
+  { name: 'Azul Metálico', color: 0x4a5568, hex: '#4a5568', category: 'metalicas' },
+  { name: 'Verde Metálico', color: 0x2d5016, hex: '#2d5016', category: 'metalicas' },
+  { name: 'Roxo Metálico', color: 0x4a1c40, hex: '#4a1c40', category: 'metalicas' },
+
+  // Cores Fluorescentes (6)
+  { name: 'Verde Neon', color: 0x00ff00, hex: '#00ff00', category: 'fluorescentes' },
+  { name: 'Rosa Neon', color: 0xff1493, hex: '#ff1493', category: 'fluorescentes' },
+  { name: 'Amarelo Neon', color: 0xffff00, hex: '#ffff00', category: 'fluorescentes' },
+  { name: 'Laranja Neon', color: 0xff4500, hex: '#ff4500', category: 'fluorescentes' },
+  { name: 'Azul Neon', color: 0x00ffff, hex: '#00ffff', category: 'fluorescentes' },
+  { name: 'Roxo Neon', color: 0xda70d6, hex: '#da70d6', category: 'fluorescentes' },
+
+  // Cores Pastéis (6)
+  { name: 'Rosa Pastel', color: 0xffb6c1, hex: '#ffb6c1', category: 'pasteis' },
+  { name: 'Azul Pastel', color: 0xadd8e6, hex: '#add8e6', category: 'pasteis' },
+  { name: 'Verde Pastel', color: 0x98fb98, hex: '#98fb98', category: 'pasteis' },
+  { name: 'Amarelo Pastel', color: 0xfffacd, hex: '#fffacd', category: 'pasteis' },
+  { name: 'Roxo Pastel', color: 0xe6e6fa, hex: '#e6e6fa', category: 'pasteis' },
+  { name: 'Pêssego Pastel', color: 0xffdab9, hex: '#ffdab9', category: 'pasteis' },
+
+  // Cores Especiais / Gradientes (5)
+  { name: 'Arco-Íris', color: 0xff0000, hex: '#ff0000', category: 'especiais',
+    gradient: 'linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8b00ff)',
+    isGradient: true },
+  { name: 'Pôr do Sol', color: 0xff6b35, hex: '#ff6b35', category: 'especiais',
+    gradient: 'linear-gradient(90deg, #ff6b35, #f7931e, #ffd23f)',
+    isGradient: true },
+  { name: 'Oceano', color: 0x1d3557, hex: '#1d3557', category: 'especiais',
+    gradient: 'linear-gradient(90deg, #1d3557, #457b9d, #a8dadc)',
+    isGradient: true },
+  { name: 'Galáxia', color: 0x1a1a1a, hex: '#1a1a1a', category: 'especiais',
+    gradient: 'linear-gradient(90deg, #1a1a1a, #2d1b69, #6b46c1, #d946ef)',
+    isGradient: true },
+  { name: 'Fogo', color: 0xe63946, hex: '#e63946', category: 'especiais',
+    gradient: 'linear-gradient(90deg, #e63946, #ff4500, #ffa500)',
+    isGradient: true },
 ];
+
+const COLOR_CATEGORIES = {
+  basicas: { label: 'Básicas', icon: '🎨', description: 'Cores sólidas tradicionais' },
+  metalicas: { label: 'Metálicas', icon: '✨', description: 'Acabamento metálico' },
+  fluorescentes: { label: 'Fluorescentes', icon: '💡', description: 'Cores neon brilhantes' },
+  pasteis: { label: 'Pastéis', icon: '🌸', description: 'Tons suaves e delicados' },
+  especiais: { label: 'Especiais', icon: '🌈', description: 'Bi-color e gradientes' },
+};
 
 export default function STLUploader({
   onAnalysisComplete,
@@ -48,6 +110,7 @@ export default function STLUploader({
   const [fileName, setFileName] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<STLAnalysis | null>(null);
   const [selectedColor, setSelectedColor] = useState(FILAMENT_COLORS[0]);
+  const [selectedCategory, setSelectedCategory] = useState<'basicas' | 'metalicas' | 'fluorescentes' | 'pasteis' | 'especiais'>('basicas');
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
