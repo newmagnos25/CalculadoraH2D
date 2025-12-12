@@ -168,23 +168,43 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <HeaderUser />
-
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-orange-50/30 dark:from-black dark:via-slate-950 dark:to-slate-900">
+      {/* Header Premium - Preto com Laranja/Dourado */}
+      <header className="bg-gradient-to-r from-black via-slate-900 to-black border-b-4 border-orange-500 shadow-2xl sticky top-0 z-50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center border-2 border-amber-300 shadow-lg shadow-orange-500/50">
+                <svg className="w-7 h-7 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-xl font-black text-white">Precifica3D</h1>
+                <p className="text-orange-400 text-xs font-bold">PRO</p>
+              </div>
+            </Link>
+            <HeaderUser />
+          </div>
+        </div>
+      </header>
+
+      {/* Analytics Header Section */}
+      <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-slate-900 dark:to-slate-800 border-b-2 border-orange-200 dark:border-orange-900/50 shadow-lg py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-4xl md:text-5xl font-black mb-4">
-                📊 Analytics
-              </h1>
-              <p className="text-xl text-indigo-100">
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-2 flex items-center gap-3">
+                <span className="text-4xl">📊</span>
+                Analytics
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400">
                 Acompanhe estatísticas detalhadas do seu negócio
               </p>
             </div>
             <button
               onClick={exportToCSV}
-              className="px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-indigo-50 transition-all shadow-lg flex items-center gap-2"
+              className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl hover:from-orange-600 hover:to-amber-600 transition-all shadow-lg flex items-center gap-2"
             >
               📥 Exportar CSV
             </button>
@@ -194,7 +214,7 @@ export default function AnalyticsPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Time Range Selector */}
-        <div className="flex gap-3 mb-8">
+        <div className="flex gap-3 mb-8 flex-wrap">
           {[
             { value: '7d', label: 'Últimos 7 dias' },
             { value: '30d', label: 'Últimos 30 dias' },
@@ -206,7 +226,7 @@ export default function AnalyticsPage() {
               onClick={() => setTimeRange(range.value as typeof timeRange)}
               className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
                 timeRange === range.value
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg'
                   : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
               }`}
             >
@@ -217,7 +237,7 @@ export default function AnalyticsPage() {
 
         {loading ? (
           <div className="text-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-orange-500 mx-auto mb-4"></div>
             <p className="text-slate-600 dark:text-slate-400 font-semibold">Carregando analytics...</p>
           </div>
         ) : analytics ? (
@@ -282,7 +302,7 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Gráfico de Barras Simples - Orçamentos por Mês */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-8 border-2 border-indigo-200 dark:border-indigo-900/50">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-8 border-2 border-orange-200 dark:border-orange-900/50">
               <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3">
                 <span className="text-3xl">📈</span>
                 Orçamentos por Mês (Últimos 6 Meses)
@@ -309,7 +329,7 @@ export default function AnalyticsPage() {
                       </div>
                       <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500 flex items-center justify-end pr-3"
+                          className="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-500 flex items-center justify-end pr-3"
                           style={{ width: `${percentage}%` }}
                         >
                           {percentage > 20 && (
@@ -363,23 +383,23 @@ export default function AnalyticsPage() {
             </div>
 
             {/* CTA */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-center">
+            <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-8 text-center shadow-2xl">
               <h3 className="text-3xl font-black text-white mb-4">
                 Quer Mais Insights?
               </h3>
-              <p className="text-lg text-indigo-100 mb-6">
+              <p className="text-lg text-orange-100 mb-6">
                 Continue gerando orçamentos para ter dados mais precisos e gráficos detalhados
               </p>
-              <div className="flex gap-4 justify-center">
+              <div className="flex gap-4 justify-center flex-wrap">
                 <Link
                   href="/calculator"
-                  className="px-8 py-4 bg-white text-indigo-600 font-black rounded-xl hover:bg-indigo-50 transition-all shadow-lg"
+                  className="px-8 py-4 bg-white text-orange-600 font-black rounded-xl hover:bg-orange-50 transition-all shadow-lg"
                 >
                   🧮 Nova Cotação
                 </Link>
                 <Link
                   href="/dashboard"
-                  className="px-8 py-4 bg-white/20 text-white font-black rounded-xl hover:bg-white/30 transition-all"
+                  className="px-8 py-4 bg-white/20 text-white font-black rounded-xl hover:bg-white/30 transition-all border-2 border-white/50"
                 >
                   📊 Dashboard
                 </Link>
@@ -397,7 +417,7 @@ export default function AnalyticsPage() {
             </p>
             <Link
               href="/calculator"
-              className="inline-block px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black rounded-xl hover:scale-105 transition-all shadow-lg"
+              className="inline-block px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-black rounded-xl hover:scale-105 transition-all shadow-lg"
             >
               🚀 Criar Primeiro Orçamento
             </Link>
