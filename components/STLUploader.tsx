@@ -120,6 +120,7 @@ export default function STLUploader({
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
   const meshRef = useRef<THREE.Mesh | null>(null);
+  const gridHelperRef = useRef<THREE.GridHelper | null>(null);
 
   // Inicializar cena Three.js
   useEffect(() => {
@@ -228,6 +229,7 @@ export default function STLUploader({
     );
     gridHelper.position.y = 0; // Grid alinhado com a base dos modelos
     scene.add(gridHelper);
+    gridHelperRef.current = gridHelper;
 
     // Eixos XYZ menores e mais discretos
     const axesHelper = new THREE.AxesHelper(50);
@@ -271,6 +273,38 @@ export default function STLUploader({
       console.log('🧹 Cena Three.js limpa');
     };
   }, []);
+
+  // Atualizar grid quando buildVolume mudar
+  useEffect(() => {
+    if (!sceneRef.current || !gridHelperRef.current) return;
+
+    const scene = sceneRef.current;
+    const oldGrid = gridHelperRef.current;
+
+    // Remover grid antigo
+    scene.remove(oldGrid);
+    oldGrid.geometry.dispose();
+    if (Array.isArray(oldGrid.material)) {
+      oldGrid.material.forEach(m => m.dispose());
+    } else {
+      oldGrid.material.dispose();
+    }
+
+    // Criar novo grid com novo tamanho
+    const gridSize = Math.max(buildVolume.x, buildVolume.y);
+    const gridDivisions = Math.round(gridSize / 10);
+    const newGrid = new THREE.GridHelper(
+      gridSize,
+      gridDivisions,
+      0x3b82f6,
+      0xd1d5db
+    );
+    newGrid.position.y = 0;
+    scene.add(newGrid);
+    gridHelperRef.current = newGrid;
+
+    console.log(`🔄 Grid atualizado para: ${gridSize}x${gridSize}mm (${buildVolume.x}x${buildVolume.y}x${buildVolume.z}mm)`);
+  }, [buildVolume.x, buildVolume.y, buildVolume.z]);
 
   const calculateGeometry = (geometry: THREE.BufferGeometry): STLAnalysis => {
     geometry.computeBoundingBox();
