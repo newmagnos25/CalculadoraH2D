@@ -18,7 +18,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     emoji: '👋',
     title: 'Bem-vindo ao Precifica3D!',
-    description: 'Vamos configurar tudo para você começar a fazer orçamentos profissionais em minutos. Siga o passo a passo!',
+    description: 'Vamos configurar tudo para você começar a fazer orçamentos profissionais em minutos. Siga o passo a passo completo!',
   },
   {
     emoji: '⚙️',
@@ -32,7 +32,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     emoji: '🖨️',
     title: 'Escolha sua Impressora',
-    description: 'Selecione a impressora que você vai usar. Você pode adicionar impressoras customizadas no menu "Impressoras" se a sua não estiver na lista.',
+    description: 'Selecione a impressora que você vai usar. Você pode adicionar impressoras customizadas no menu "Impressoras" se a sua não estiver na lista. Dica: Passe o mouse sobre o ícone de ajuda para ver dicas!',
     highlight: 'select[name="printer"]',
   },
   {
@@ -47,47 +47,67 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
     description: 'Depois de fazer upload do STL, escolha entre 35+ cores organizadas em categorias (Básicas, Metálicas, Fluorescentes, Pastéis, Especiais com gradientes bi-color)! Rotacione e dê zoom com o mouse. Os valores já preenchem automaticamente abaixo.',
   },
   {
+    emoji: '📝',
+    title: 'Descrição do Item',
+    description: 'Preencha o nome/descrição do produto (ex: "Miniatura Pokemon", "Suporte Celular"). Também informe a quantidade de peças e dimensões (opcional). Isso aparecerá no PDF do orçamento!',
+  },
+  {
     emoji: '🧵',
     title: 'Adicione os Filamentos',
-    description: 'Informe o peso em GRAMAS de cada filamento usado (já preenchido se fez upload STL). Para projetos multi-cor, clique em "+ Adicionar Filamento" e escolha a cor de cada um.',
+    description: 'Informe o peso em GRAMAS de cada filamento usado (já preenchido se fez upload STL). Para projetos multi-cor, clique em "+ Adicionar Filamento" e escolha a cor de cada um. Use os ícones de ajuda para dicas!',
     highlight: '.filament-section',
   },
   {
     emoji: '⏱️',
     title: 'Tempo de Impressão',
-    description: 'Digite o tempo total que a impressão levará (em Horas e Minutos). Você pode ver isso no slicer (Cura, PrusaSlicer, etc).',
+    description: 'Digite o tempo total que a impressão levará (em Horas e Minutos). Você pode ver isso no slicer (Cura, PrusaSlicer, etc). Tempo médio: 2-8h para peças pequenas/médias.',
     highlight: 'input[type="number"][placeholder*="Horas"]',
   },
   {
     emoji: '⚡',
     title: 'Tarifa de Energia',
-    description: 'Selecione seu ESTADO e sua DISTRIBUIDORA de energia. Isso garante que o custo de energia elétrica seja calculado com precisão!',
+    description: 'Selecione seu ESTADO e sua DISTRIBUIDORA de energia. Isso garante que o custo de energia elétrica seja calculado com precisão! Cada distribuidora tem tarifa diferente.',
     highlight: 'select[id="state"]',
+  },
+  {
+    emoji: '🔧',
+    title: 'Adereços e Inserções (Opcional)',
+    description: 'Adicione itens extras ao projeto: parafusos, ímãs, insertos metálicos, LEDs, etc. O custo deles será automaticamente somado ao orçamento final. Você pode criar adereços customizados!',
   },
   {
     emoji: '💼',
     title: 'Custos do Negócio (Opcional)',
-    description: 'Configure mão de obra, depreciação, custos fixos e margem de lucro. Esses valores são salvos automaticamente para os próximos orçamentos.',
+    description: 'Configure mão de obra (R$/h), depreciação da impressora, custos fixos e margem de lucro (%). Esses valores são salvos automaticamente para os próximos orçamentos. Use os tooltips para dicas de valores!',
   },
   {
     emoji: '🧮',
     title: 'Calcule o Orçamento',
-    description: 'Clique em "Calcular Preço" para ver o valor. Isso consome 1 crédito. O resultado mostra breakdown completo de custos + lucro.',
+    description: 'Clique em "Calcular Preço" para ver o valor. Isso consome 1 crédito. O resultado mostra breakdown completo de custos + lucro com porcentagens e valores detalhados.',
   },
   {
     emoji: '📄',
     title: 'Gere o PDF (GRÁTIS!)',
-    description: 'Depois de calcular, você pode gerar o PDF quantas vezes quiser SEM GASTAR CRÉDITO ADICIONAL! Ajuste, teste e envie para o cliente.',
+    description: 'Depois de calcular, você pode gerar o PDF quantas vezes quiser SEM GASTAR CRÉDITO ADICIONAL! Ajuste, teste e envie para o cliente. O PDF inclui logo, dados da empresa e breakdown completo.',
   },
   {
     emoji: '📜',
     title: 'Contrato (Opcional)',
-    description: 'Se quiser formalizar, gere também o Contrato de Prestação de Serviço. Isso consome +1 crédito, mas é opcional.',
+    description: 'Se quiser formalizar, gere também o Contrato de Prestação de Serviço. Isso consome +1 crédito, mas é opcional. Ideal para projetos maiores e proteção jurídica.',
+  },
+  {
+    emoji: '📊',
+    title: 'Dashboard de Histórico',
+    description: 'Acesse o Dashboard para ver todos os orçamentos e contratos gerados. Você pode re-baixar PDFs, filtrar por tipo e data, e acompanhar seu histórico completo (disponível para planos Professional+).',
   },
   {
     emoji: '🎯',
     title: 'Templates para Agilizar',
-    description: 'Salve produtos recorrentes (chaveiros, miniaturas, etc) como TEMPLATES. Assim você gera orçamentos em segundos nos próximos clientes!',
+    description: 'Salve produtos recorrentes (chaveiros, miniaturas, etc) como TEMPLATES. Assim você gera orçamentos em segundos nos próximos clientes! Clique em "📋 Templates" no topo da calculadora.',
+  },
+  {
+    emoji: '🔧',
+    title: 'Personalize Tudo!',
+    description: 'DICA EXTRA: Você pode criar impressoras, filamentos e adereços customizados! Assim você mantém seus preços e configurações sempre atualizados. Perfeito para quem tem materiais específicos.',
   },
   {
     emoji: '🚀',

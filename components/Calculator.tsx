@@ -21,6 +21,7 @@ import TemplatesManager from './TemplatesManager';
 import STLUploader from './STLUploader';
 import { ProductTemplate } from '@/lib/templates';
 import { loadDefaultPrinter, saveDefaultPrinter } from '@/lib/user-preferences';
+import Tooltip, { HelpIcon } from './Tooltip';
 
 interface FilamentUsage {
   id: string;
@@ -553,6 +554,9 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
               <label className="text-sm font-bold text-blue-900 dark:text-blue-200">
                 📝 Descrição do Item
               </label>
+              <Tooltip content="Descreva o produto para identificação no PDF. Ex: Miniatura, Suporte, Chaveiro...">
+                <HelpIcon className="w-4 h-4" />
+              </Tooltip>
             </div>
 
             <input
@@ -565,9 +569,14 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold mb-1 text-blue-800 dark:text-blue-300">
-                  📦 Quantidade
-                </label>
+                <div className="flex items-center gap-1 mb-1">
+                  <label className="block text-xs font-semibold text-blue-800 dark:text-blue-300">
+                    📦 Quantidade
+                  </label>
+                  <Tooltip content="Número de peças iguais que serão impressas neste orçamento">
+                    <HelpIcon className="w-3.5 h-3.5" />
+                  </Tooltip>
+                </div>
                 <input
                   type="number"
                   min="1"
@@ -578,9 +587,14 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
               </div>
 
               <div>
-                <label className="block text-xs font-semibold mb-1 text-blue-800 dark:text-blue-300">
-                  📏 Dimensões (opcional)
-                </label>
+                <div className="flex items-center gap-1 mb-1">
+                  <label className="block text-xs font-semibold text-blue-800 dark:text-blue-300">
+                    📏 Dimensões (opcional)
+                  </label>
+                  <Tooltip content="Tamanho aproximado da peça. Auto-preenchido ao fazer upload do STL">
+                    <HelpIcon className="w-3.5 h-3.5" />
+                  </Tooltip>
+                </div>
                 <input
                   type="text"
                   value={dimensions}
@@ -596,9 +610,14 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
           {/* Filamentos/Cores */}
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
-                Filamentos / Cores ({filamentUsages.length})
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  Filamentos / Cores ({filamentUsages.length})
+                </label>
+                <Tooltip content="Adicione cada filamento usado. Peso em GRAMAS (ex: 50g). Para multi-cor, clique em 'Adicionar cor'">
+                  <HelpIcon className="w-4 h-4" />
+                </Tooltip>
+              </div>
               <button
                 onClick={addFilamentUsage}
                 className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1 transition-colors"
@@ -735,9 +754,14 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
           {/* Tempo e Energia */}
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">
-              ⏱️ Tempo de Impressão
-            </label>
+            <div className="flex items-center gap-2 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                ⏱️ Tempo de Impressão
+              </label>
+              <Tooltip content="Tempo total de impressão. Veja no slicer (Cura, PrusaSlicer, etc) antes de exportar o G-code">
+                <HelpIcon className="w-4 h-4" />
+              </Tooltip>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-medium mb-1 text-slate-600 dark:text-slate-400">
@@ -785,9 +809,14 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
           {/* Energia */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div>
-              <label className="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">
-                Estado
-              </label>
+              <div className="flex items-center gap-2 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  Estado
+                </label>
+                <Tooltip content="Selecione seu estado para calcular o custo de energia correto. Cada distribuidora tem tarifa diferente">
+                  <HelpIcon className="w-4 h-4" />
+                </Tooltip>
+              </div>
               <select
                 value={selectedState}
                 onChange={e => {
@@ -808,9 +837,14 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">
-                Distribuidora
-              </label>
+              <div className="flex items-center gap-2 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  Distribuidora
+                </label>
+                <Tooltip content="Selecione sua distribuidora de energia. O valor em R$/kWh é usado para calcular o custo elétrico">
+                  <HelpIcon className="w-4 h-4" />
+                </Tooltip>
+              </div>
               <select
                 value={energyTariffId}
                 onChange={e => setEnergyTariffId(e.target.value)}
@@ -837,9 +871,14 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
               <div className="grid grid-cols-2 gap-3 mb-3">
                 <div>
-                  <label className="block text-xs font-medium mb-1 text-slate-600 dark:text-slate-400">
-                    Mão de obra (R$/h)
-                  </label>
+                  <div className="flex items-center gap-1 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">
+                      Mão de obra (R$/h)
+                    </label>
+                    <Tooltip content="Valor da sua hora de trabalho. Média: R$ 15-50/h dependendo da complexidade">
+                      <HelpIcon className="w-3.5 h-3.5" />
+                    </Tooltip>
+                  </div>
                   <input
                     type="number"
                     step="0.1"
@@ -849,9 +888,14 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1 text-slate-600 dark:text-slate-400">
-                    Depreciação (R$)
-                  </label>
+                  <div className="flex items-center gap-1 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">
+                      Depreciação (R$)
+                    </label>
+                    <Tooltip content="Desgaste da impressora por uso. Calcule: (Preço da impressora ÷ Vida útil em impressões)">
+                      <HelpIcon className="w-3.5 h-3.5" />
+                    </Tooltip>
+                  </div>
                   <input
                     type="number"
                     step="0.1"
@@ -864,9 +908,14 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium mb-1 text-slate-600 dark:text-slate-400">
-                    Custos fixos (R$)
-                  </label>
+                  <div className="flex items-center gap-1 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">
+                      Custos fixos (R$)
+                    </label>
+                    <Tooltip content="Custos indiretos por impressão: aluguel, internet, embalagem, etc. Média: R$ 0,50-2,00">
+                      <HelpIcon className="w-3.5 h-3.5" />
+                    </Tooltip>
+                  </div>
                   <input
                     type="number"
                     step="0.1"
@@ -876,9 +925,14 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1 text-slate-600 dark:text-slate-400">
-                    Margem de lucro (%)
-                  </label>
+                  <div className="flex items-center gap-1 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400">
+                      Margem de lucro (%)
+                    </label>
+                    <Tooltip content="Seu lucro sobre os custos. Mercado: 30-50% para peças simples, 50-100% para complexas">
+                      <HelpIcon className="w-3.5 h-3.5" />
+                    </Tooltip>
+                  </div>
                   <input
                     type="number"
                     step="1"
@@ -900,10 +954,15 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
               </svg>
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                Adereços e Inserções
-              </h3>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                  Adereços e Inserções
+                </h3>
+                <Tooltip content="Adicione itens extras: parafusos, ímãs, insertos metálicos, LEDs, etc. O custo é somado ao orçamento">
+                  <HelpIcon className="w-4 h-4" />
+                </Tooltip>
+              </div>
               <p className="text-xs text-slate-600 dark:text-slate-400">Parafusos, ímãs, insertos, etc</p>
             </div>
           </div>

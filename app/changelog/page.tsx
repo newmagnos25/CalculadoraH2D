@@ -5,17 +5,47 @@ import HeaderUser from '@/components/HeaderUser';
 
 const CHANGELOG = [
   {
+    version: '2.2.0',
+    date: 'Dezembro 2024',
+    title: '🚀 Analytics, Tooltips e UX Completa',
+    description: 'Atualização massiva de UX! Analytics com gráficos, tooltips informativos, tutorial expandido e landing page profissional.',
+    changes: [
+      '📊 Página de Analytics com gráficos e estatísticas detalhadas',
+      '💡 Tooltips informativos em TODOS os campos da calculadora',
+      '📚 Tutorial expandido para 18 passos (cobrindom todas as features)',
+      '🌟 Landing page melhorada com screenshots e depoimentos',
+      '🎨 Stats visuais (35+ cores, 46 filamentos, visualização 3D)',
+      '📈 Exportação de analytics para CSV',
+      '🔗 Links para Dashboard e Analytics no header',
+      '📝 Changelog atualizado com todas as novidades'
+    ]
+  },
+  {
+    version: '2.1.0',
+    date: 'Dezembro 2024',
+    title: '🎨 35+ Cores com Categorias e Gradientes',
+    description: 'Expansão massiva do seletor de cores! De 10 para 35+ cores organizadas em categorias com suporte a gradientes bi-color.',
+    changes: [
+      '🎨 35+ cores de filamentos (era 10)',
+      '📂 5 categorias: Básicas, Metálicas, Fluorescentes, Pastéis, Especiais',
+      '🌈 Gradientes bi-color (Arco-Íris, Pôr do Sol, Oceano, Galáxia, Fogo)',
+      '👁️ Preview visual circular para cada cor',
+      '🔍 Filtros por categoria com contadores',
+      '✨ Interface modernizada do seletor de cores'
+    ]
+  },
+  {
     version: '2.0.0',
     date: 'Dezembro 2024',
-    title: '🎉 Upload STL e Seletor de Cores',
-    description: 'Maior atualização! Upload de STL com análise automática completa e visualização 3D em 10 cores.',
+    title: '🎉 Upload STL e Visualização 3D',
+    description: 'Maior atualização inicial! Upload de STL com análise automática completa e visualização 3D profissional.',
     changes: [
       '✨ Upload de arquivos STL com análise automática',
-      '🎨 Seletor de 10 cores para visualização 3D',
-      '🖼️ Visualizador Three.js com rotação e zoom',
+      '🎨 Visualização 3D com Three.js',
+      '🖼️ Visualizador com rotação e zoom',
       '📏 Mesa 220x220mm com grid profissional',
-      '⚡ Auto-preenchimento após análise',
-      '🔧 Tutorial atualizado (14 passos)'
+      '⚡ Auto-preenchimento de peso, volume e dimensões',
+      '🔧 Tutorial onboarding (14 passos iniciais)'
     ]
   },
   {
