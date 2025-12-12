@@ -73,11 +73,44 @@ export default function AnalyticsPage() {
 
       const averagePrice = totalQuotes > 0 ? totalRevenue / totalQuotes : 0;
 
-      // Filamento mais usado (simplificado)
-      const mostUsedFilament = 'PLA Preto'; // Poderia extrair dos dados reais
+      // Filamento mais usado - extrair dos dados reais
+      const filamentCount: Record<string, number> = {};
+      quoteCalculations.forEach(q => {
+        const filamentUsages = q.quote_data?.calculation?.filamentUsages || [];
+        filamentUsages.forEach((usage: any) => {
+          if (usage.filamentId) {
+            const key = `${usage.filamentBrand || ''} ${usage.filamentType || ''}`.trim();
+            filamentCount[key] = (filamentCount[key] || 0) + 1;
+          }
+        });
+      });
 
-      // Impressora mais usada (simplificado)
-      const mostUsedPrinter = 'Ender 3 V2'; // Poderia extrair dos dados reais
+      let mostUsedFilament = 'Nenhum';
+      let maxFilamentCount = 0;
+      Object.entries(filamentCount).forEach(([filament, count]) => {
+        if (count > maxFilamentCount) {
+          maxFilamentCount = count;
+          mostUsedFilament = filament;
+        }
+      });
+
+      // Impressora mais usada - extrair dos dados reais
+      const printerCount: Record<string, number> = {};
+      quoteCalculations.forEach(q => {
+        const printerName = q.quote_data?.printDetails?.printer || q.quote_data?.calculation?.printer;
+        if (printerName) {
+          printerCount[printerName] = (printerCount[printerName] || 0) + 1;
+        }
+      });
+
+      let mostUsedPrinter = 'Nenhum';
+      let maxPrinterCount = 0;
+      Object.entries(printerCount).forEach(([printer, count]) => {
+        if (count > maxPrinterCount) {
+          maxPrinterCount = count;
+          mostUsedPrinter = printer;
+        }
+      });
 
       // Tempo médio de impressão
       const totalPrintTime = quoteCalculations.reduce((sum, q) => {

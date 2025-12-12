@@ -113,9 +113,9 @@ export default function LandingPage() {
                   Faça upload do STL e visualize em 3D com 35+ cores organizadas em categorias. Rotacione, dê zoom e escolha gradientes bi-color. O sistema analisa automaticamente volume, peso e dimensões.
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Three.js</span>
+                  <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Preview 3D</span>
                   <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">35+ Cores</span>
-                  <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Análise Auto</span>
+                  <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Análise Automática</span>
                 </div>
               </div>
               <div className="bg-slate-950 rounded-xl p-4 border border-blue-500/30">
@@ -181,76 +181,52 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* What You Get Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-            O que Dizem os <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">Profissionais</span>
+            Por Que Escolher o <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">Precifica3D PRO</span>
           </h2>
           <p className="text-xl text-slate-400 max-w-3xl mx-auto">
-            Makers e empresas que confiam no Precifica3D PRO
+            Desenvolvido especialmente para profissionais de impressão 3D
           </p>
         </div>
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-orange-500 rounded-2xl p-6 hover:scale-105 transition-all">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center text-white font-black text-lg">
-                RC
-              </div>
-              <div>
-                <div className="font-bold text-white">Rafael Costa</div>
-                <div className="text-xs text-slate-400">Maker Profissional</div>
+              <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center">
+                <span className="text-3xl">⚡</span>
               </div>
             </div>
-            <p className="text-slate-300 leading-relaxed text-sm mb-3">
-              "O upload STL com análise automática economizou HORAS do meu trabalho. Não preciso mais calcular manualmente volume e peso. Simplesmente perfeito!"
+            <h3 className="font-black text-white text-xl mb-3">Economia de Tempo</h3>
+            <p className="text-slate-300 leading-relaxed text-sm">
+              Upload de STL com análise automática de volume, peso e dimensões. Sem cálculos manuais. Configure uma vez, use sempre.
             </p>
-            <div className="flex gap-1">
-              {[...Array(5)].map((_, i) => (
-                <span key={i} className="text-yellow-500 text-lg">⭐</span>
-              ))}
-            </div>
           </div>
 
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-blue-500 rounded-2xl p-6 hover:scale-105 transition-all">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-black text-lg">
-                MS
-              </div>
-              <div>
-                <div className="font-bold text-white">Mariana Silva</div>
-                <div className="text-xs text-slate-400">3D Print Studio</div>
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                <span className="text-3xl">📊</span>
               </div>
             </div>
-            <p className="text-slate-300 leading-relaxed text-sm mb-3">
-              "A visualização 3D com 35+ cores impressiona meus clientes! Eles veem exatamente como ficará antes de aprovar. Aumento de 40% nas vendas!"
+            <h3 className="font-black text-white text-xl mb-3">Cálculos Precisos</h3>
+            <p className="text-slate-300 leading-relaxed text-sm">
+              Filamentos, energia, mão de obra, depreciação e margem de lucro. Todos os custos reais para não perder dinheiro em nenhum projeto.
             </p>
-            <div className="flex gap-1">
-              {[...Array(5)].map((_, i) => (
-                <span key={i} className="text-yellow-500 text-lg">⭐</span>
-              ))}
-            </div>
           </div>
 
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-purple-500 rounded-2xl p-6 hover:scale-105 transition-all">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-black text-lg">
-                PO
-              </div>
-              <div>
-                <div className="font-bold text-white">Pedro Oliveira</div>
-                <div className="text-xs text-slate-400">Impressão 3D ME</div>
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                <span className="text-3xl">📄</span>
               </div>
             </div>
-            <p className="text-slate-300 leading-relaxed text-sm mb-3">
-              "Os PDFs ilimitados mudaram meu negócio. Posso ajustar e reenviar quantas vezes precisar sem medo de gastar créditos. Sistema nota 10!"
+            <h3 className="font-black text-white text-xl mb-3">PDFs Profissionais</h3>
+            <p className="text-slate-300 leading-relaxed text-sm">
+              Orçamentos e contratos com sua marca, QR codes, assinatura digital. Apresentação profissional que fecha mais vendas.
             </p>
-            <div className="flex gap-1">
-              {[...Array(5)].map((_, i) => (
-                <span key={i} className="text-yellow-500 text-lg">⭐</span>
-              ))}
-            </div>
           </div>
         </div>
       </section>
