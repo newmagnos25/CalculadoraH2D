@@ -99,6 +99,15 @@ export function validateEmail(email: string): EmailValidationResult {
     '10minutemail.com', 'guerrillamail.com', 'mailinator.com',
     'tempmail.com', 'throwaway.email', 'trashmail.com',
     'yopmail.com', 'maildrop.cc', 'getnada.com',
+    'temp-mail.org', 'sharklasers.com', 'guerillamail.info',
+    'grr.la', 'guerrillamail.biz', 'guerrillamail.de',
+    'spam4.me', 'mintemail.com', 'emailondeck.com',
+    'jetable.org', 'throwawaymail.com', 'fakeinbox.com',
+    'dispostable.com', 'soodonims.com', 'spamgourmet.com',
+    'mytrashmail.com', 'mailnesia.com', 'emailnax.com',
+    '10mail.org', 'tempmailaddress.com', 'correotemporal.org',
+    'mohmal.com', 'inbox.lv', '33mail.com', 'getairmail.com',
+    'mailcatch.com', 'mailforspam.com', 'anonymbox.com',
   ];
 
   // Verificar se o local é fake
