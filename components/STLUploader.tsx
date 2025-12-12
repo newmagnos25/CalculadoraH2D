@@ -22,6 +22,7 @@ interface STLUploaderProps {
   onAnalysisComplete: (analysis: STLAnalysis) => void;
   onFileLoaded?: (fileName: string) => void;
   maxSizeMB?: number;
+  buildVolume?: { x: number; y: number; z: number };
 }
 
 // Interface para cores de filamentos
@@ -104,6 +105,7 @@ export default function STLUploader({
   onAnalysisComplete,
   onFileLoaded,
   maxSizeMB = 50,
+  buildVolume = { x: 220, y: 220, z: 250 }, // Default: mesa 220x220mm (Ender 3)
 }: STLUploaderProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -215,9 +217,9 @@ export default function STLUploader({
 
     console.log('💡 Luzes adicionadas à cena');
 
-    // Grid e eixos para referência visual - mesa de impressão
-    const gridSize = 220; // Simula uma mesa de impressão 220x220mm
-    const gridDivisions = 22; // 10mm por divisão
+    // Grid dinâmico baseado na impressora selecionada
+    const gridSize = Math.max(buildVolume.x, buildVolume.y); // Usa o maior lado da mesa
+    const gridDivisions = Math.round(gridSize / 10); // 10mm por divisão
     const gridHelper = new THREE.GridHelper(
       gridSize,
       gridDivisions,
@@ -807,6 +809,46 @@ export default function STLUploader({
                 </p>
               </div>
             </div>
+
+            {/* Validação de tamanho da mesa */}
+            {(() => {
+              const fitsX = analysis.dimensions.width <= buildVolume.x;
+              const fitsY = analysis.dimensions.depth <= buildVolume.y;
+              const fitsZ = analysis.dimensions.height <= buildVolume.z;
+              const fits = fitsX && fitsY && fitsZ;
+
+              if (!fits) {
+                return (
+                  <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border-2 border-red-500">
+                    <p className="text-sm font-bold text-red-700 dark:text-red-400 mb-2 flex items-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      ⚠️ MODELO NÃO CABE NA MESA!
+                    </p>
+                    <p className="text-xs text-red-600 dark:text-red-300 mb-2">
+                      A impressora selecionada tem mesa de <strong>{buildVolume.x}x{buildVolume.y}x{buildVolume.z}mm</strong>, mas o modelo precisa de:
+                    </p>
+                    <div className="flex gap-2 text-xs">
+                      <span className={fitsX ? 'text-green-600' : 'text-red-600 font-bold'}>X: {analysis.dimensions.width.toFixed(1)}mm</span>
+                      <span className={fitsY ? 'text-green-600' : 'text-red-600 font-bold'}>Y: {analysis.dimensions.depth.toFixed(1)}mm</span>
+                      <span className={fitsZ ? 'text-green-600' : 'text-red-600 font-bold'}>Z: {analysis.dimensions.height.toFixed(1)}mm</span>
+                    </div>
+                    <p className="text-xs text-red-600 dark:text-red-300 mt-2">
+                      💡 Selecione uma impressora maior ou escale o modelo antes de exportar o STL.
+                    </p>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-300 dark:border-green-700">
+                  <p className="text-xs text-green-700 dark:text-green-400">
+                    ✅ <strong>Modelo cabe perfeitamente!</strong> Mesa: {buildVolume.x}x{buildVolume.y}x{buildVolume.z}mm
+                  </p>
+                </div>
+              );
+            })()}
 
             <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
               <p className="text-xs text-blue-700 dark:text-blue-400">

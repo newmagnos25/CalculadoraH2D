@@ -604,6 +604,7 @@ export default function Calculator({ isAuthenticated = false }: CalculatorProps)
               onAnalysisComplete={handleSTLAnalysis}
               onFileLoaded={(fileName) => setStlFileName(fileName)}
               maxSizeMB={50}
+              buildVolume={allPrinters.find(p => p.id === printerId)?.buildVolume || { x: 220, y: 220, z: 250 }}
             />
           </div>
 
