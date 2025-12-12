@@ -43,9 +43,19 @@ export default function STLUploader({
 
   // Inicializar cena Three.js
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current) {
+      console.error('❌ Canvas ref não está disponível!');
+      return;
+    }
 
     console.log('🎨 Inicializando cena Three.js...');
+    console.log('📦 Canvas element:', canvasRef.current);
+    console.log('📐 Canvas dimensions:', {
+      width: canvasRef.current.clientWidth,
+      height: canvasRef.current.clientHeight,
+      offsetWidth: canvasRef.current.offsetWidth,
+      offsetHeight: canvasRef.current.offsetHeight,
+    });
 
     // Scene
     const scene = new THREE.Scene();
@@ -371,6 +381,18 @@ export default function STLUploader({
           camera: !!cameraRef.current,
           renderer: !!rendererRef.current,
         });
+        console.log('🔍 Valores das refs:', {
+          sceneRef: sceneRef.current,
+          cameraRef: cameraRef.current,
+          rendererRef: rendererRef.current,
+        });
+
+        // Tentar inicializar se canvas existir
+        if (canvasRef.current && !sceneRef.current) {
+          console.log('🔧 Tentando inicializar cena agora...');
+          // Força inicialização
+          window.location.reload();
+        }
       }
     } catch (err) {
       console.error('Erro ao processar STL:', err);
@@ -427,6 +449,42 @@ export default function STLUploader({
         </div>
       )}
 
+      {/* Canvas 3D - Sempre visível para garantir que Three.js inicialize corretamente */}
+      <div className="mb-4">
+        <div className="bg-white dark:bg-slate-800 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 shadow-lg">
+          <div className="bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2">
+            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              Preview 3D {fileName ? '(Arraste para rotacionar • Scroll para zoom)' : '(Carregue um arquivo STL para visualizar)'}
+            </h4>
+          </div>
+          <div className="w-full h-96 relative">
+            <canvas
+              ref={canvasRef}
+              className="w-full h-full bg-slate-50 dark:bg-slate-900"
+            />
+            {!fileName && (
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-50/80 dark:bg-slate-900/80 pointer-events-none">
+                <div className="text-center">
+                  <svg className="w-16 h-16 mx-auto text-slate-400 dark:text-slate-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">
+                    Nenhum modelo carregado
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
+                    Faça upload de um arquivo STL para visualizar
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Preview e Análise */}
       {fileName && analysis && (
         <div className="space-y-4">
@@ -439,23 +497,6 @@ export default function STLUploader({
             <span className="text-slate-500 dark:text-slate-400">
               ({analysis.triangles.toLocaleString('pt-BR')} triângulos)
             </span>
-          </div>
-
-          {/* Preview 3D */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 shadow-lg">
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-2">
-              <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                Preview 3D (Arraste para rotacionar • Scroll para zoom)
-              </h4>
-            </div>
-            <canvas
-              ref={canvasRef}
-              className="w-full h-96 bg-slate-50 dark:bg-slate-900"
-            />
           </div>
 
           {/* Análise */}
