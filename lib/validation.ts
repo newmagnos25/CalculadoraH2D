@@ -179,6 +179,7 @@ export interface PasswordValidationResult {
   isValid: boolean;
   error?: string;
   strength?: 'weak' | 'medium' | 'strong';
+  suggestions?: string[];
 }
 
 export function validatePassword(password: string): PasswordValidationResult {
@@ -186,6 +187,7 @@ export function validatePassword(password: string): PasswordValidationResult {
     return {
       isValid: false,
       error: 'Senha é obrigatória',
+      suggestions: ['Digite uma senha para proteger sua conta'],
     };
   }
 
@@ -193,7 +195,27 @@ export function validatePassword(password: string): PasswordValidationResult {
     return {
       isValid: false,
       error: 'Senha deve ter pelo menos 6 caracteres',
+      suggestions: ['Use uma senha mais longa para maior segurança'],
     };
+  }
+
+  const suggestions: string[] = [];
+
+  // Verificar cada critério e adicionar sugestões
+  if (!/\d/.test(password)) {
+    suggestions.push('Adicione números à sua senha');
+  }
+  if (!/[a-z]/.test(password)) {
+    suggestions.push('Adicione letras minúsculas');
+  }
+  if (!/[A-Z]/.test(password)) {
+    suggestions.push('Adicione letras maiúsculas');
+  }
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    suggestions.push('Adicione caracteres especiais como @, #, !, etc.');
+  }
+  if (password.length < 8) {
+    suggestions.push('Use pelo menos 8 caracteres para maior segurança');
   }
 
   // Calcular força da senha
@@ -220,7 +242,160 @@ export function validatePassword(password: string): PasswordValidationResult {
   }
 
   return {
-    isValid: true,
+    isValid: password.length >= 6,
     strength,
+    suggestions: suggestions.length > 0 ? suggestions : undefined,
   };
+}
+
+/**
+ * Validação de valores numéricos para calculadora
+ */
+export interface NumberValidationResult {
+  isValid: boolean;
+  value: number;
+  error?: string;
+  warning?: string;
+}
+
+export function validatePositiveNumber(
+  value: number | string,
+  fieldName: string,
+  allowZero: boolean = false,
+  minValue?: number,
+  maxValue?: number
+): NumberValidationResult {
+  // Converter string para número se necessário
+  let numValue: number;
+  if (typeof value === 'string') {
+    numValue = parseFloat(value.replace(',', '.'));
+  } else {
+    numValue = value;
+  }
+
+  // Verificar se é um número válido
+  if (isNaN(numValue)) {
+    return {
+      isValid: false,
+      value: 0,
+      error: `${fieldName} deve ser um número válido`,
+    };
+  }
+
+  // Verificar se é positivo
+  if (!allowZero && numValue <= 0) {
+    return {
+      isValid: false,
+      value: 0,
+      error: `${fieldName} deve ser maior que zero`,
+    };
+  }
+
+  // Verificar valor mínimo
+  if (minValue !== undefined && numValue < minValue) {
+    return {
+      isValid: false,
+      value: numValue,
+      error: `${fieldName} deve ser pelo menos ${minValue}`,
+    };
+  }
+
+  // Verificar valor máximo
+  if (maxValue !== undefined && numValue > maxValue) {
+    return {
+      isValid: false,
+      value: numValue,
+      error: `${fieldName} não pode ser maior que ${maxValue}`,
+    };
+  }
+
+  // Verificar se é um valor razoável (warning)
+  if (numValue > 1000000) {
+    return {
+      isValid: true,
+      value: numValue,
+      warning: `O valor de ${fieldName} parece muito alto. Verifique se está correto.`,
+    };
+  }
+
+  return {
+    isValid: true,
+    value: numValue,
+  };
+}
+
+/**
+ * Validação de CPF/CNPJ
+ */
+export function validateCPFCNPJ(value: string): { isValid: boolean; type: 'CPF' | 'CNPJ' | 'invalid'; error?: string } {
+  // Remove caracteres não numéricos
+  const cleanValue = value.replace(/\D/g, '');
+
+  // Validação de CPF
+  if (cleanValue.length === 11) {
+    let sum = 0;
+    let remainder: number;
+
+    for (let i = 1; i <= 9; i++) {
+      sum += parseInt(cleanValue.substring(i - 1, i)) * (11 - i);
+    }
+
+    remainder = (sum * 10) % 11;
+    if (remainder === 10 || remainder === 11) {
+      remainder = 0;
+    }
+    if (remainder !== parseInt(cleanValue.substring(9, 10))) {
+      return { isValid: false, type: 'invalid', error: 'CPF inválido - dígito verificador incorreto' };
+    }
+
+    sum = 0;
+    for (let i = 1; i <= 10; i++) {
+      sum += parseInt(cleanValue.substring(i - 1, i)) * (12 - i);
+    }
+
+    remainder = (sum * 10) % 11;
+    if (remainder === 10 || remainder === 11) {
+      remainder = 0;
+    }
+    if (remainder !== parseInt(cleanValue.substring(10, 11))) {
+      return { isValid: false, type: 'invalid', error: 'CPF inválido - dígito verificador incorreto' };
+    }
+
+    return { isValid: true, type: 'CPF' };
+  }
+
+  // Validação de CNPJ
+  if (cleanValue.length === 14) {
+    let sum = 0;
+    let weight = 5;
+
+    for (let i = 0; i < 12; i++) {
+      sum += parseInt(cleanValue.substring(i, i + 1)) * weight;
+      weight--;
+      if (weight < 2) weight = 9;
+    }
+
+    let remainder = sum % 11;
+    let digit1 = remainder < 2 ? 0 : 11 - remainder;
+
+    sum = 0;
+    weight = 6;
+    for (let i = 0; i < 13; i++) {
+      sum += parseInt(cleanValue.substring(i, i + 1)) * weight;
+      weight--;
+      if (weight < 2) weight = 9;
+    }
+
+    remainder = sum % 11;
+    let digit2 = remainder < 2 ? 0 : 11 - remainder;
+
+    if (digit1 !== parseInt(cleanValue.substring(12, 13)) ||
+        digit2 !== parseInt(cleanValue.substring(13, 14))) {
+      return { isValid: false, type: 'invalid', error: 'CNPJ inválido - dígitos verificadores incorretos' };
+    }
+
+    return { isValid: true, type: 'CNPJ' };
+  }
+
+  return { isValid: false, type: 'invalid', error: 'CPF/CNPJ deve ter 11 ou 14 dígitos' };
 }
